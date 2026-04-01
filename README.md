@@ -101,13 +101,13 @@ Estrutura os custos em três camadas — diretos, indiretos e custo de falha —
 
 | Nome | Papel |
 |---|---|
-| André Borges Viana | Creative Coding |
-| Arthur Moury | Creative Coding |
-| Bernardo Alencar | Creative Coding |
-| Breno Pereira | Creative Coding |
-| Diego Ferreira Magnata | Creative Coding |
-| Gustavo Castro | Creative Coding |
-| Maria Augusta | Creative Coding |
+| André Borges Viana | Ciências da Computação |
+| Arthur Moury | Ciências da Computação |
+| Bernardo Alencar | Ciências da Computação |
+| Breno Pereira | Ciências da Computação |
+| Diego Ferreira Magnata | Ciências da Computação |
+| Gustavo Castro | Ciências da Computação |
+| Maria Augusta | Ciências da Computação |
 
 ### Design
 
