@@ -1,29 +1,25 @@
-import type { NextPage } from 'next'
-import { ReactNode, useEffect } from 'react'
-
-interface LayoutProps {
+import type {NextPage} from 'next'
+import React,{ReactNode,useEffect} from 'react'
+interface LayoutProps{
   children: ReactNode
 }
 
-export const Layout = ({ children }: LayoutProps): JSX.Element => {
-  useEffect(() => {
-    const handleLoad = () => {
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/service-worker.js')
-            .then((registration) => {
-              console.log('SW registered: ', registration)
-            })
-            .catch((registrationError) => {
-              console.log('SW registration failed: ', registrationError)
-            })
+export const Layout=({children}:LayoutProps):React.JSX.Element=>{
+  useEffect(()=>{
+    const handleLoad=()=>{
+      if('serviceWorker' in navigator){
+        window.addEventListener('load',()=>{
+          navigator.serviceWorker.register('/service-worker.js').then((registration)=>{
+            console.log('SW registered: ',registration)
+          }).catch((registrationError)=>{
+            console.log('SW registration failed: ',registrationError)
+          })
         })
       }
     }
     handleLoad()
-  }, [])
-
-  return (
+  },[])
+  return(
     <html lang="pt-BR">
       <body className="font-sans bg-edenred-background text-edenred-text">
         {children}
@@ -32,8 +28,8 @@ export const Layout = ({ children }: LayoutProps): JSX.Element => {
   )
 }
 
-export const getLayout = (page: NextPage): JSX.Element => {
-  return (
+export const getLayout=(page:React.ReactNode):React.JSX.Element=>{
+  return(
     <Layout>
       {page}
     </Layout>

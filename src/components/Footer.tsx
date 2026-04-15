@@ -1,12 +1,11 @@
 import Link from 'next/link'
-import { ReactNode } from 'react'
-
-interface FooterProps {
+import React,{ReactNode} from 'react'
+interface FooterProps{
   children?: ReactNode
 }
 
-const Footer = ({ children }: FooterProps): JSX.Element => {
-  return (
+const Footer=({children}:FooterProps):React.JSX.Element=>{
+  return(
     <footer className="bg-gray-900 text-white mt-12 py-8">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
@@ -26,5 +25,4 @@ const Footer = ({ children }: FooterProps): JSX.Element => {
     </footer>
   )
 }
-
 export default Footer
