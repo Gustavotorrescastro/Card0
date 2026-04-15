@@ -1,29 +1,41 @@
+'use client'
+
 import Link from 'next/link'
-import React,{ReactNode} from 'react'
-interface HeaderProps{
+import { ReactNode } from 'react'
+import { User } from 'lucide-react'
+
+interface HeaderProps {
   children?: ReactNode
 }
 
-const Header=({children}:HeaderProps):React.JSX.Element=>{
-  return(
-    <header className="bg-edenred-primary text-white shadow-lg">
+const Header = ({ children }: HeaderProps): React.JSX.Element => {
+  return (
+    <header className="bg-edenred-primary text-white shadow-lg z-50">
       <div className="container mx-auto px-4 py-4">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-          <Link href="/" className="text-2xl font-bold hover:text-edenred-light transition-colors">
+        <div className="flex items-center justify-between">
+          {/* Lado Esquerdo: Logo */}
+          <Link 
+            href="/dashboard" 
+            className="text-2xl font-bold hover:text-edenred-light transition-colors tracking-tight"
+          >
             Card0 - Edenred
           </Link>
-          <nav className="flex items-center space-x-6 mt-4 md:mt-0">
-            <Link href="/simulador-risco-operacional" className="text-sm font-medium hover:text-edenred-light transition-colors">
-              Simulador de Risco
-            </Link>
-            <Link href="/login" className="text-sm font-medium hover:text-edenred-light transition-colors border border-white px-3 py-1 rounded-md hover:bg-white hover:text-edenred-primary">
-              Login
-            </Link>
-          </nav>
+          
+          {/* Lado Direito: Botão de Perfil */}
+          <div className="flex items-center space-x-4">
+            {children}
+            
+            <button 
+              className="flex items-center justify-center w-10 h-10 rounded-full bg-edenred-secondary hover:bg-white/20 transition-all border border-white/10"
+              title="Perfil do Usuário"
+            >
+              <User size={20} className="text-white" />
+            </button>
+          </div>
         </div>
-        {children}
       </div>
     </header>
   )
 }
+
 export default Header

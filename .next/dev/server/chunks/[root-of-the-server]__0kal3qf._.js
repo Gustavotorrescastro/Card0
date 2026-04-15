@@ -48,36 +48,23 @@ __turbopack_context__.s([
     "POST",
     ()=>POST
 ]);
-// src/app/api/auth/login/route.ts completo
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/server.js [app-route] (ecmascript)");
 ;
 async function POST(request) {
-    try {
-        const body = await request.json();
-        const { email, password } = body;
-        // Para teste: Aceitar o padrão antigo OU qualquer email que venha do seu formulário
-        if (password.length >= 6) {
-            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-                message: 'Login realizado com sucesso',
-                user: {
-                    email
-                }
-            }, {
-                status: 200
-            });
-        }
+    const { email, password } = await request.json();
+    // Lógica temporária: aceita qualquer email se a senha tiver >= 6 caracteres
+    if (password && password.length >= 6) {
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-            error: 'Credenciais inválidas'
+            message: 'OK'
         }, {
-            status: 401
-        });
-    } catch (error) {
-        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-            error: 'Erro no servidor'
-        }, {
-            status: 500
+            status: 200
         });
     }
+    return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+        error: 'Senha demasiado curta ou inválida'
+    }, {
+        status: 401
+    });
 }
 }),
 ];
