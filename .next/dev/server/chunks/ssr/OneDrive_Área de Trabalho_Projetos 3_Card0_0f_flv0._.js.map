@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/gusta/OneDrive/%C3%81rea%20de%20Trabalho/Projetos%203/Card0/src/app/layout.tsx"],"sourcesContent":["import './globals.css' // Importante para o Tailwind carregar\r\nimport type { Metadata } from 'next'\r\n\r\nexport const metadata: Metadata = {\r\n    title: 'Card0 - Edenred',\r\n    description: 'Simulador de Risco Operacional',\r\n}\r\n\r\nexport default function RootLayout({\r\n    children,\r\n}: {\r\n    children: React.ReactNode\r\n}) {\r\n    return (\r\n        <html lang=\"pt-BR\">\r\n            <body>{children}</body>\r\n        </html>\r\n    )\r\n}"],"names":["metadata","title","description","RootLayout","children","lang"],"mappings":";;;;;;;;;AAGO,MAAMA,WAAqB;IAC9BC,OAAO;IACPC,aAAa;AACjB;AAEe,SAASC,WAAW,EAC/BC,QAAQ,EAGX;IACG,qBACI,ySAAC;QAAKC,MAAK;kBACP,cAAA,ySAAC;sBAAMD;;;;;;;;;;;AAGnB"}},
+    {"offset": {"line": 41, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/gusta/OneDrive/%C3%81rea%20de%20Trabalho/Projetos%203/Card0/node_modules/next/src/server/route-modules/app-page/vendored/rsc/react-jsx-dev-runtime.ts"],"sourcesContent":["module.exports = (\n  require('../../module.compiled') as typeof import('../../module.compiled')\n).vendored['react-rsc']!.ReactJsxDevRuntime\n"],"names":["module","exports","require","vendored","ReactJsxDevRuntime"],"mappings":"AAAAA,OAAOC,OAAO,GACZC,QAAQ,uKACRC,QAAQ,CAAC,YAAY,CAAEC,kBAAkB","ignoreList":[0]}}]
+}
