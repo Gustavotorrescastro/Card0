@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+@theme {
+    --color-edenred-primary: #E2001A;
+    --color-edenred-secondary: #B00014;
+    --color-edenred-light: #FFEBEC;
+    --color-edenred-background: #F4F4F4;
+    --color-edenred-surface: #FFFFFF;
+    --color-edenred-text: #1D1D1B;
+    --color-edenred-text-secondary: #666666;
+    --color-edenred-border: #E5E5E5;
+}
