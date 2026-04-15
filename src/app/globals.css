@@ -1,19 +1,45 @@
 @import "tailwindcss";
 
 @theme {
+  /* Variáveis de cor para usar como utilitários (ex: bg-edenred-primary) */
   --color-edenred-primary: #E2001A;
-  /* ... suas outras cores ... */
+  --color-edenred-secondary: #B00014;
+  --color-edenred-background: #F4F4F4;
+  --color-edenred-surface: #FFFFFF;
+  --color-edenred-text: #1D1D1B;
+  --color-edenred-text-secondary: #666666;
+  --color-edenred-border: #E5E5E5;
 }
 
-/* Isso faz com que o fundo e o texto base mudem sozinhos */
 @layer base {
-  body {
-    @apply transition-colors duration-300;
-    @apply bg-[family-name:--color-edenred-background] text-[family-name:--color-edenred-text];
+  /* Configuração para o Modo Claro (Padrão) */
+  :root {
+    background-color: #F4F4F4;
+    color: #1D1D1B;
+    color-scheme: light;
   }
 
-  .dark body {
+  /* Configuração para o Modo Escuro (Ativado pela classe .dark) */
+  .dark {
     background-color: #0F0F0F;
     color: #FFFFFF;
+    color-scheme: dark;
   }
+
+  body {
+    @apply min-h-screen transition-colors duration-300;
+    /* Garante que o body herde a cor de fundo do root/dark */
+    background-color: inherit;
+    color: inherit;
+  }
+}
+
+/* Utilitários extras para manter o visual limpo */
+input[type="range"] {
+  @apply accent-edenred-primary;
+}
+
+/* Transição suave em todos os elementos que mudam de cor */
+* {
+  @apply transition-colors duration-200;
 }
