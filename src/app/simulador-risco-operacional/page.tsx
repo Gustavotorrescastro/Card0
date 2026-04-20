@@ -6,22 +6,61 @@ import Sidebar from '@/components/Sidebar'
 import { Leaf, CircleDollarSign, CalendarDays } from 'lucide-react'
 import { useTheme } from '@/context/ThemeContext'
 
+interface Risco {
+  nome: string
+  fatores: FatorRisco[]
+}
+
+interface FatorRisco {
+  nome: string
+  valor: number
+  unidade: string
+}
+
+interface Cenario {
+  nome: string
+  probabilidade: number
+  impacto: number
+}
+
+function calcularMetricas(risco: Risco, cenarios: Cenario[]) {
+  const cartoesAtivos = risco.fatores.find((f) => f.nome === 'Cartões Ativos')?.valor || 0
+  const taxaFalha = risco.fatores.find((f) => f.nome === 'Taxa de Falha')?.valor || 0
+
+  const falhasMes = Math.round(cartoesAtivos * (taxaFalha / 100))
+  const custoFisicoMes = falhasMes * 20
+  const custoDigitalOperacional = falhasMes * 0.2
+  const co2Evitado = falhasMes * 5
+  const economiaFinanceira = custoFisicoMes - custoDigitalOperacional
+
+  return {
+    falhasMes,
+    custoFisicoMes,
+    custoDigitalOperacional,
+    co2Evitado,
+    economiaFinanceira,
+  }
+}
+
 export default function SimuladorRiscoPage() {
   const { theme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
-  const [cartoesAtivos, setCartoesAtivos] = useState(1000)
-  const [taxaFalha, setTaxaFalha] = useState(2)
+  const [risco, setRisco] = useState<Risco>({
+    nome: 'Risco Operacional',
+    fatores: [
+      { nome: 'Cartões Ativos', valor: 1000, unidade: 'unidades' },
+      { nome: 'Taxa de Falha', valor: 2, unidade: '%' },
+    ],
+  })
+
+  const [cenarios, setCenarios] = useState<Cenario[]>([
+    { nome: 'Cenário Base', probabilidade: 100, impacto: 0 },
+  ])
 
   useEffect(() => setMounted(true), [])
 
-  const falhasMes = Math.round(cartoesAtivos * (taxaFalha / 100))
-  const co2FisicoMes = falhasMes * 5 
-  const custoFisicoMes = falhasMes * 20 
-  const plasticoFisicoMes = falhasMes * 0.005 
-  const custoDigitalOperacional = falhasMes * 0.20 
-  const co2Evitado = co2FisicoMes
-  const economiaFinanceira = custoFisicoMes - custoDigitalOperacional
+  const { falhasMes, custoFisicoMes, custoDigitalOperacional, co2Evitado, economiaFinanceira } = calcularMetricas(risco, cenarios)
 
   if (!mounted) return <div className="min-h-screen bg-white dark:bg-[#0F0F0F]" />
 
@@ -41,36 +80,34 @@ export default function SimuladorRiscoPage() {
             </section>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Sliders com fundos alternáveis */}
               <div className="bg-gray-50 dark:bg-[#1A1A1A] p-6 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm">
                 <div className="flex justify-between mb-4">
-                  <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Total de cartões ativos</label>
-                  <span className="text-2xl font-bold text-edenred-primary">{cartoesAtivos.toLocaleString()}</span>
+                  <label className="text-sm font-medium text-gray-500 dark:text-gray-400">{risco.fatores[0].nome}</label>
+                  <span className="text-2xl font-bold text-edenred-primary">{risco.fatores[0].valor.toLocaleString()}</span>
                 </div>
                 <input 
                   type="range" min="100" max="100000" step="100"
-                  value={cartoesAtivos}
-                  onChange={(e) => setCartoesAtivos(Number(e.target.value))}
+                  value={risco.fatores[0].valor}
+                  onChange={(e) => setRisco({ ...risco, fatores: [{ ...risco.fatores[0], valor: Number(e.target.value) }, risco.fatores[1]] })}
                   className="w-full h-2 bg-gray-300 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-edenred-primary"
                 />
               </div>
 
               <div className="bg-gray-50 dark:bg-[#1A1A1A] p-6 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm">
                 <div className="flex justify-between mb-4">
-                  <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Taxa de falha / mês (%)</label>
-                  <span className="text-2xl font-bold text-edenred-primary">{taxaFalha}%</span>
+                  <label className="text-sm font-medium text-gray-500 dark:text-gray-400">{risco.fatores[1].nome}</label>
+                  <span className="text-2xl font-bold text-edenred-primary">{risco.fatores[1].valor}%</span>
                 </div>
                 <input 
                   type="range" min="0.1" max="10" step="0.1"
-                  value={taxaFalha}
-                  onChange={(e) => setTaxaFalha(Number(e.target.value))}
+                  value={risco.fatores[1].valor}
+                  onChange={(e) => setRisco({ ...risco, fatores: [risco.fatores[0], { ...risco.fatores[1], valor: Number(e.target.value) }] })}
                   className="w-full h-2 bg-gray-300 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-edenred-primary"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Card Físico */}
               <div className="bg-red-50/50 dark:bg-[#1A1A1A]/50 p-6 rounded-xl border border-red-200 dark:border-red-900/30">
                 <h3 className="text-red-600 dark:text-red-500 font-bold mb-4 uppercase tracking-wider text-sm">Físico — falhas/mês</h3>
                 <ul className="space-y-3 text-sm">
@@ -85,7 +122,6 @@ export default function SimuladorRiscoPage() {
                 </ul>
               </div>
 
-              {/* Card Digital */}
               <div className="bg-green-50/50 dark:bg-[#1A1A1A]/50 p-6 rounded-xl border border-green-200 dark:border-green-900/30">
                 <h3 className="text-green-600 dark:text-green-500 font-bold mb-4 uppercase tracking-wider text-sm">Digital — Eficiente</h3>
                 <ul className="space-y-3 text-sm">
@@ -101,7 +137,6 @@ export default function SimuladorRiscoPage() {
               </div>
             </div>
 
-            {/* Resumo de Impacto */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="bg-white dark:bg-[#1A1A1A] p-6 rounded-xl border-l-4 border-red-600 shadow-md">
                 <div className="flex items-center space-x-3 mb-2 text-gray-500 dark:text-gray-400">
