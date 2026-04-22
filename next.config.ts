@@ -15,14 +15,7 @@ const nextConfig: NextConfig = {
   // A internacionalização agora é feita via middleware e pastas [lang].
   // Se você estiver usando App Router, pode remover a chave i18n.
 
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: '/:path*',
-      },
-    ];
-  },
+
 
   async redirects() {
     return [

@@ -1,20 +1,30 @@
 import { NextResponse } from 'next/server'
+import { getUsers, saveUser } from '@/lib/db'
 
 export async function POST(request: Request) {
   try {
     const body = await request.json()
     const { name, email, password } = body
 
-    // Aqui você adicionaria a lógica para salvar no banco de dados (Ex: Prisma/PostgreSQL)
-    console.log('Solicitação de cadastro recebida:', { name, email })
-
-    // Simulação de sucesso
     if (!name || !email || !password) {
       return NextResponse.json(
         { error: 'Todos os campos são obrigatórios' },
         { status: 400 }
       )
     }
+
+    const users = getUsers()
+    const userExists = users.find((u: any) => u.email === email)
+
+    if (userExists) {
+      return NextResponse.json(
+        { error: 'Este email já está cadastrado.' },
+        { status: 400 }
+      )
+    }
+
+    // Salva no mock DB
+    saveUser({ name, email, password })
 
     return NextResponse.json(
       { message: 'Usuário criado com sucesso', user: { name, email } },

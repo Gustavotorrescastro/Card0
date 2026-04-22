@@ -1,5 +1,9 @@
 {
+  "/api/auth/login/route": "app/api/auth/login/route.js",
+  "/api/auth/register/route": "app/api/auth/register/route.js",
+  "/cadastro/page": "app/cadastro/page.js",
   "/dashboard/page": "app/dashboard/page.js",
   "/linha-do-tempo/page": "app/linha-do-tempo/page.js",
+  "/login/page": "app/login/page.js",
   "/simulador-risco-operacional/page": "app/simulador-risco-operacional/page.js"
 }

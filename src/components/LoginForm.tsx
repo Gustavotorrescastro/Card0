@@ -35,6 +35,9 @@ const LoginForm = ({ onLogin }: LoginFormProps): React.JSX.Element => {
 
       if (onLogin) onLogin(email, password)
       
+      // Salva no localStorage para mock de autenticação
+      localStorage.setItem('userLoggedIn', 'true')
+      
       // REDIRECIONAMENTO PARA A ROTA /dashboard
       router.push('/dashboard')
     } catch (err: any) {
