@@ -20,7 +20,7 @@ const Sidebar = () => {
       ${theme === 'dark' ? 'bg-[#141414] text-white border-gray-800' : 'bg-white text-gray-800 border-gray-200'}`}
     >
       <div className="p-4 flex justify-end">
-        <button onClick={() => setIsOpen(!isOpen)} className="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-lg text-edenred-primary">
+        <button onClick={() => setIsOpen(!isOpen)} className="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-lg text-brand-primary">
           {isOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
@@ -45,8 +45,8 @@ const Sidebar = () => {
 
 // Helper SidebarItem simplificado para usar as classes dark/light
 const SidebarItem = ({ href, icon, label, isOpen, active, theme }: any) => (
-  <Link href={href} className={`flex items-center space-x-4 p-3 rounded-lg transition-all duration-200 group ${active ? 'bg-edenred-primary text-white' : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500'}`}>
-    <div className={`min-w-[24px] flex justify-center ${active ? 'text-white' : 'group-hover:text-edenred-primary'}`}>{icon}</div>
+  <Link href={href} className={`flex items-center space-x-4 p-3 rounded-lg transition-all duration-200 group ${active ? 'bg-brand-primary text-white' : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500'}`}>
+    <div className={`min-w-[24px] flex justify-center ${active ? 'text-white' : 'group-hover:text-brand-primary'}`}>{icon}</div>
     {isOpen && <span className="whitespace-nowrap font-medium">{label}</span>}
   </Link>
 )

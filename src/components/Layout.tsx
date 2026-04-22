@@ -21,7 +21,7 @@ export const Layout=({children}:LayoutProps):React.JSX.Element=>{
   },[])
   return(
     <html lang="pt-BR">
-      <body className="font-sans bg-edenred-background text-edenred-text">
+      <body className="font-sans bg-brand-background text-brand-text">
         {children}
       </body>
     </html>

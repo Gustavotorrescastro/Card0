@@ -56,24 +56,24 @@ const RegisterForm = (): React.JSX.Element => {
   }
 
   return (
-    <div className="w-full max-w-md p-8 bg-edenred-surface rounded-xl shadow-2xl border border-edenred-border">
+    <div className="w-full max-w-md p-8 bg-brand-surface rounded-xl shadow-2xl border border-brand-border">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="text-center mb-6">
-          <h2 className="text-3xl font-bold text-edenred-primary">Cadastro</h2>
-          <p className="text-edenred-textSecondary mt-2">Crie sua conta no Card0</p>
+          <h2 className="text-3xl font-bold text-brand-primary">Cadastro</h2>
+          <p className="text-brand-textSecondary mt-2">Crie sua conta no Card0</p>
         </div>
 
         {error && (
-          <div className="bg-red-50 border-l-4 border-edenred-primary text-red-700 p-4 text-sm rounded animate-pulse">
+          <div className="bg-red-50 border-l-4 border-brand-primary text-red-700 p-4 text-sm rounded animate-pulse">
             {error}
           </div>
         )}
 
         <div className="space-y-1">
-          <label className="text-sm font-semibold text-edenred-text">Nome Completo</label>
+          <label className="text-sm font-semibold text-brand-text">Nome Completo</label>
           <input
             type="text"
-            className="w-full px-4 py-2 border border-edenred-border rounded-lg outline-none focus:ring-2 focus:ring-edenred-primary transition-all text-edenred-text"
+            className="w-full px-4 py-2 border border-brand-border rounded-lg outline-none focus:ring-2 focus:ring-brand-primary transition-all text-brand-text"
             placeholder="Ex: João Silva"
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             required
@@ -81,10 +81,10 @@ const RegisterForm = (): React.JSX.Element => {
         </div>
 
         <div className="space-y-1">
-          <label className="text-sm font-semibold text-edenred-text">E-mail</label>
+          <label className="text-sm font-semibold text-brand-text">E-mail</label>
           <input
             type="email"
-            className="w-full px-4 py-2 border border-edenred-border rounded-lg outline-none focus:ring-2 focus:ring-edenred-primary transition-all text-edenred-text"
+            className="w-full px-4 py-2 border border-brand-border rounded-lg outline-none focus:ring-2 focus:ring-brand-primary transition-all text-brand-text"
             placeholder="seu@email.com"
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             required
@@ -92,10 +92,10 @@ const RegisterForm = (): React.JSX.Element => {
         </div>
 
         <div className="space-y-1">
-          <label className="text-sm font-semibold text-edenred-text">Senha</label>
+          <label className="text-sm font-semibold text-brand-text">Senha</label>
           <input
             type="password"
-            className="w-full px-4 py-2 border border-edenred-border rounded-lg outline-none focus:ring-2 focus:ring-edenred-primary transition-all text-edenred-text"
+            className="w-full px-4 py-2 border border-brand-border rounded-lg outline-none focus:ring-2 focus:ring-brand-primary transition-all text-brand-text"
             placeholder="••••••••"
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             required
@@ -103,10 +103,10 @@ const RegisterForm = (): React.JSX.Element => {
         </div>
 
         <div className="space-y-1">
-          <label className="text-sm font-semibold text-edenred-text">Confirmar Senha</label>
+          <label className="text-sm font-semibold text-brand-text">Confirmar Senha</label>
           <input
             type="password"
-            className="w-full px-4 py-2 border border-edenred-border rounded-lg outline-none focus:ring-2 focus:ring-edenred-primary transition-all text-edenred-text"
+            className="w-full px-4 py-2 border border-brand-border rounded-lg outline-none focus:ring-2 focus:ring-brand-primary transition-all text-brand-text"
             placeholder="••••••••"
             onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
             required
@@ -117,16 +117,16 @@ const RegisterForm = (): React.JSX.Element => {
           type="submit"
           disabled={loading}
           className={`w-full py-3 mt-4 rounded-lg font-bold text-white transition-all transform active:scale-95 ${
-            loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-edenred-primary hover:bg-edenred-secondary shadow-md'
+            loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-brand-primary hover:bg-brand-secondary shadow-md'
           }`}
         >
           {loading ? 'Processando...' : 'Criar Conta'}
         </button>
 
         <div className="text-center mt-6">
-          <p className="text-sm text-edenred-textSecondary">
+          <p className="text-sm text-brand-textSecondary">
             Já tem uma conta?{' '}
-            <Link href="/login" className="text-edenred-primary font-bold hover:underline">
+            <Link href="/login" className="text-brand-primary font-bold hover:underline">
               Faça Login
             </Link>
           </p>

@@ -13,10 +13,10 @@ const Footer=({children}:FooterProps):React.JSX.Element=>{
             <p className="text-sm">© 2026 Card0 - Edenred. Todos os direitos reservados.</p>
           </div>
           <nav className="flex space-x-4 text-center md:text-right">
-            <Link href="/termos" className="text-sm hover:text-edenred-primary transition-colors">
+            <Link href="/termos" className="text-sm hover:text-brand-primary transition-colors">
               Termos de Uso
             </Link>
-            <Link href="/privacidade" className="text-sm hover:text-edenred-primary transition-colors">
+            <Link href="/privacidade" className="text-sm hover:text-brand-primary transition-colors">
               Política de Privacidade
             </Link>
           </nav>

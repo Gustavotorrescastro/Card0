@@ -47,14 +47,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))
   }
 
-  // Evita renderizar o conteúdo antes do tema estar definido (previne o "flash" de cor branca)
-  if (!mounted) {
-    return <div style={{ visibility: 'hidden' }}>{children}</div>
-  }
-
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      {children}
+      {!mounted ? (
+        <div style={{ visibility: 'hidden' }}>{children}</div>
+      ) : (
+        children
+      )}
     </ThemeContext.Provider>
   )
 }

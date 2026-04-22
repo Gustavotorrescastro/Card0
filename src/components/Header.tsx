@@ -10,13 +10,13 @@ interface HeaderProps {
 
 const Header = ({ children }: HeaderProps): React.JSX.Element => {
   return (
-    <header className="bg-edenred-primary text-white shadow-lg z-50">
+    <header className="bg-brand-primary text-white shadow-lg z-50">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Lado Esquerdo: Logo */}
           <Link 
             href="/dashboard" 
-            className="text-2xl font-bold hover:text-edenred-light transition-colors tracking-tight"
+            className="text-2xl font-bold hover:text-brand-light transition-colors tracking-tight"
           >
             Card0 - Edenred
           </Link>
@@ -26,7 +26,7 @@ const Header = ({ children }: HeaderProps): React.JSX.Element => {
             {children}
             
             <button 
-              className="flex items-center justify-center w-10 h-10 rounded-full bg-edenred-secondary hover:bg-white/20 transition-all border border-white/10"
+              className="flex items-center justify-center w-10 h-10 rounded-full bg-brand-secondary hover:bg-white/20 transition-all border border-white/10"
               title="Perfil do Usuário"
             >
               <User size={20} className="text-white" />

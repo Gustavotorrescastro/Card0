@@ -1,14 +1,20 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
-  /* Variáveis de cor para usar como utilitários (ex: bg-edenred-primary) */
-  --color-edenred-primary: #E2001A;
-  --color-edenred-secondary: #B00014;
-  --color-edenred-background: #F4F4F4;
-  --color-edenred-surface: #FFFFFF;
-  --color-edenred-text: #1D1D1B;
-  --color-edenred-text-secondary: #666666;
-  --color-edenred-border: #E5E5E5;
+  /* Variáveis de cor para usar como utilitários (ex: bg-brand-primary) */
+  --color-brand-primary: #2f56a3;
+  --color-brand-secondary: #1c2241;
+  --color-brand-tertiary: #3b6fb5;
+  --color-brand-teal: #91d0d1;
+  --color-brand-light: #c7e6ed;
+  --color-brand-white: #f6edee;
+  --color-brand-background: #F4F4F4;
+  --color-brand-surface: #FFFFFF;
+  --color-brand-text: #1D1D1B;
+  --color-brand-text-secondary: #666666;
+  --color-brand-border: #E5E5E5;
 }
 
 @layer base {
@@ -36,7 +42,7 @@
 
 /* Utilitários extras para manter o visual limpo */
 input[type="range"] {
-  @apply accent-edenred-primary;
+  @apply accent-brand-primary;
 }
 
 /* Transição suave em todos os elementos que mudam de cor */

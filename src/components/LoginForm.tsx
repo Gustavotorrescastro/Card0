@@ -45,38 +45,38 @@ const LoginForm = ({ onLogin }: LoginFormProps): React.JSX.Element => {
   }
 
   return (
-    <div className="w-full max-w-md p-8 bg-edenred-surface rounded-xl shadow-2xl border border-edenred-border">
+    <div className="w-full max-w-md p-8 bg-brand-surface rounded-xl shadow-2xl border border-brand-border">
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-edenred-primary">Login</h2>
-          <p className="text-edenred-textSecondary mt-2">Card0 - Edenred</p>
+          <h2 className="text-3xl font-bold text-brand-primary">Login</h2>
+          <p className="text-brand-textSecondary mt-2">Card0 - Edenred</p>
         </div>
 
         {error && (
-          <div className="bg-red-50 border-l-4 border-edenred-primary text-red-700 p-4 text-sm rounded animate-pulse">
+          <div className="bg-red-50 border-l-4 border-brand-primary text-red-700 p-4 text-sm rounded animate-pulse">
             {error}
           </div>
         )}
 
         <div className="space-y-2">
-          <label className="block text-sm font-semibold text-edenred-text">Email</label>
+          <label className="block text-sm font-semibold text-brand-text">Email</label>
           <input 
             type="email" 
             value={email} 
             onChange={(e) => setEmail(e.target.value)} 
-            className="w-full px-4 py-2 border border-edenred-border rounded-lg focus:ring-2 focus:ring-edenred-primary outline-none text-edenred-text" 
+            className="w-full px-4 py-2 border border-brand-border rounded-lg focus:ring-2 focus:ring-brand-primary outline-none text-brand-text" 
             placeholder="seu@email.com" 
             required 
           />
         </div>
 
         <div className="space-y-2">
-          <label className="block text-sm font-semibold text-edenred-text">Senha</label>
+          <label className="block text-sm font-semibold text-brand-text">Senha</label>
           <input 
             type="password" 
             value={password} 
             onChange={(e) => setPassword(e.target.value)} 
-            className="w-full px-4 py-2 border border-edenred-border rounded-lg focus:ring-2 focus:ring-edenred-primary outline-none text-edenred-text" 
+            className="w-full px-4 py-2 border border-brand-border rounded-lg focus:ring-2 focus:ring-brand-primary outline-none text-brand-text" 
             placeholder="••••••••" 
             required 
           />
@@ -85,13 +85,13 @@ const LoginForm = ({ onLogin }: LoginFormProps): React.JSX.Element => {
         <button 
           type="submit" 
           disabled={loading} 
-          className={`w-full py-3 rounded-lg font-bold text-white transition-all transform active:scale-95 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-edenred-primary hover:bg-edenred-secondary shadow-md hover:shadow-lg'}`}
+          className={`w-full py-3 rounded-lg font-bold text-white transition-all transform active:scale-95 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-brand-primary hover:bg-brand-secondary shadow-md hover:shadow-lg'}`}
         >
           {loading ? 'Entrando...' : 'Entrar'}
         </button>
 
-        <p className="text-center text-sm text-edenred-textSecondary mt-4">
-          Não tem conta? <Link href="/cadastro" className="text-edenred-primary font-bold hover:underline">Cadastre-se</Link>
+        <p className="text-center text-sm text-brand-textSecondary mt-4">
+          Não tem conta? <Link href="/cadastro" className="text-brand-primary font-bold hover:underline">Cadastre-se</Link>
         </p>
       </form>
     </div>

@@ -52,28 +52,24 @@ function ThemeProvider({ children }) {
     const toggleTheme = ()=>{
         setTheme((prev)=>prev === 'dark' ? 'light' : 'dark');
     };
-    // Evita renderizar o conteúdo antes do tema estar definido (previne o "flash" de cor branca)
-    if (!mounted) {
-        return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(ThemeContext.Provider, {
+        value: {
+            theme,
+            toggleTheme
+        },
+        children: !mounted ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
             style: {
                 visibility: 'hidden'
             },
             children: children
         }, void 0, false, {
             fileName: "[project]/src/context/ThemeContext.tsx",
-            lineNumber: 52,
-            columnNumber: 12
-        }, this);
-    }
-    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(ThemeContext.Provider, {
-        value: {
-            theme,
-            toggleTheme
-        },
-        children: children
+            lineNumber: 53,
+            columnNumber: 9
+        }, this) : children
     }, void 0, false, {
         fileName: "[project]/src/context/ThemeContext.tsx",
-        lineNumber: 56,
+        lineNumber: 51,
         columnNumber: 5
     }, this);
 }

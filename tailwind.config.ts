@@ -11,9 +11,13 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        edenred: {
-          primary: '#E2001A',
-          secondary: '#B00014',
+        brand: {
+          primary: '#2f56a3',
+          secondary: '#1c2241',
+          tertiary: '#3b6fb5',
+          teal: '#91d0d1',
+          light: '#c7e6ed',
+          white: '#f6edee',
           background: '#F4F4F4',
           surface: '#FFFFFF',
           text: '#1D1D1B',

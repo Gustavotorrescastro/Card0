@@ -65,7 +65,7 @@ export default function TimelinePage() {
                     value={userId} 
                     onChange={(e) => setUserId(e.target.value)} 
                     required 
-                    className="w-full px-4 py-3 bg-white dark:bg-[#121212] border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-edenred-primary outline-none text-gray-900 dark:text-white"
+                    className="w-full px-4 py-3 bg-white dark:bg-[#121212] border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-brand-primary outline-none text-gray-900 dark:text-white"
                   />
                 </div>
                 <div className="space-y-2">
@@ -75,13 +75,13 @@ export default function TimelinePage() {
                     value={startDate} 
                     onChange={(e) => setStartDate(e.target.value)} 
                     required 
-                    className="w-full px-4 py-3 bg-white dark:bg-[#121212] border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-edenred-primary outline-none text-gray-900 dark:text-white"
+                    className="w-full px-4 py-3 bg-white dark:bg-[#121212] border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-brand-primary outline-none text-gray-900 dark:text-white"
                   />
                 </div>
                 <button 
                   type="submit" 
                   disabled={loading} 
-                  className="md:col-span-2 w-full bg-edenred-primary text-white font-bold py-4 rounded-xl hover:opacity-90 transition-all shadow-md"
+                  className="md:col-span-2 w-full bg-brand-primary text-white font-bold py-4 rounded-xl hover:opacity-90 transition-all shadow-md"
                 >
                   {loading ? 'Calculando...' : 'Ver Impacto'}
                 </button>
@@ -91,7 +91,7 @@ export default function TimelinePage() {
                 <div className="mt-12 space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="bg-white dark:bg-[#252525] p-6 rounded-xl border border-gray-200 dark:border-gray-700 flex items-center space-x-4">
-                      <div className="p-3 bg-edenred-primary/10 rounded-full text-edenred-primary"><Calendar size={28} /></div>
+                      <div className="p-3 bg-brand-primary/10 rounded-full text-brand-primary"><Calendar size={28} /></div>
                       <div>
                         <span className="block text-xs text-gray-500 dark:text-gray-400 uppercase font-bold">Dias</span>
                         <span className="text-3xl font-black">{impactData.accumulatedImpact.days}</span>

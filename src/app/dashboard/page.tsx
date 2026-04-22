@@ -41,8 +41,8 @@ export default function DashboardPage() {
               <Link href="/simulador-risco-operacional" 
                 className={`p-6 rounded-xl border transition-all ${
                 theme === 'dark' 
-                  ? 'bg-[#1A1A1A] border-gray-800 hover:border-edenred-primary' 
-                  : 'bg-gray-50 border-gray-200 hover:border-edenred-primary'
+                  ? 'bg-[#1A1A1A] border-gray-800 hover:border-brand-primary' 
+                  : 'bg-gray-50 border-gray-200 hover:border-brand-primary'
               }`}>
                 <h3 className="text-xl font-bold mb-2">Simulador de Risco</h3>
                 <p className="text-sm opacity-70">Calcule o impacto ambiental e financeiro da migração digital.</p>
@@ -51,8 +51,8 @@ export default function DashboardPage() {
               <Link href="/linha-do-tempo" 
                 className={`p-6 rounded-xl border transition-all ${
                 theme === 'dark' 
-                  ? 'bg-[#1A1A1A] border-gray-800 hover:border-edenred-primary' 
-                  : 'bg-gray-50 border-gray-200 hover:border-edenred-primary'
+                  ? 'bg-[#1A1A1A] border-gray-800 hover:border-brand-primary' 
+                  : 'bg-gray-50 border-gray-200 hover:border-brand-primary'
               }`}>
                 <h3 className="text-xl font-bold mb-2">Linha do Tempo</h3>
                 <p className="text-sm opacity-70">Visualize o acúmulo anual de riscos e reduções de CO2.</p>

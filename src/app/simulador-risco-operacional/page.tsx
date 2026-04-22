@@ -83,26 +83,26 @@ export default function SimuladorRiscoPage() {
               <div className="bg-gray-50 dark:bg-[#1A1A1A] p-6 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm">
                 <div className="flex justify-between mb-4">
                   <label className="text-sm font-medium text-gray-500 dark:text-gray-400">{risco.fatores[0].nome}</label>
-                  <span className="text-2xl font-bold text-edenred-primary">{risco.fatores[0].valor.toLocaleString()}</span>
+                  <span className="text-2xl font-bold text-brand-primary">{risco.fatores[0].valor.toLocaleString()}</span>
                 </div>
                 <input 
                   type="range" min="100" max="100000" step="100"
                   value={risco.fatores[0].valor}
                   onChange={(e) => setRisco({ ...risco, fatores: [{ ...risco.fatores[0], valor: Number(e.target.value) }, risco.fatores[1]] })}
-                  className="w-full h-2 bg-gray-300 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-edenred-primary"
+                  className="w-full h-2 bg-gray-300 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-brand-primary"
                 />
               </div>
 
               <div className="bg-gray-50 dark:bg-[#1A1A1A] p-6 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm">
                 <div className="flex justify-between mb-4">
                   <label className="text-sm font-medium text-gray-500 dark:text-gray-400">{risco.fatores[1].nome}</label>
-                  <span className="text-2xl font-bold text-edenred-primary">{risco.fatores[1].valor}%</span>
+                  <span className="text-2xl font-bold text-brand-primary">{risco.fatores[1].valor}%</span>
                 </div>
                 <input 
                   type="range" min="0.1" max="10" step="0.1"
                   value={risco.fatores[1].valor}
                   onChange={(e) => setRisco({ ...risco, fatores: [risco.fatores[0], { ...risco.fatores[1], valor: Number(e.target.value) }] })}
-                  className="w-full h-2 bg-gray-300 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-edenred-primary"
+                  className="w-full h-2 bg-gray-300 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-brand-primary"
                 />
               </div>
             </div>

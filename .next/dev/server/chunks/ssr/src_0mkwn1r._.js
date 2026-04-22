@@ -15,7 +15,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$re
 ;
 const Header = ({ children })=>{
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("header", {
-        className: "bg-edenred-primary text-white shadow-lg z-50",
+        className: "bg-brand-primary text-white shadow-lg z-50",
         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
             className: "container mx-auto px-4 py-4",
             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -23,7 +23,7 @@ const Header = ({ children })=>{
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
                         href: "/dashboard",
-                        className: "text-2xl font-bold hover:text-edenred-light transition-colors tracking-tight",
+                        className: "text-2xl font-bold hover:text-brand-light transition-colors tracking-tight",
                         children: "Card0 - Edenred"
                     }, void 0, false, {
                         fileName: "[project]/src/components/Header.tsx",
@@ -35,7 +35,7 @@ const Header = ({ children })=>{
                         children: [
                             children,
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                className: "flex items-center justify-center w-10 h-10 rounded-full bg-edenred-secondary hover:bg-white/20 transition-all border border-white/10",
+                                className: "flex items-center justify-center w-10 h-10 rounded-full bg-brand-secondary hover:bg-white/20 transition-all border border-white/10",
                                 title: "Perfil do Usuário",
                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$user$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__User$3e$__["User"], {
                                     size: 20,
@@ -115,7 +115,7 @@ const Sidebar = ()=>{
                 className: "p-4 flex justify-end",
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                     onClick: ()=>setIsOpen(!isOpen),
-                    className: "p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-lg text-edenred-primary",
+                    className: "p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-lg text-brand-primary",
                     children: isOpen ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$x$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__X$3e$__["X"], {
                         size: 22
                     }, void 0, false, {
@@ -259,10 +259,10 @@ const Sidebar = ()=>{
 // Helper SidebarItem simplificado para usar as classes dark/light
 const SidebarItem = ({ href, icon, label, isOpen, active, theme })=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
         href: href,
-        className: `flex items-center space-x-4 p-3 rounded-lg transition-all duration-200 group ${active ? 'bg-edenred-primary text-white' : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500'}`,
+        className: `flex items-center space-x-4 p-3 rounded-lg transition-all duration-200 group ${active ? 'bg-brand-primary text-white' : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500'}`,
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: `min-w-[24px] flex justify-center ${active ? 'text-white' : 'group-hover:text-edenred-primary'}`,
+                className: `min-w-[24px] flex justify-center ${active ? 'text-white' : 'group-hover:text-brand-primary'}`,
                 children: icon
             }, void 0, false, {
                 fileName: "[project]/src/components/Sidebar.tsx",
@@ -307,24 +307,54 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$ThemeConte
 ;
 ;
 ;
+function calcularMetricas(risco, cenarios) {
+    const cartoesAtivos = risco.fatores.find((f)=>f.nome === 'Cartões Ativos')?.valor || 0;
+    const taxaFalha = risco.fatores.find((f)=>f.nome === 'Taxa de Falha')?.valor || 0;
+    const falhasMes = Math.round(cartoesAtivos * (taxaFalha / 100));
+    const custoFisicoMes = falhasMes * 20;
+    const custoDigitalOperacional = falhasMes * 0.2;
+    const co2Evitado = falhasMes * 5;
+    const economiaFinanceira = custoFisicoMes - custoDigitalOperacional;
+    return {
+        falhasMes,
+        custoFisicoMes,
+        custoDigitalOperacional,
+        co2Evitado,
+        economiaFinanceira
+    };
+}
 function SimuladorRiscoPage() {
     const { theme } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$ThemeContext$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useTheme"])();
     const [mounted, setMounted] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
-    const [cartoesAtivos, setCartoesAtivos] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(1000);
-    const [taxaFalha, setTaxaFalha] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(2);
+    const [risco, setRisco] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])({
+        nome: 'Risco Operacional',
+        fatores: [
+            {
+                nome: 'Cartões Ativos',
+                valor: 1000,
+                unidade: 'unidades'
+            },
+            {
+                nome: 'Taxa de Falha',
+                valor: 2,
+                unidade: '%'
+            }
+        ]
+    });
+    const [cenarios, setCenarios] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([
+        {
+            nome: 'Cenário Base',
+            probabilidade: 100,
+            impacto: 0
+        }
+    ]);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>setMounted(true), []);
-    const falhasMes = Math.round(cartoesAtivos * (taxaFalha / 100));
-    const co2FisicoMes = falhasMes * 5;
-    const custoFisicoMes = falhasMes * 20;
-    const plasticoFisicoMes = falhasMes * 0.005;
-    const custoDigitalOperacional = falhasMes * 0.20;
-    const co2Evitado = co2FisicoMes;
-    const economiaFinanceira = custoFisicoMes - custoDigitalOperacional;
+    const { falhasMes, custoFisicoMes, custoDigitalOperacional, co2Evitado, economiaFinanceira } = calcularMetricas(risco, cenarios);
     if (!mounted) return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         className: "min-h-screen bg-white dark:bg-[#0F0F0F]"
     }, void 0, false, {
         fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-        lineNumber: 26,
+        lineNumber: 65,
         columnNumber: 24
     }, this);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -332,7 +362,7 @@ function SimuladorRiscoPage() {
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Header$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                 fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                lineNumber: 30,
+                lineNumber: 69,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -340,7 +370,7 @@ function SimuladorRiscoPage() {
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Sidebar$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                         fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                        lineNumber: 33,
+                        lineNumber: 72,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
@@ -355,7 +385,7 @@ function SimuladorRiscoPage() {
                                             children: "Simulador de Risco Operacional"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                            lineNumber: 39,
+                                            lineNumber: 78,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -363,13 +393,13 @@ function SimuladorRiscoPage() {
                                             children: "Analise o impacto ambiental e financeiro de falhas logísticas."
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                            lineNumber: 40,
+                                            lineNumber: 79,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                    lineNumber: 38,
+                                    lineNumber: 77,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -383,24 +413,24 @@ function SimuladorRiscoPage() {
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
                                                             className: "text-sm font-medium text-gray-500 dark:text-gray-400",
-                                                            children: "Total de cartões ativos"
+                                                            children: risco.fatores[0].nome
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                            lineNumber: 47,
+                                                            lineNumber: 85,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                            className: "text-2xl font-bold text-edenred-primary",
-                                                            children: cartoesAtivos.toLocaleString()
+                                                            className: "text-2xl font-bold text-brand-primary",
+                                                            children: risco.fatores[0].valor.toLocaleString()
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                            lineNumber: 48,
+                                                            lineNumber: 86,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                    lineNumber: 46,
+                                                    lineNumber: 84,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -408,18 +438,27 @@ function SimuladorRiscoPage() {
                                                     min: "100",
                                                     max: "100000",
                                                     step: "100",
-                                                    value: cartoesAtivos,
-                                                    onChange: (e)=>setCartoesAtivos(Number(e.target.value)),
-                                                    className: "w-full h-2 bg-gray-300 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-edenred-primary"
+                                                    value: risco.fatores[0].valor,
+                                                    onChange: (e)=>setRisco({
+                                                            ...risco,
+                                                            fatores: [
+                                                                {
+                                                                    ...risco.fatores[0],
+                                                                    valor: Number(e.target.value)
+                                                                },
+                                                                risco.fatores[1]
+                                                            ]
+                                                        }),
+                                                    className: "w-full h-2 bg-gray-300 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-brand-primary"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                    lineNumber: 50,
+                                                    lineNumber: 88,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                            lineNumber: 45,
+                                            lineNumber: 83,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -430,27 +469,27 @@ function SimuladorRiscoPage() {
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
                                                             className: "text-sm font-medium text-gray-500 dark:text-gray-400",
-                                                            children: "Taxa de falha / mês (%)"
+                                                            children: risco.fatores[1].nome
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                            lineNumber: 60,
+                                                            lineNumber: 98,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                            className: "text-2xl font-bold text-edenred-primary",
+                                                            className: "text-2xl font-bold text-brand-primary",
                                                             children: [
-                                                                taxaFalha,
+                                                                risco.fatores[1].valor,
                                                                 "%"
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                            lineNumber: 61,
+                                                            lineNumber: 99,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                    lineNumber: 59,
+                                                    lineNumber: 97,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -458,24 +497,33 @@ function SimuladorRiscoPage() {
                                                     min: "0.1",
                                                     max: "10",
                                                     step: "0.1",
-                                                    value: taxaFalha,
-                                                    onChange: (e)=>setTaxaFalha(Number(e.target.value)),
-                                                    className: "w-full h-2 bg-gray-300 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-edenred-primary"
+                                                    value: risco.fatores[1].valor,
+                                                    onChange: (e)=>setRisco({
+                                                            ...risco,
+                                                            fatores: [
+                                                                risco.fatores[0],
+                                                                {
+                                                                    ...risco.fatores[1],
+                                                                    valor: Number(e.target.value)
+                                                                }
+                                                            ]
+                                                        }),
+                                                    className: "w-full h-2 bg-gray-300 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-brand-primary"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                    lineNumber: 63,
+                                                    lineNumber: 101,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                            lineNumber: 58,
+                                            lineNumber: 96,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                    lineNumber: 43,
+                                    lineNumber: 82,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -489,7 +537,7 @@ function SimuladorRiscoPage() {
                                                     children: "Físico — falhas/mês"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                    lineNumber: 75,
+                                                    lineNumber: 112,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
@@ -503,7 +551,7 @@ function SimuladorRiscoPage() {
                                                                     children: "Cartões falhando"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                                    lineNumber: 78,
+                                                                    lineNumber: 115,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -511,13 +559,13 @@ function SimuladorRiscoPage() {
                                                                     children: falhasMes
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                                    lineNumber: 79,
+                                                                    lineNumber: 116,
                                                                     columnNumber: 21
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                            lineNumber: 77,
+                                                            lineNumber: 114,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
@@ -528,7 +576,7 @@ function SimuladorRiscoPage() {
                                                                     children: "Custo logístico"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                                    lineNumber: 82,
+                                                                    lineNumber: 119,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -539,25 +587,25 @@ function SimuladorRiscoPage() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                                    lineNumber: 83,
+                                                                    lineNumber: 120,
                                                                     columnNumber: 21
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                            lineNumber: 81,
+                                                            lineNumber: 118,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                    lineNumber: 76,
+                                                    lineNumber: 113,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                            lineNumber: 74,
+                                            lineNumber: 111,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -568,7 +616,7 @@ function SimuladorRiscoPage() {
                                                     children: "Digital — Eficiente"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                    lineNumber: 90,
+                                                    lineNumber: 126,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
@@ -582,7 +630,7 @@ function SimuladorRiscoPage() {
                                                                     children: "CO₂ de reemissão"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                                    lineNumber: 93,
+                                                                    lineNumber: 129,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -590,13 +638,13 @@ function SimuladorRiscoPage() {
                                                                     children: "0 kg"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                                    lineNumber: 94,
+                                                                    lineNumber: 130,
                                                                     columnNumber: 21
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                            lineNumber: 92,
+                                                            lineNumber: 128,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
@@ -607,7 +655,7 @@ function SimuladorRiscoPage() {
                                                                     children: "Custo operacional"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                                    lineNumber: 97,
+                                                                    lineNumber: 133,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -618,31 +666,31 @@ function SimuladorRiscoPage() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                                    lineNumber: 98,
+                                                                    lineNumber: 134,
                                                                     columnNumber: 21
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                            lineNumber: 96,
+                                                            lineNumber: 132,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                    lineNumber: 91,
+                                                    lineNumber: 127,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                            lineNumber: 89,
+                                            lineNumber: 125,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                    lineNumber: 72,
+                                    lineNumber: 110,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -658,7 +706,7 @@ function SimuladorRiscoPage() {
                                                             size: 18
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                            lineNumber: 108,
+                                                            lineNumber: 143,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -666,13 +714,13 @@ function SimuladorRiscoPage() {
                                                             children: "CO₂ evitado"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                            lineNumber: 109,
+                                                            lineNumber: 144,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                    lineNumber: 107,
+                                                    lineNumber: 142,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -683,13 +731,13 @@ function SimuladorRiscoPage() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                    lineNumber: 111,
+                                                    lineNumber: 146,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                            lineNumber: 106,
+                                            lineNumber: 141,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -702,7 +750,7 @@ function SimuladorRiscoPage() {
                                                             size: 18
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                            lineNumber: 116,
+                                                            lineNumber: 151,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -710,13 +758,13 @@ function SimuladorRiscoPage() {
                                                             children: "Economia"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                            lineNumber: 117,
+                                                            lineNumber: 152,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                    lineNumber: 115,
+                                                    lineNumber: 150,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -727,13 +775,13 @@ function SimuladorRiscoPage() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                    lineNumber: 119,
+                                                    lineNumber: 154,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                            lineNumber: 114,
+                                            lineNumber: 149,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -746,7 +794,7 @@ function SimuladorRiscoPage() {
                                                             size: 18
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                            lineNumber: 124,
+                                                            lineNumber: 159,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -754,13 +802,13 @@ function SimuladorRiscoPage() {
                                                             children: "Retorno"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                            lineNumber: 125,
+                                                            lineNumber: 160,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                    lineNumber: 123,
+                                                    lineNumber: 158,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -768,42 +816,42 @@ function SimuladorRiscoPage() {
                                                     children: "~1 mês"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                                    lineNumber: 127,
+                                                    lineNumber: 162,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                            lineNumber: 122,
+                                            lineNumber: 157,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                                    lineNumber: 105,
+                                    lineNumber: 140,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                            lineNumber: 36,
+                            lineNumber: 75,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                        lineNumber: 35,
+                        lineNumber: 74,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-                lineNumber: 32,
+                lineNumber: 71,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/simulador-risco-operacional/page.tsx",
-        lineNumber: 29,
+        lineNumber: 68,
         columnNumber: 5
     }, this);
 }
