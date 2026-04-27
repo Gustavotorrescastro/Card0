@@ -6,6 +6,7 @@ import Sidebar from '@/components/Sidebar'
 import { Leaf, CircleDollarSign, CalendarDays } from 'lucide-react'
 import { useTheme } from '@/context/ThemeContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
+import ComparadorSustentabilidade from '@/components/ComparadorSustentabilidade'
 
 interface Risco {
   nome: string
@@ -164,6 +165,11 @@ export default function SimuladorRiscoPage() {
                   <div className="text-3xl font-bold text-green-600 dark:text-green-400">~1 mês</div>
                 </div>
               </div>
+
+              <div className="pt-8 border-t border-gray-200 dark:border-gray-800">
+                <ComparadorSustentabilidade />
+              </div>
+
             </div>
           </main>
         </div>
