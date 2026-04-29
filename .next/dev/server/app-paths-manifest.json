@@ -1,6 +1,0 @@
-{
-  "/api/linha-do-tempo/route": "app/api/linha-do-tempo/route.js",
-  "/dashboard/page": "app/dashboard/page.js",
-  "/linha-do-tempo/page": "app/linha-do-tempo/page.js",
-  "/simulador-risco-operacional/page": "app/simulador-risco-operacional/page.js"
-}
