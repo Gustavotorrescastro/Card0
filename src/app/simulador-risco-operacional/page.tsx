@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react' // Memory calcuted values
 import { Leaf, CircleDollarSign, CalendarDays } from 'lucide-react'
 import Header from '@/components/Header'
 import Sidebar from '@/components/Sidebar'
@@ -32,10 +32,23 @@ export default function SimuladorRiscoPage() {
 
   // Cálculo das métricas (otimizado com useMemo)
   // useMemo evita recalcular quando outros estados mudam
-  const metricas = useMemo(
+  const metricas = useMemo( // Download memory
     () => calcularMetricasRisco(cartoesAtivos, taxaFalha),
     [cartoesAtivos, taxaFalha]
   )
+
+  /*
+  Anatomia do UseMemo:
+  const metricas = useMemo(
+    () => calcularMetricasRisco(cartoesAtivos, taxaFalha),
+    ↑                                                    
+    função que retorna o valor calculado
+
+    [cartoesAtivos, taxaFalha]
+    ↑
+    array de dependências
+  )
+  */
 
   // Renderização de carregamento
   if (!mounted) {
