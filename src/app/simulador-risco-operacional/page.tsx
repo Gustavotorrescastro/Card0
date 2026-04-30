@@ -5,8 +5,8 @@ import { Leaf, CircleDollarSign, CalendarDays } from 'lucide-react'
 import Header from '@/components/Header'
 import Sidebar from '@/components/Sidebar'
 import ProtectedRoute from '@/components/ProtectedRoute'
-import ComparadorSustentabilidade from '@/components/ComparadorSustentabilidade'
 import { useTheme } from '@/context/ThemeContext'
+
 
 // Importando nossos novos arquivos
 import { LIMITES } from './constantes'
@@ -190,11 +190,6 @@ export default function SimuladorRiscoPage() {
                   icone={CalendarDays}
                   corBorda="green"
                 />
-              </div>
-
-              {/* Comparador de Sustentabilidade */}
-              <div className="pt-8 border-t border-gray-200 dark:border-gray-800">
-                <ComparadorSustentabilidade />
               </div>
 
             </div>

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Menu, X, LayoutDashboard, Calculator, History, Sun, Moon } from 'lucide-react'
+import { Menu, X, LayoutDashboard, Calculator, History, Sun, Moon, Leaf } from 'lucide-react'
 import { useTheme } from '@/context/ThemeContext'
 
 const Sidebar = () => {
@@ -28,6 +28,7 @@ const Sidebar = () => {
       <nav className="flex-grow px-3 space-y-2">
         <SidebarItem href="/dashboard" icon={<LayoutDashboard size={22} />} label="Dashboard" isOpen={isOpen} active={isActive('/dashboard')} theme={theme} />
         <SidebarItem href="/simulador-risco-operacional" icon={<Calculator size={22} />} label="Simulador de Risco" isOpen={isOpen} active={isActive('/simulador-risco-operacional')} theme={theme} />
+        <SidebarItem href="/calculadora-impacto" icon={<Leaf size={22} />} label="Calculadora de Impacto" isOpen={isOpen} active={isActive('/calculadora-impacto')} theme={theme} />
         <SidebarItem href="/linha-do-tempo" icon={<History size={22} />} label="Linha do Tempo" isOpen={isOpen} active={isActive('/linha-do-tempo')} theme={theme} />
       </nav>
 
