@@ -1,25 +1,31 @@
 import fs from 'fs';
 import path from 'path';
-
-// Define o caminho para o "banco de dados" em formato JSON
 const dbPath = path.join(process.cwd(), 'users.json');
-
-// Inicializa o arquivo se ele não existir
-if (!fs.existsSync(dbPath)) {
+if(!fs.existsSync(dbPath)){
   fs.writeFileSync(dbPath, JSON.stringify([]));
 }
 
 export const getUsers = () => {
-  try {
+  try{
+    if(!fs.existsSync(dbPath)){
+      fs.writeFileSync(dbPath, JSON.stringify([]));
+    }
     const data = fs.readFileSync(dbPath, 'utf8');
-    return JSON.parse(data);
-  } catch (error) {
+    const parsed = JSON.parse(data);
+    return Array.isArray(parsed) ? parsed : [];
+  }catch(error){
+    console.error('Error in getUsers:', error);
     return [];
   }
 };
 
 export const saveUser = (user: any) => {
-  const users = getUsers();
-  users.push(user);
-  fs.writeFileSync(dbPath, JSON.stringify(users, null, 2));
+  try{
+    const users = getUsers();
+    users.push(user);
+    fs.writeFileSync(dbPath, JSON.stringify(users, null, 2));
+  }catch(error){
+    console.error('Error in saveUser:', error);
+    throw error;
+  }
 };

@@ -21,13 +21,12 @@ const RegisterForm = (): React.JSX.Element => {
     setError('')
 
     // Validação básica de senha
-    if (formData.password !== formData.confirmPassword) {
+    if(formData.password !== formData.confirmPassword){
       setError('As senhas não coincidem.')
       setLoading(false)
       return
     }
-
-    try {
+    try{
       // Aqui chamamos a rota de API que criamos em /api/auth/register
       const response = await fetch('/api/auth/register', {
         method: 'POST',
@@ -41,16 +40,16 @@ const RegisterForm = (): React.JSX.Element => {
 
       const data = await response.json()
 
-      if (!response.ok) {
+      if(!response.ok){
         throw new Error(data.error || 'Erro ao realizar cadastro.')
       }
 
       // Sucesso: Redireciona para o login
       alert('Conta criada com sucesso!')
       router.push('/login')
-    } catch (err: any) {
+    }catch(err: any){
       setError(err.message)
-    } finally {
+    }finally{
       setLoading(false)
     }
   }

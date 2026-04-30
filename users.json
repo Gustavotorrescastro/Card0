@@ -3,5 +3,30 @@
     "name": "Diego Testando",
     "email": "hahahahehehe@gmail.com",
     "password": "12345"
+  },
+  {
+    "name": "test",
+    "email": "test",
+    "password": "test"
+  },
+  {
+    "name": "Teste",
+    "email": "teste@teste.com",
+    "password": "123"
+  },
+  {
+    "name": "saadfgh",
+    "email": "ssdf@kkkk.com",
+    "password": "123456"
+  },
+  {
+    "name": "tyyobsdb",
+    "email": "aaa@bbb.com",
+    "password": "123456"
+  },
+  {
+    "name": "qweerth",
+    "email": "ccc@bbb.com",
+    "password": "123456"
   }
 ]
