@@ -2,53 +2,62 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { Menu, X, LayoutDashboard, Calculator, History, Sun, Moon, Leaf } from 'lucide-react'
-import { useTheme } from '@/context/ThemeContext'
+import { usePathname, useRouter } from 'next/navigation'
+import { Menu, X, LayoutDashboard, Calculator, History, Leaf, LogOut, User } from 'lucide-react'
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true)
-  const { theme, toggleTheme } = useTheme()
   const pathname = usePathname()
+  const router = useRouter()
 
   const isActive = (path: string) => pathname === path
 
+  const handleLogout = () => {
+    localStorage.removeItem('userLoggedIn')
+    router.push('/login')
+  }
+
   return (
     <aside 
-      className={`relative min-h-[calc(100vh-72px)] transition-all duration-300 ease-in-out border-r flex flex-col 
-      ${isOpen ? 'w-64' : 'w-20'} 
-      ${theme === 'dark' ? 'bg-[#141414] text-white border-gray-800' : 'bg-white text-gray-800 border-gray-200'}`}
+      className={`relative min-h-screen transition-all duration-300 ease-in-out border-r border-white/10 flex flex-col shadow-2xl z-20
+      ${isOpen ? 'w-72' : 'w-20'}`}
+      style={{ backgroundColor: '#1c2241' }}
     >
-      <div className="p-4 flex justify-end">
-        <button onClick={() => setIsOpen(!isOpen)} className="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-lg text-brand-primary">
-          {isOpen ? <X size={22} /> : <Menu size={22} />}
+      <div className="p-6 flex justify-end">
+        <button onClick={() => setIsOpen(!isOpen)} className="p-2 hover:bg-white/10 rounded-xl text-[#91d0d1]">
+          {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
-      <nav className="flex-grow px-3 space-y-2">
-        <SidebarItem href="/dashboard" icon={<LayoutDashboard size={22} />} label="Dashboard" isOpen={isOpen} active={isActive('/dashboard')} theme={theme} />
-        <SidebarItem href="/simulador-risco-operacional" icon={<Calculator size={22} />} label="Simulador de Risco" isOpen={isOpen} active={isActive('/simulador-risco-operacional')} theme={theme} />
-        <SidebarItem href="/calculadora-impacto" icon={<Leaf size={22} />} label="Calculadora de Impacto" isOpen={isOpen} active={isActive('/calculadora-impacto')} theme={theme} />
-        <SidebarItem href="/linha-do-tempo" icon={<History size={22} />} label="Linha do Tempo" isOpen={isOpen} active={isActive('/linha-do-tempo')} theme={theme} />
+      <nav className="flex-grow px-4 space-y-3">
+        <SidebarLink href="/dashboard" icon={<LayoutDashboard size={22} />} label="Dashboard" isOpen={isOpen} active={isActive('/dashboard')} />
+        <SidebarLink href="/simulador-risco-operacional" icon={<Calculator size={22} />} label="Simulador de Risco" isOpen={isOpen} active={isActive('/simulador-risco-operacional')} />
+        <SidebarLink href="/calculadora-impacto" icon={<Leaf size={22} />} label="Calculadora de Impacto" isOpen={isOpen} active={isActive('/calculadora-impacto')} />
+        <SidebarLink href="/linha-do-tempo" icon={<History size={22} />} label="Linha do Tempo" isOpen={isOpen} active={isActive('/linha-do-tempo')} />
+        <SidebarLink href="/perfil" icon={<User size={22} />} label="Meu Perfil" isOpen={isOpen} active={isActive('/perfil')} />
       </nav>
 
-      <div className={`p-4 border-t ${theme === 'dark' ? 'border-gray-800' : 'border-gray-200'}`}>
-        <button onClick={toggleTheme} className="w-full flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all text-gray-400">
-          <div className="min-w-[24px] flex justify-center">
-            {theme === 'dark' ? <Sun size={22} className="text-yellow-500" /> : <Moon size={22} className="text-blue-600" />}
+      {/* Botão de Sair Fixo ao Final */}
+      <div className="p-4 border-t border-white/5">
+        <button 
+          onClick={handleLogout}
+          className="w-full flex items-center space-x-4 p-4 rounded-2xl hover:bg-red-500/10 transition-all text-red-400 group"
+        >
+          <div className="min-w-[28px] flex justify-center group-hover:scale-110 transition-transform">
+            <LogOut size={22} />
           </div>
-          {isOpen && <span className="whitespace-nowrap font-medium">{theme === 'dark' ? 'Modo Claro' : 'Modo Escuro'}</span>}
+          {isOpen && <span className="whitespace-nowrap font-bold text-xs uppercase tracking-widest">Sair do Sistema</span>}
         </button>
       </div>
     </aside>
   )
 }
 
-// Helper SidebarItem simplificado para usar as classes dark/light
-const SidebarItem = ({ href, icon, label, isOpen, active, theme }: any) => (
-  <Link href={href} className={`flex items-center space-x-4 p-3 rounded-lg transition-all duration-200 group ${active ? 'bg-brand-primary text-white' : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500'}`}>
-    <div className={`min-w-[24px] flex justify-center ${active ? 'text-white' : 'group-hover:text-brand-primary'}`}>{icon}</div>
-    {isOpen && <span className="whitespace-nowrap font-medium">{label}</span>}
+const SidebarLink = ({ href, icon, label, isOpen, active }: any) => (
+  <Link href={href} className={`flex items-center space-x-4 p-4 rounded-2xl transition-all group relative ${active ? 'bg-[#2f56a3] text-white shadow-lg' : 'text-[#c7e6ed]/60 hover:text-white hover:bg-white/5'}`}>
+    <div className={`min-w-[28px] flex justify-center ${active ? 'text-[#91d0d1]' : ''}`}>{icon}</div>
+    {isOpen && <span className="whitespace-nowrap text-sm font-bold">{label}</span>}
+    {active && <div className="absolute left-0 w-1 h-6 bg-[#91d0d1] rounded-r-full" />}
   </Link>
 )
 

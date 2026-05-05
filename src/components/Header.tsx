@@ -1,63 +1,29 @@
 'use client'
-
 import Link from 'next/link'
-import { ReactNode, useEffect, useState } from 'react'
-import { User, LogOut } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { User, Bell } from 'lucide-react'
 
-interface HeaderProps {
-  children?: ReactNode
-}
-
-const Header = ({ children }: HeaderProps): React.JSX.Element => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const router = useRouter()
-
-  useEffect(() => {
-    const loggedIn = localStorage.getItem('userLoggedIn') === 'true'
-    setIsLoggedIn(loggedIn)
-  }, [])
-
-  const handleLogout = () => {
-    localStorage.removeItem('userLoggedIn')
-    setIsLoggedIn(false)
-    router.push('/login')
-  }
-
+const Header = () => {
   return (
-    <header className="bg-brand-primary text-white shadow-lg z-50">
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
-          {/* Lado Esquerdo: Logo */}
-          <Link 
-            href="/dashboard" 
-            className="text-2xl font-bold hover:text-brand-light transition-colors tracking-tight"
-          >
-            Card0 - Edenred
-          </Link>
-          
-          {/* Lado Direito: Botão de Perfil */}
-          <div className="flex items-center space-x-4">
-            {children}
-            {isLoggedIn ? (
-              <button 
-                onClick={handleLogout}
-                className="flex items-center justify-center w-10 h-10 rounded-full bg-red-500 hover:bg-red-600 transition-all border border-white/10"
-                title="Sair"
-              >
-                <LogOut size={20} className="text-white" />
-              </button>
-            ) : (
-              <Link 
-                href="/login"
-                className="flex items-center justify-center w-10 h-10 rounded-full bg-brand-secondary hover:bg-white/20 transition-all border border-white/10"
-                title="Fazer Login"
-              >
-                <User size={20} className="text-white" />
-              </Link>
-            )}
+    <header className="h-16 bg-[#1c2241] text-white flex items-center justify-between px-8 shadow-lg z-10 w-full">
+      <div className="flex items-center gap-4">
+        <Link href="/dashboard" className="text-xl font-black tracking-tighter hover:opacity-80 transition-opacity">
+          CARD<span className="text-[#91d0d1]">0</span>
+        </Link>
+      </div>
+      
+      <div className="flex items-center gap-6">
+        <button className="text-white/60 hover:text-[#91d0d1] transition-colors">
+          <Bell size={20} />
+        </button>
+        <Link href="/perfil" className="flex items-center gap-3 group">
+          <div className="text-right hidden sm:block">
+            <p className="text-xs font-bold group-hover:text-[#91d0d1] transition-colors">Usuário Gestor</p>
+            <p className="text-[10px] text-white/40 uppercase tracking-widest">Admin</p>
           </div>
-        </div>
+          <div className="bg-[#2f56a3] p-2 rounded-xl border border-[#3b6fb5] group-hover:border-[#91d0d1] transition-all">
+            <User size={20} />
+          </div>
+        </Link>
       </div>
     </header>
   )

@@ -1,39 +1,51 @@
 'use client'
 import { useState, useEffect } from 'react'
-import Header from '@/components/Header'
+import { Leaf } from 'lucide-react'
 import Sidebar from '@/components/Sidebar'
+import Header from '@/components/Header'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import ComparadorSustentabilidade from '@/components/ComparadorSustentabilidade'
-import { useTheme } from '@/context/ThemeContext'
 
 export default function CalculadoraImpactoPage(){
-  const { theme } = useTheme()
   const [mounted, setMounted] = useState(false)
+  
   useEffect(() => {
     setMounted(true)
   }, [])
+
   if(!mounted){
-    return <div className="min-h-screen bg-white dark:bg-[#0F0F0F]" />
+    return <div className="min-h-screen bg-[#f6edee]" />
   }
+
   return (
     <ProtectedRoute>
-      <div className="min-h-screen flex flex-col bg-white dark:bg-[#0F0F0F] text-gray-900 dark:text-white transition-colors duration-300">
-        <Header />
-        <div className="flex flex-1">
-          <Sidebar />
-          <main className="flex-1 p-6 md:p-10 overflow-y-auto">
+      <div className="flex min-h-screen bg-[#f6edee]">
+        <Sidebar />
+
+        <div className="flex-1 flex flex-col">
+          <Header />
+
+          <main className="flex-1 p-8 overflow-y-auto">
             <div className="max-w-5xl mx-auto space-y-8">
-              <section>
-                <h1 className="text-3xl font-bold mb-2">
-                  Calculadora de Impacto Ambiental
-                </h1>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Analise o impacto ambiental da migração de cartões físicos para digitais.
-                </p>
+              <section className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-[#c7e6ed]">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="p-3 bg-[#91d0d1]/20 rounded-2xl">
+                    <Leaf className="text-[#1c2241]" size={28} />
+                  </div>
+                  <div>
+                    <h1 className="text-3xl font-black text-[#1c2241] uppercase tracking-tighter">
+                      Calculadora de Impacto
+                    </h1>
+                    <p className="text-slate-500 font-medium">
+                      Analise a migração de cartões físicos para digitais.
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="pt-6 border-t border-[#f6edee]">
+                  <ComparadorSustentabilidade />
+                </div>
               </section>
-              <div className="pt-2">
-                <ComparadorSustentabilidade />
-              </div>
             </div>
           </main>
         </div>
