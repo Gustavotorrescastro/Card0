@@ -33,5 +33,35 @@
     "name": "Arthur",
     "email": "arthur@gmail.com",
     "password": "Arthur123"
+  },
+  {
+    "name": "teste",
+    "email": "teste@gmail.com",
+    "password": "teste123"
+  },
+  {
+    "name": "Godoy Teste",
+    "email": "teste@cesar.school",
+    "password": "senha123"
+  },
+  {
+    "name": "Godoy Teste",
+    "email": "teste935@cesar.school",
+    "password": "senha123"
+  },
+  {
+    "name": "Godoy Teste",
+    "email": "teste66@cesar.school",
+    "password": "senha123"
+  },
+  {
+    "name": "Godoy Teste",
+    "email": "teste338@cesar.school",
+    "password": "senha123"
+  },
+  {
+    "name": "Godoy Teste",
+    "email": "teste79@cesar.school",
+    "password": "senha123"
   }
 ]
