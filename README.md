@@ -154,6 +154,11 @@ edenred-carbon-calculator/
 
 ---
 
+---
+
+## 📆 Seção Semanas
+
+Abaixo estão os registros semanais de evolução do projeto:
 
 📅 Semana 13
 <details> <summary>↕️ Atividades realizadas na Semana 13</summary>
