@@ -154,9 +154,6 @@ edenred-carbon-calculator/
 
 ---
 
-## 📄 Licença
-
-Projeto desenvolvido exclusivamente para a **Edenred**. Todos os direitos reservados.
 
 📅 Semana 13
 <details> <summary>↕️ Atividades realizadas na Semana 13</summary>
@@ -181,3 +178,9 @@ x
 x
 x
 </details>
+
+## 📄 Licença
+
+Projeto desenvolvido exclusivamente para a **Edenred**. Todos os direitos reservados.
+
+
