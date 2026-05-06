@@ -179,6 +179,30 @@ x
 x
 </details>
 
+📅 Semana 16
+<details> <summary>↕️ Atividades realizadas na Semana 16</summary>
+x
+x
+x
+x
+</details>
+
+📅 Semana 17
+<details> <summary>↕️ Atividades realizadas na Semana 17</summary>
+x
+x
+x
+x
+</details>
+
+📅 Semana 18
+<details> <summary>↕️ Atividades realizadas na Semana 18</summary>
+x
+x
+x
+x
+</details>
+
 ## 📄 Licença
 
 Projeto desenvolvido exclusivamente para a **Edenred**. Todos os direitos reservados.
