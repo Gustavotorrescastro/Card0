@@ -152,7 +152,6 @@ edenred-carbon-calculator/
     └── figma-link.md           # Link para o projeto no Figma
 ```
 
----
 
 ---
 
