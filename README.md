@@ -159,8 +159,104 @@ edenred-carbon-calculator/
 
 Abaixo estão os registros semanais de evolução do projeto:
 
+📅 Semana 1
+<details> <summary> Atividades realizadas na Semana 1</summary>
+x
+x
+x
+x
+</details>
+
+📅 Semana 2
+<details> <summary> Atividades realizadas na Semana 2</summary>
+x
+x
+x
+x
+</details>
+
+📅 Semana 3
+<details> <summary> Atividades realizadas na Semana 3</summary>
+x
+x
+x
+x
+</details>
+
+📅 Semana 4
+<details> <summary> Atividades realizadas na Semana 4</summary>
+x
+x
+x
+x
+</details>
+
+📅 Semana 5
+<details> <summary> Atividades realizadas na Semana 5</summary>
+x
+x
+x
+x
+</details>
+
+📅 Semana 6
+<details> <summary> Atividades realizadas na Semana 6</summary>
+x
+x
+x
+x
+</details>
+
+📅 Semana 7
+<details> <summary> Atividades realizadas na Semana 7</summary>
+x
+x
+x
+x
+</details>
+
+📅 Semana 8
+<details> <summary> Atividades realizadas na Semana 8</summary>
+x
+x
+x
+x
+</details>
+
+📅 Semana 9
+<details> <summary> Atividades realizadas na Semana 9</summary>
+x
+x
+x
+x
+</details>
+
+📅 Semana 10
+<details> <summary> Atividades realizadas na Semana 10</summary>
+x
+x
+x
+x
+</details>
+
+📅 Semana 11
+<details> <summary> Atividades realizadas na Semana 11</summary>
+x
+x
+x
+x
+</details>
+
+📅 Semana 12
+<details> <summary> Atividades realizadas na Semana 12</summary>
+x
+x
+x
+x
+</details>
+
 📅 Semana 13
-<details> <summary>↕️ Atividades realizadas na Semana 13</summary>
+<details> <summary> Atividades realizadas na Semana 13</summary>
 x
 x
 x
@@ -168,7 +264,7 @@ x
 </details>
 
 📅 Semana 14
-<details> <summary>↕️ Atividades realizadas na Semana 14</summary>
+<details> <summary> Atividades realizadas na Semana 14</summary>
 x
 x
 x
@@ -176,7 +272,7 @@ x
 </details>
 
 📅 Semana 15
-<details> <summary>↕️ Atividades realizadas na Semana 15</summary>
+<details> <summary> Atividades realizadas na Semana 15</summary>
 x
 x
 x
@@ -184,7 +280,7 @@ x
 </details>
 
 📅 Semana 16
-<details> <summary>↕️ Atividades realizadas na Semana 16</summary>
+<details> <summary> Atividades realizadas na Semana 16</summary>
 x
 x
 x
@@ -192,7 +288,7 @@ x
 </details>
 
 📅 Semana 17
-<details> <summary>↕️ Atividades realizadas na Semana 17</summary>
+<details> <summary> Atividades realizadas na Semana 17</summary>
 x
 x
 x
@@ -200,7 +296,7 @@ x
 </details>
 
 📅 Semana 18
-<details> <summary>↕️ Atividades realizadas na Semana 18</summary>
+<details> <summary> Atividades realizadas na Semana 18</summary>
 x
 x
 x
