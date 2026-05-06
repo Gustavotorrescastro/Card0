@@ -97,9 +97,9 @@ export default function SimuladorRiscoPage() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <CardMetrica titulo="CO₂ evitado" valor={`${metricas.co2Evitado.toLocaleString('pt-BR')} kg`} icone={Leaf} />
-                <CardMetrica titulo="Economia" valor={`R$ ${metricas.economiaFinanceira.toLocaleString('pt-BR')}`} icone={CircleDollarSign} />
-                <CardMetrica titulo="Retorno" valor="~1 mês" icone={CalendarDays} />
+                <CardMetrica titulo="CO₂ evitado" valor={`${metricas.co2Evitado.toLocaleString('pt-BR')} kg`} icone={Leaf} corBorda="green" />
+                <CardMetrica titulo="Economia" valor={`R$ ${metricas.economiaFinanceira.toLocaleString('pt-BR')}`} icone={CircleDollarSign} corBorda="green" />
+                <CardMetrica titulo="Retorno" valor="~1 mês" icone={CalendarDays} corBorda="green" />
               </div>
             </div>
           </main>
