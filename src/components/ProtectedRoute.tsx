@@ -1,28 +1,28 @@
 'use client';
-import { useEffect, useState } from 'react';
+
+import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthorized, loading } = useAuth();
   const router = useRouter();
-  const [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(() => {
-    const loggedIn = localStorage.getItem('userLoggedIn') === 'true';
-    if (!loggedIn) {
+    if (!loading && !isAuthorized) {
       router.push('/login');
-    } else {
-      setIsAuthorized(true);
     }
-  }, [router]);
+  }, [isAuthorized, loading, router]);
 
-  // Enquanto verifica o login, não renderiza o conteúdo protegido
-  if (!isAuthorized) {
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-[#0F0F0F]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-primary"></div>
+      <div className="min-h-screen flex items-center justify-center bg-[#f6edee]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#1c2241]"></div>
       </div>
     );
   }
+
+  if (!isAuthorized) return null;
 
   return <>{children}</>;
 }

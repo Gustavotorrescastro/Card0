@@ -4,14 +4,19 @@ import { User, Bell } from 'lucide-react'
 
 const Header = () => {
   return (
-    <header className="h-16 bg-[#1c2241] text-white flex items-center justify-between px-8 shadow-lg z-10 w-full">
-      <div className="flex items-center gap-4">
+    <header className="h-16 bg-[#1c2241] text-white flex items-center px-8 shadow-lg z-10 w-full">
+      {/* Espaçador para equilibrar o lado esquerdo */}
+      <div className="flex-1 hidden md:block" />
+      
+      {/* Logo Centralizada */}
+      <div className="flex-shrink-0 flex items-center justify-center md:absolute md:left-1/2 md:-translate-x-1/2">
         <Link href="/dashboard" className="text-xl font-black tracking-tighter hover:opacity-80 transition-opacity">
           CARD<span className="text-[#91d0d1]">0</span>
         </Link>
       </div>
       
-      <div className="flex items-center gap-6">
+      {/* Ações à Direita */}
+      <div className="flex-1 flex items-center justify-end gap-6">
         <button className="text-white/60 hover:text-[#91d0d1] transition-colors">
           <Bell size={20} />
         </button>
