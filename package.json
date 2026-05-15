@@ -37,5 +37,8 @@
     "recharts": "^3.8.1",
     "tailwindcss": "^4.2.2",
     "typescript": "^6.0.2"
+  },
+  "devDependencies": {
+    "cypress": "^15.15.0"
   }
 }

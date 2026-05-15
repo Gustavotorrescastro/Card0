@@ -98,8 +98,15 @@ export default function GraficoCamadas({ resultado }: GraficoCamadasProps) {
               />
               <YAxis type="category" dataKey="name" hide />
               <Tooltip
-                formatter={(value: number) => formatarMoeda(value)}
-                contentStyle={{ borderRadius: '15px', border: 'none' }}
+                formatter={(value) => {
+                  const numero =
+                    typeof value === "number"
+                      ? value
+                      : Number(value ?? 0);
+
+                  return formatarMoeda(numero);
+                }}
+                contentStyle={{ borderRadius: "15px", border: "none" }}
               />
               <Legend
                 iconType="circle"
@@ -137,8 +144,15 @@ export default function GraficoCamadas({ resultado }: GraficoCamadasProps) {
                 ))}
               </Pie>
               <Tooltip
-                formatter={(value: number) => formatarMoeda(value)}
-                contentStyle={{ borderRadius: '15px', border: 'none' }}
+                formatter={(value) => {
+                  const numero =
+                    typeof value === "number"
+                      ? value
+                      : Number(value ?? 0);
+
+                  return formatarMoeda(numero);
+                }}
+                contentStyle={{ borderRadius: "15px", border: "none" }}
               />
               <Legend
                 iconType="circle"

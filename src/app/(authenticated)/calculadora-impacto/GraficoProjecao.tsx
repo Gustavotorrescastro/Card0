@@ -65,12 +65,19 @@ export default function GraficoProjecao({
               tickLine={false}
             />
             <Tooltip
-              formatter={(value: number, name: string) => [
-                formatarMoeda(value),
-                name === 'tcoFisico' ? 'Físico' : 'Digital',
-              ]}
-              labelFormatter={(label) => `${label.toLocaleString('pt-BR')} cartões`}
-              contentStyle={{ borderRadius: '15px', border: 'none' }}
+              formatter={(value, name) => {
+                const numero =
+                  typeof value === "number"
+                    ? value
+                    : Number(value ?? 0);
+
+                const nome = String(name);
+
+                return [
+                  formatarMoeda(numero),
+                  nome === "tcoFisico" ? "Físico" : "Digital",
+                ];
+              }}
             />
             <Line
               type="monotone"
