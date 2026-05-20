@@ -1,59 +1,43 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
-import { LayoutDashboard, Calculator, Leaf, History, User, LogOut, MapPin } from 'lucide-react'
+import { usePathname } from 'next/navigation'
+import { LayoutDashboard, History, Calculator, Leaf, Recycle, MapPin } from 'lucide-react'
 
 const TopNavbar = () => {
   const pathname = usePathname()
-  const router = useRouter()
 
   const isActive = (path: string) => pathname === path
 
-  const handleLogout = () => {
-    localStorage.removeItem('userLoggedIn')
-    router.push('/login')
-  }
-
   const navItems = [
-    { href: '/dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
-    { href: '/simulador-risco-operacional', icon: <Calculator size={20} />, label: 'Simulador de Risco' },
-    { href: '/calculadora-impacto', icon: <Leaf size={20} />, label: 'Calculadora de Impacto' },
-    { href: '/logistica-reversa', icon: <MapPin size={20} />, label: 'Logística Reversa' },
-    { href: '/linha-do-tempo', icon: <History size={20} />, label: 'Linha do Tempo' },
-    { href: '/perfil', icon: <User size={20} />, label: 'Meu Perfil' },
+    { href: '/dashboard', icon: <LayoutDashboard size={15} />, label: 'Dashboard' },
+    { href: '/linha-do-tempo', icon: <History size={15} />, label: 'Análise e monitoramento' },
+    { href: '/simulador-risco-operacional', icon: <Calculator size={15} />, label: 'Simulações e cenários' },
+    { href: '/calculadora-impacto', icon: <Leaf size={15} />, label: 'Custos e impacto financeiro' },
+    { href: '/lca-simplificado', icon: <Recycle size={15} />, label: 'Ciclo de Vida (LCA)' },
+    { href: '/logistica-reversa', icon: <MapPin size={15} />, label: 'Operação e execução' },
   ]
 
   return (
-    <div className="w-full flex justify-center py-6 px-8 bg-[#f6edee]">
-      <nav className="bg-[#1c2241] p-2 rounded-full border border-white/10 shadow-2xl flex items-center gap-1">
+    <div className="w-full flex justify-center py-2 px-4 max-w-full">
+      <nav className="bg-white border border-slate-200/80 p-1 rounded-full flex flex-row flex-nowrap items-center justify-between gap-1 shadow-sm max-w-full overflow-x-auto scrollbar-none">
         {navItems.map((item) => (
           <Link
             key={item.href}
             href={item.href}
             className={`
-              flex items-center space-x-2 px-6 py-2.5 rounded-full text-[11px] font-black uppercase tracking-widest transition-all
+              flex items-center space-x-1.5 px-4 py-2 rounded-full text-[10px] md:text-[11px] font-bold tracking-wide transition-all select-none whitespace-nowrap
               ${
                 isActive(item.href)
-                  ? 'bg-[#2f56a3] text-white shadow-lg scale-105'
-                  : 'text-[#c7e6ed]/60 hover:text-white hover:bg-white/5'
+                  ? 'bg-[#F72717] text-white shadow-sm scale-100'
+                  : 'text-[#252525]/70 hover:text-[#F72717] hover:bg-slate-100/50'
               }
             `}
           >
-            {item.icon && <span className={isActive(item.href) ? 'text-[#91d0d1]' : ''}>{item.icon}</span>}
-            <span className="whitespace-nowrap">{item.label}</span>
+            {item.icon && <span className={isActive(item.href) ? 'text-white' : 'text-slate-400 group-hover:text-[#F72717]'}>{item.icon}</span>}
+            <span>{item.label}</span>
           </Link>
         ))}
-
-        <div className="w-px h-6 bg-white/10 mx-2" />
-
-        <button
-          onClick={handleLogout}
-          className="flex items-center space-x-2 px-6 py-2.5 rounded-full text-[11px] font-black uppercase tracking-widest text-red-400 hover:bg-red-500/10 transition-all"
-        >
-          <LogOut size={18} />
-          <span className="whitespace-nowrap">Sair</span>
-        </button>
       </nav>
     </div>
   )

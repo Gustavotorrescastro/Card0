@@ -14,12 +14,12 @@ interface CardComparativoProps {
  */
 export default function CardComparativo({ resultado }: CardComparativoProps) {
   return (
-    <div className="bg-white p-8 rounded-[2.5rem] border border-[#c7e6ed] shadow-sm">
+    <div className="bg-white p-8 rounded-[2.5rem] border border-[#E2E8F0] shadow-sm">
       <div className="mb-6">
-        <p className="text-xs font-black text-[#1c2241]/60 uppercase tracking-widest mb-1">
+        <p className="text-xs font-black text-[#162056]/60 uppercase tracking-widest mb-1">
           Comparativo final
         </p>
-        <h3 className="text-lg font-black text-[#1c2241] uppercase tracking-tight">
+        <h3 className="text-lg font-black text-[#162056] uppercase tracking-tight">
           Físico vs Digital
         </h3>
       </div>
@@ -27,8 +27,8 @@ export default function CardComparativo({ resultado }: CardComparativoProps) {
       {/* Comparativo: duas colunas iguais com VS no meio */}
       <div className="flex items-stretch gap-3 mb-6">
         {/* Físico */}
-        <div className="flex-1 min-w-0 bg-[#1c2241] p-5 rounded-3xl text-white">
-          <p className="text-[10px] font-black text-[#91d0d1] uppercase tracking-widest mb-2 truncate">
+        <div className="flex-1 min-w-0 bg-[#162056] p-5 rounded-3xl text-white">
+          <p className="text-[10px] font-black text-[#7FC2E4] uppercase tracking-widest mb-2 truncate">
             Cartão físico (TCO)
           </p>
           <p className="text-lg lg:text-xl font-black leading-tight whitespace-nowrap overflow-hidden text-ellipsis">
@@ -44,18 +44,18 @@ export default function CardComparativo({ resultado }: CardComparativoProps) {
         </div>
 
         {/* Digital */}
-        <div className="flex-1 min-w-0 bg-[#91d0d1]/20 p-5 rounded-3xl border-2 border-[#91d0d1]">
-          <p className="text-[10px] font-black text-[#2f56a3] uppercase tracking-widest mb-2 truncate">
+        <div className="flex-1 min-w-0 bg-[#7FC2E4]/20 p-5 rounded-3xl border-2 border-[#7FC2E4]">
+          <p className="text-[10px] font-black text-[#F72717] uppercase tracking-widest mb-2 truncate">
             Cartão digital (estimado)
           </p>
-          <p className="text-lg lg:text-xl font-black text-[#1c2241] leading-tight whitespace-nowrap overflow-hidden text-ellipsis">
+          <p className="text-lg lg:text-xl font-black text-[#162056] leading-tight whitespace-nowrap overflow-hidden text-ellipsis">
             {formatarMoeda(resultado.digital)}
           </p>
         </div>
       </div>
 
       {/* Economia */}
-      <div className="bg-gradient-to-br from-green-500/10 to-[#91d0d1]/20 p-6 rounded-3xl border border-green-500/20">
+      <div className="bg-gradient-to-br from-green-500/10 to-[#7FC2E4]/20 p-6 rounded-3xl border border-green-500/20">
         <div className="flex items-start gap-4">
           <div className="p-3 bg-green-500/20 rounded-2xl shrink-0">
             <Sparkles size={24} className="text-green-700" />
@@ -76,7 +76,7 @@ export default function CardComparativo({ resultado }: CardComparativoProps) {
 
               <span className="text-slate-400 font-bold">|</span>
 
-              <span className="text-xl font-black text-[#1c2241] break-words">
+              <span className="text-xl font-black text-[#162056] break-words">
                 {formatarMoeda(resultado.economiaAbsoluta)}
               </span>
             </div>

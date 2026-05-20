@@ -32,21 +32,21 @@ export default function CardCustoTotal({
         : '#ef4444'
 
   return (
-    <div className="bg-white p-8 rounded-[2.5rem] border border-[#c7e6ed] shadow-sm relative overflow-hidden">
-      <div className="absolute top-0 right-0 p-4 opacity-10 text-[#1c2241]">
+    <div className="bg-white p-8 rounded-[2.5rem] border border-[#E2E8F0] shadow-sm relative overflow-hidden">
+      <div className="absolute top-0 right-0 p-4 opacity-10 text-[#162056]">
         <TrendingUp size={80} />
       </div>
 
       <div className="relative z-10">
-        <p className="text-xs font-black text-[#1c2241]/60 uppercase tracking-widest mb-2">
+        <p className="text-xs font-black text-[#162056]/60 uppercase tracking-widest mb-2">
           Custo total da operação
         </p>
 
-        <h3 className="text-4xl font-black text-[#1c2241] mb-8">
+        <h3 className="text-4xl font-black text-[#162056] mb-8">
           {formatarMoeda(valor)}
         </h3>
 
-        <div className="pt-6 border-t border-[#f6edee]">
+        <div className="pt-6 border-t border-[#F5F5F5]">
           {/* Gauge circular grande centralizado */}
           <div className="flex justify-center">
             <div
@@ -63,7 +63,7 @@ export default function CardCustoTotal({
                 <path
                   d={`M 20 145 A ${raio} ${raio} 0 0 1 240 145`}
                   fill="none"
-                  stroke="#f6edee"
+                  stroke="#F5F5F5"
                   strokeWidth="22"
                   strokeLinecap="round"
                 />

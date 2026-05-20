@@ -22,9 +22,9 @@ interface GraficoCamadasProps {
 }
 
 const CORES = {
-  diretos: '#1c2241',
-  indiretos: '#2f56a3',
-  falha: '#91d0d1',
+  diretos: '#162056',
+  indiretos: '#F72717',
+  falha: '#7FC2E4',
 }
 
 /**
@@ -64,20 +64,20 @@ export default function GraficoCamadas({ resultado }: GraficoCamadasProps) {
   ]
 
   return (
-    <div className="bg-white p-8 rounded-[2.5rem] border border-[#c7e6ed] shadow-sm">
+    <div className="bg-white p-8 rounded-[2.5rem] border border-[#E2E8F0] shadow-sm">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <p className="text-xs font-black text-[#1c2241]/60 uppercase tracking-widest mb-1">
+          <p className="text-xs font-black text-[#162056]/60 uppercase tracking-widest mb-1">
             Composição do custo
           </p>
-          <h3 className="text-lg font-black text-[#1c2241] uppercase tracking-tight">
+          <h3 className="text-lg font-black text-[#162056] uppercase tracking-tight">
             Como o custo total é formado
           </h3>
         </div>
 
         <button
           onClick={() => setModo(modo === 'barra' ? 'rosca' : 'barra')}
-          className="p-3 rounded-2xl bg-[#f6edee] hover:bg-[#c7e6ed]/30 transition-colors text-[#1c2241]"
+          className="p-3 rounded-2xl bg-[#F5F5F5] hover:bg-[#E2E8F0]/30 transition-colors text-[#162056]"
           aria-label={`Alternar para gráfico de ${modo === 'barra' ? 'rosca' : 'barra'}`}
           title={`Ver como gráfico de ${modo === 'barra' ? 'rosca' : 'barra'}`}
         >
@@ -98,15 +98,8 @@ export default function GraficoCamadas({ resultado }: GraficoCamadasProps) {
               />
               <YAxis type="category" dataKey="name" hide />
               <Tooltip
-                formatter={(value) => {
-                  const numero =
-                    typeof value === "number"
-                      ? value
-                      : Number(value ?? 0);
-
-                  return formatarMoeda(numero);
-                }}
-                contentStyle={{ borderRadius: "15px", border: "none" }}
+                formatter={(value: any) => formatarMoeda(Number(value || 0))}
+                contentStyle={{ borderRadius: '15px', border: 'none' }}
               />
               <Legend
                 iconType="circle"
@@ -144,15 +137,8 @@ export default function GraficoCamadas({ resultado }: GraficoCamadasProps) {
                 ))}
               </Pie>
               <Tooltip
-                formatter={(value) => {
-                  const numero =
-                    typeof value === "number"
-                      ? value
-                      : Number(value ?? 0);
-
-                  return formatarMoeda(numero);
-                }}
-                contentStyle={{ borderRadius: "15px", border: "none" }}
+                formatter={(value: any) => formatarMoeda(Number(value || 0))}
+                contentStyle={{ borderRadius: '15px', border: 'none' }}
               />
               <Legend
                 iconType="circle"
@@ -164,7 +150,7 @@ export default function GraficoCamadas({ resultado }: GraficoCamadasProps) {
       </div>
 
       {/* Legenda lateral com percentuais */}
-      <div className="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-[#f6edee]">
+      <div className="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-[#F5F5F5]">
         <div className="text-center">
           <div
             className="w-3 h-3 rounded-full mx-auto mb-1"
@@ -173,7 +159,7 @@ export default function GraficoCamadas({ resultado }: GraficoCamadasProps) {
           <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">
             Diretos
           </p>
-          <p className="text-sm font-black text-[#1c2241]">
+          <p className="text-sm font-black text-[#162056]">
             {resultado.percentualDireto.toFixed(0)}%
           </p>
         </div>
@@ -185,7 +171,7 @@ export default function GraficoCamadas({ resultado }: GraficoCamadasProps) {
           <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">
             Indiretos
           </p>
-          <p className="text-sm font-black text-[#1c2241]">
+          <p className="text-sm font-black text-[#162056]">
             {resultado.percentualIndireto.toFixed(0)}%
           </p>
         </div>
@@ -197,7 +183,7 @@ export default function GraficoCamadas({ resultado }: GraficoCamadasProps) {
           <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">
             Falha
           </p>
-          <p className="text-sm font-black text-[#1c2241]">
+          <p className="text-sm font-black text-[#162056]">
             {resultado.percentualFalha.toFixed(0)}%
           </p>
         </div>

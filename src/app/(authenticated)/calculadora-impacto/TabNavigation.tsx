@@ -21,7 +21,7 @@ export default function TabNavigation({
   onChange,
 }: TabNavigationProps) {
   return (
-    <div className="bg-white p-2 rounded-full border border-[#c7e6ed] shadow-sm inline-flex flex-wrap gap-1">
+    <div className="bg-white p-2 rounded-full border border-[#E2E8F0] shadow-sm inline-flex flex-wrap gap-1">
       {tabs.map((tab) => {
         const isActive = tab.id === ativa
         return (
@@ -32,8 +32,8 @@ export default function TabNavigation({
               px-5 py-2 rounded-full text-xs font-black uppercase tracking-widest transition-all
               ${
                 isActive
-                  ? 'bg-[#1c2241] text-white shadow-md'
-                  : 'text-slate-400 hover:text-[#1c2241] hover:bg-[#f6edee]/50'
+                  ? 'bg-[#162056] text-white shadow-md'
+                  : 'text-slate-400 hover:text-[#162056] hover:bg-[#F5F5F5]/50'
               }
             `}
           >

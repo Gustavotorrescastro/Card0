@@ -19,12 +19,12 @@ export default function ControleQuantidade({
   onChange,
 }: ControleQuantidadeProps) {
   return (
-    <div className="bg-white p-6 rounded-3xl border border-[#c7e6ed] shadow-sm">
+    <div className="bg-white p-6 rounded-3xl border border-[#E2E8F0] shadow-sm">
       <div className="flex justify-between items-center mb-3">
-        <label className="text-xs font-black text-[#1c2241]/60 uppercase tracking-widest">
+        <label className="text-xs font-black text-[#162056]/60 uppercase tracking-widest">
           Quantidade de cartões
         </label>
-        <span className="text-2xl font-black text-[#1c2241]">
+        <span className="text-2xl font-black text-[#162056]">
           {valor.toLocaleString('pt-BR')}
         </span>
       </div>
@@ -36,7 +36,7 @@ export default function ControleQuantidade({
         step={step}
         value={valor}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full h-2 bg-[#f6edee] rounded-lg appearance-none cursor-pointer accent-[#2f56a3]"
+        className="w-full h-2 bg-[#F5F5F5] rounded-lg appearance-none cursor-pointer accent-[#F72717]"
       />
 
       <div className="flex justify-between mt-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">

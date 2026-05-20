@@ -4,15 +4,18 @@
 
 @theme {
   /* Variáveis de cor para usar como utilitários (ex: bg-brand-primary) */
-  --color-brand-primary: #2f56a3;
-  --color-brand-secondary: #1c2241;
-  --color-brand-tertiary: #3b6fb5;
-  --color-brand-teal: #91d0d1;
-  --color-brand-light: #c7e6ed;
-  --color-brand-white: #f6edee;
-  --color-brand-background: #F4F4F4;
+  --font-sans: var(--font-montserrat), sans-serif;
+  --color-brand-primary: #F72717;
+  --color-brand-secondary: #162056;
+  --color-brand-tertiary: #7FC2E4;
+  --color-brand-teal: #7FC2E4;
+  --color-brand-accent: #E1EA80;
+  --color-brand-lime: #E1EA80;
+  --color-brand-light: #7FC2E4;
+  --color-brand-white: #F5F5F5;
+  --color-brand-background: #F5F5F5;
   --color-brand-surface: #FFFFFF;
-  --color-brand-text: #1D1D1B;
+  --color-brand-text: #252525;
   --color-brand-text-secondary: #666666;
   --color-brand-border: #E5E5E5;
 }
@@ -20,20 +23,20 @@
 @layer base {
   /* Configuração para o Modo Claro (Padrão) */
   :root {
-    background-color: #F4F4F4;
-    color: #1D1D1B;
+    background-color: #F5F5F5;
+    color: #252525;
     color-scheme: light;
   }
 
   /* Configuração para o Modo Escuro (Ativado pela classe .dark) */
   .dark {
-    background-color: #0F0F0F;
-    color: #FFFFFF;
+    background-color: #121212;
+    color: #F5F5F5;
     color-scheme: dark;
   }
 
   body {
-    @apply min-h-screen transition-colors duration-300;
+    @apply min-h-screen transition-colors duration-300 font-sans;
     /* Garante que o body herde a cor de fundo do root/dark */
     background-color: inherit;
     color: inherit;

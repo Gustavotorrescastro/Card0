@@ -34,12 +34,12 @@ export default function GraficoProjecao({
   )
 
   return (
-    <div className="bg-white p-8 rounded-[2.5rem] border border-[#c7e6ed] shadow-sm">
+    <div className="bg-white p-8 rounded-[2.5rem] border border-[#E2E8F0] shadow-sm">
       <div className="mb-6">
-        <p className="text-xs font-black text-[#1c2241]/60 uppercase tracking-widest mb-1">
+        <p className="text-xs font-black text-[#162056]/60 uppercase tracking-widest mb-1">
           Projeção de crescimento
         </p>
-        <h3 className="text-lg font-black text-[#1c2241] uppercase tracking-tight">
+        <h3 className="text-lg font-black text-[#162056] uppercase tracking-tight">
           Impacto do crescimento da operação
         </h3>
         <p className="text-xs text-slate-500 font-medium mt-1">
@@ -65,41 +65,34 @@ export default function GraficoProjecao({
               tickLine={false}
             />
             <Tooltip
-              formatter={(value, name) => {
-                const numero =
-                  typeof value === "number"
-                    ? value
-                    : Number(value ?? 0);
-
-                const nome = String(name);
-
-                return [
-                  formatarMoeda(numero),
-                  nome === "tcoFisico" ? "Físico" : "Digital",
-                ];
-              }}
+              formatter={(value: any, name: any) => [
+                formatarMoeda(Number(value || 0)),
+                name === 'tcoFisico' ? 'Físico' : 'Digital',
+              ]}
+              labelFormatter={(label) => `${label.toLocaleString('pt-BR')} cartões`}
+              contentStyle={{ borderRadius: '15px', border: 'none' }}
             />
             <Line
               type="monotone"
               dataKey="tcoFisico"
-              stroke="#1c2241"
+              stroke="#162056"
               strokeWidth={3}
-              dot={{ fill: '#1c2241', r: 5 }}
+              dot={{ fill: '#162056', r: 5 }}
               activeDot={{ r: 7 }}
             />
             <Line
               type="monotone"
               dataKey="tcoDigital"
-              stroke="#91d0d1"
+              stroke="#7FC2E4"
               strokeWidth={3}
-              dot={{ fill: '#91d0d1', r: 4 }}
+              dot={{ fill: '#7FC2E4', r: 4 }}
               activeDot={{ r: 6 }}
             />
             <ReferenceDot
               x={pontoAtual.quantidade}
               y={pontoAtual.tcoFisico}
               r={8}
-              fill="#2f56a3"
+              fill="#F72717"
               stroke="white"
               strokeWidth={3}
             />
@@ -107,15 +100,15 @@ export default function GraficoProjecao({
         </ResponsiveContainer>
       </div>
 
-      <div className="flex justify-center gap-6 mt-4 pt-4 border-t border-[#f6edee]">
+      <div className="flex justify-center gap-6 mt-4 pt-4 border-t border-[#F5F5F5]">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-[#1c2241]" />
+          <div className="w-3 h-3 rounded-full bg-[#162056]" />
           <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
             Físico
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-[#91d0d1]" />
+          <div className="w-3 h-3 rounded-full bg-[#7FC2E4]" />
           <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
             Digital
           </span>

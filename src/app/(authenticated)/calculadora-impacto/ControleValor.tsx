@@ -31,9 +31,9 @@ export default function ControleValor({
   }
 
   return (
-    <div className="bg-white p-6 rounded-3xl border border-[#c7e6ed] shadow-sm">
+    <div className="bg-white p-6 rounded-3xl border border-[#E2E8F0] shadow-sm">
       <div className="flex justify-between items-center mb-3">
-        <label className="text-xs font-black text-[#1c2241]/60 uppercase tracking-widest">
+        <label className="text-xs font-black text-[#162056]/60 uppercase tracking-widest">
           Valor por cartão
         </label>
         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
@@ -45,14 +45,14 @@ export default function ControleValor({
         <button
           onClick={decrementar}
           disabled={valor <= min}
-          className="p-3 rounded-2xl bg-[#f6edee] hover:bg-[#c7e6ed]/30 transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-[#1c2241]"
+          className="p-3 rounded-2xl bg-[#F5F5F5] hover:bg-[#E2E8F0]/30 transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-[#162056]"
           aria-label="Diminuir valor"
         >
           <Minus size={18} />
         </button>
 
-        <div className="flex-1 text-center bg-[#f6edee]/50 rounded-2xl py-3 border border-[#c7e6ed]/50">
-          <span className="text-2xl font-black text-[#1c2241]">
+        <div className="flex-1 text-center bg-[#F5F5F5]/50 rounded-2xl py-3 border border-[#E2E8F0]/50">
+          <span className="text-2xl font-black text-[#162056]">
             R$ {valor.toFixed(2).replace('.', ',')}
           </span>
         </div>
@@ -60,7 +60,7 @@ export default function ControleValor({
         <button
           onClick={incrementar}
           disabled={valor >= max}
-          className="p-3 rounded-2xl bg-[#f6edee] hover:bg-[#c7e6ed]/30 transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-[#1c2241]"
+          className="p-3 rounded-2xl bg-[#F5F5F5] hover:bg-[#E2E8F0]/30 transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-[#162056]"
           aria-label="Aumentar valor"
         >
           <Plus size={18} />

@@ -54,10 +54,9 @@ export default function CalculadoraImpactoPage() {
   }, [projecao, resultado])
 
   return (
-    <div className="p-8">
-      <div className="max-w-7xl mx-auto space-y-12">
-        {/* Tab navigation centralizada */}
-        <section className="flex justify-center">
+    <div className="space-y-8 pb-16 w-full max-w-7xl mx-auto px-1 md:px-0">
+      {/* Tab navigation centralizada */}
+      <section className="flex justify-center">
           <TabNavigation
             tabs={TABS}
             ativa={abaAtiva}
@@ -67,7 +66,7 @@ export default function CalculadoraImpactoPage() {
 
         {/* Título dinâmico e descrição */}
         <section className="text-center">
-          <h1 className="text-4xl font-black text-[#1c2241] uppercase tracking-tighter mb-4">
+          <h1 className="text-4xl font-black text-[#162056] uppercase tracking-tighter mb-4">
             {TABS.find(t => t.id === abaAtiva)?.label}
           </h1>
           <p className="text-slate-500 font-medium max-w-2xl mx-auto">
@@ -95,12 +94,12 @@ export default function CalculadoraImpactoPage() {
                 onChange={setValorPorCartao}
               />
 
-              <div className="bg-[#1c2241] p-6 rounded-3xl text-white relative overflow-hidden">
+              <div className="bg-[#162056] p-6 rounded-3xl text-white relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-3 opacity-10">
                   <Info size={60} />
                 </div>
                 <div className="relative z-10">
-                  <div className="flex items-center gap-2 mb-3 text-[#91d0d1]">
+                  <div className="flex items-center gap-2 mb-3 text-[#7FC2E4]">
                     <Info size={16} />
                     <span className="text-[10px] font-black uppercase tracking-widest">
                       Sobre as métricas
@@ -134,11 +133,11 @@ export default function CalculadoraImpactoPage() {
         )}
 
         {abaAtiva !== 'custos' && (
-          <section className="bg-white p-12 rounded-[2.5rem] border border-[#c7e6ed] shadow-sm text-center">
+          <section className="bg-white p-12 rounded-[2.5rem] border border-[#E2E8F0] shadow-sm text-center">
             <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
               Em breve
             </p>
-            <h2 className="text-2xl font-black text-[#1c2241] uppercase tracking-tighter">
+            <h2 className="text-2xl font-black text-[#162056] uppercase tracking-tighter">
               {TABS.find((t) => t.id === abaAtiva)?.label}
             </h2>
             <p className="text-slate-500 font-medium mt-3 max-w-lg mx-auto">
@@ -147,7 +146,6 @@ export default function CalculadoraImpactoPage() {
             </p>
           </section>
         )}
-      </div>
     </div>
   )
 }
