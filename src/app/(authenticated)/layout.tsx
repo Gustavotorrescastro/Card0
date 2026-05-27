@@ -3,6 +3,8 @@
 import ProtectedRoute from '@/components/ProtectedRoute'
 import Header from '@/components/Header'
 import TopNavbar from '@/components/TopNavbar'
+import Footer from '@/components/Footer'
+import Card0Logo from '@/components/Card0Logo'
 import Link from 'next/link'
 
 export default function AuthenticatedLayout({
@@ -17,11 +19,10 @@ export default function AuthenticatedLayout({
         <Header />
         
         {/* Conteúdo da página */}
-        <div className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-4 flex flex-col items-center">
-          {/* Logo CARD.O centralizado abaixo da barra superior */}
-          <div className="my-6">
-            <Link href="/dashboard" className="text-3xl font-black tracking-[0.2em] text-[#162056] hover:opacity-85 transition-opacity">
-              CARD.O
+        <div className="flex-1 w-full px-4 md:px-8 py-4 flex flex-col">
+          <div className="my-6 flex w-full justify-center">
+            <Link href="/dashboard" className="inline-flex hover:opacity-85 transition-opacity">
+              <Card0Logo className="h-10 w-auto" priority />
             </Link>
           </div>
           
@@ -33,6 +34,7 @@ export default function AuthenticatedLayout({
             {children}
           </main>
         </div>
+        <Footer />
       </div>
     </ProtectedRoute>
   )

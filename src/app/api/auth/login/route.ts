@@ -7,7 +7,15 @@ export async function POST(request: Request) {
   const user = users.find((u: any) => u.email === email && u.password === password)
   const isAdmin = email === 'admin@card0.com.br' && password === 'senha123'
   if(user || isAdmin){
-    return NextResponse.json({ message: 'OK', user: user || { email: 'admin@card0.com.br' } }, { status: 200 })
+    return NextResponse.json({
+      message: 'OK',
+      user: user || {
+        name: 'Administrador',
+        email: 'admin@card0.com.br',
+        city: 'Recife',
+        state: 'Pernambuco',
+      },
+    }, { status: 200 })
   }
   return NextResponse.json({ error: 'Email ou senha incorretos. Tente novamente.' }, { status: 401 })
 }

@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Card0Logo from './Card0Logo'
 
 const RegisterForm = (): React.JSX.Element => {
   const [formData, setFormData] = useState({
@@ -59,7 +60,9 @@ const RegisterForm = (): React.JSX.Element => {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="text-center mb-6">
           <h2 className="text-3xl font-bold text-brand-primary">Cadastro</h2>
-          <p className="text-brand-textSecondary mt-2">Crie sua conta no Card0</p>
+          <div className="mt-3 flex justify-center">
+            <Card0Logo className="h-7 w-auto" />
+          </div>
         </div>
 
         {error && (

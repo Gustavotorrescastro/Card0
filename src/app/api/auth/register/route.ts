@@ -4,7 +4,7 @@ import { getUsers, saveUser } from '@/lib/db'
 export async function POST(request: Request) {
   try{
     const body = await request.json()
-    const { name, email, password } = body
+    const { name, email, password, birthDate, city, state } = body
     if(!name || !email || !password){
       return NextResponse.json(
         { error: 'Todos os campos são obrigatórios' },
@@ -19,9 +19,9 @@ export async function POST(request: Request) {
         { status: 400 }
       )
     }
-    saveUser({ name, email, password })
+    saveUser({ name, email, password, birthDate, city, state })
     return NextResponse.json(
-      { message: 'Usuário criado com sucesso', user: { name, email } },
+      { message: 'Usuário criado com sucesso', user: { name, email, birthDate, city, state } },
       { status: 201 }
     )
   }catch(error){

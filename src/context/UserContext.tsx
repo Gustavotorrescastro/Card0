@@ -23,6 +23,27 @@ const DEFAULT_PROFILE: UserProfile = {
   localizacao: 'Recife-PE, Brasil',
 }
 
+function normalizarProfile(raw: Partial<UserProfile> | null): UserProfile {
+  return {
+    ...DEFAULT_PROFILE,
+    ...raw,
+    name: raw?.name || localStorage.getItem('userName') || DEFAULT_PROFILE.name,
+    email: raw?.email || localStorage.getItem('userEmail') || DEFAULT_PROFILE.email,
+  }
+}
+
+function lerProfileSalvo(): UserProfile {
+  const stored = localStorage.getItem('userProfile')
+
+  if (stored) {
+    try {
+      return normalizarProfile(JSON.parse(stored))
+    } catch {}
+  }
+
+  return normalizarProfile(null)
+}
+
 const UserContext = createContext<UserContextType>({
   profile: DEFAULT_PROFILE,
   updateProfile: () => {},
@@ -33,24 +54,19 @@ export const useUser = () => useContext(UserContext)
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [profile, setProfile] = useState<UserProfile>(DEFAULT_PROFILE)
 
-  // Carrega do localStorage quando monta no client
+  // Carrega do localStorage quando monta no client e quando o login/cadastro atualiza os dados.
   useEffect(() => {
-    const stored = localStorage.getItem('userProfile')
-    if (stored) {
-      try {
-        setProfile(JSON.parse(stored))
-      } catch {}
-    } else {
-      // compatibilidade com chaves legadas do login
-      const name = localStorage.getItem('userName')
-      const email = localStorage.getItem('userEmail')
-      if (name || email) {
-        setProfile((prev) => ({
-          ...prev,
-          name: name || prev.name,
-          email: email || prev.email,
-        }))
-      }
+    const hidratarProfile = () => {
+      setProfile(lerProfileSalvo())
+    }
+
+    hidratarProfile()
+    window.addEventListener('storage', hidratarProfile)
+    window.addEventListener('userProfileUpdated', hidratarProfile)
+
+    return () => {
+      window.removeEventListener('storage', hidratarProfile)
+      window.removeEventListener('userProfileUpdated', hidratarProfile)
     }
   }, [])
 

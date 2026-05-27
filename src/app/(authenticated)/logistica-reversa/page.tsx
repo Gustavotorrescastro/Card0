@@ -44,7 +44,7 @@ export default function LogisticaReversaPage() {
   }
 
   return (
-    <div className="space-y-8 pb-16 w-full max-w-7xl mx-auto px-1 md:px-0">
+    <div className="space-y-8 pb-16 w-full px-1 md:px-0">
       {/* MODAL DE SUCESSO */}
       <AnimatePresence>
         {showModal && (

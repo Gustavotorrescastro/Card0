@@ -29,7 +29,7 @@ export default function Dashboard() {
   const primeiroNome = profile.name.split(' ')[0]
 
   return (
-    <div className="space-y-6 pb-16 w-full max-w-7xl mx-auto px-1 md:px-0 font-sans">
+    <div className="space-y-6 pb-16 w-full px-1 md:px-0 font-sans">
 
       {/* ===== MODAL EDITAR PERFIL ===== */}
       {editando && (
