@@ -14,12 +14,12 @@ const TopNavbar = () => {
     { href: '/linha-do-tempo', icon: <History size={15} />, label: 'Análise e monitoramento' },
     { href: '/simulador-risco-operacional', icon: <Calculator size={15} />, label: 'Simulações e cenários' },
     { href: '/calculadora-impacto', icon: <Leaf size={15} />, label: 'Custos e impacto financeiro' },
-    { href: '/lca-simplificado', icon: <Recycle size={15} />, label: 'Ciclo de Vida (LCA)' },
-    { href: '/logistica-reversa', icon: <MapPin size={15} />, label: 'Operação e execução' },
+    { href: '/lca-simplificado', icon: <Recycle size={15} />, label: 'Operação e execução' },
+    { href: '/logistica-reversa', icon: <MapPin size={15} />, label: 'Logística reversa' },
   ]
 
   return (
-    <div className="w-full flex justify-center py-2 px-4 max-w-full">
+    <div className="w-full flex justify-center py-1 px-4 max-w-full">
       <nav className="bg-white border border-slate-200/80 p-1 rounded-full flex flex-row flex-nowrap items-center justify-between gap-1 shadow-sm max-w-full overflow-x-auto scrollbar-none">
         {navItems.map((item) => (
           <Link

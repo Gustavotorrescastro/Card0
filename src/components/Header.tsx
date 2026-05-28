@@ -2,19 +2,13 @@
 
 import Link from 'next/link'
 import { User } from 'lucide-react'
+import EdenredLogo from './EdenredLogo'
 
 export default function Header() {
   return (
-    <header className="w-full bg-white h-20 px-6 md:px-12 flex items-center justify-between border-b border-slate-200 select-none">
-      {/* Logo Edenred (Capsule vermelha clássica com texto branco) */}
+    <header className="w-full bg-white h-14 px-6 md:px-12 flex items-center justify-between border-b border-[#2f80ed] select-none">
       <div className="flex items-center">
-        <div className="flex items-center gap-1.5 bg-[#F72717] px-4 py-2 rounded-full text-white shadow-sm">
-          {/* Círculo com 'e' estilizado */}
-          <div className="w-5 h-5 rounded-full bg-white text-[#F72717] flex items-center justify-center font-bold text-xs">
-            e
-          </div>
-          <span className="text-white font-extrabold tracking-tight text-sm lowercase leading-none">edenred</span>
-        </div>
+        <EdenredLogo className="h-10 w-24" />
       </div>
       
       {/* Botão de Perfil (Silhueta de usuário elegante) */}

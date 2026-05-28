@@ -89,5 +89,13 @@
     "birthDate": "2007-12-12",
     "city": "Recife",
     "state": "Pernambuco"
+  },
+  {
+    "name": "Teste100",
+    "email": "teste100@gmail.com",
+    "password": "Teste*123",
+    "birthDate": "2007-12-12",
+    "city": "Recife",
+    "state": "Pernambuco"
   }
 ]

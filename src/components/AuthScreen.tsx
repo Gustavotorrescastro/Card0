@@ -5,15 +5,9 @@ import type { FormEvent, ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   ArrowRight,
-  Banknote,
   Check,
   CheckCircle2,
   ChevronDown,
-  Goal,
-  History,
-  LayoutGrid,
-  MapPin,
-  SlidersHorizontal,
 } from 'lucide-react'
 
 import AuthFooter from './AuthFooter'
@@ -33,15 +27,6 @@ const stepIndex: Record<AuthStep, number> = {
   password: 2,
   done: 3,
 }
-
-const iconItems = [
-  LayoutGrid,
-  History,
-  SlidersHorizontal,
-  Banknote,
-  MapPin,
-  Goal,
-]
 
 const estados = ['Pernambuco', 'Sao Paulo', 'Rio de Janeiro', 'Minas Gerais', 'Bahia']
 
@@ -114,6 +99,28 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
   )
 
   const allPasswordChecks = Object.values(passwordChecks).every(Boolean)
+  const cadastroAtivo = step !== 'login'
+
+  const voltarParaLogin = () => {
+    setError('')
+    setStep('login')
+    router.push('/login')
+  }
+
+  const navegarEtapaAnterior = (index: number) => {
+    if (index >= stepIndex[step]) return
+
+    const stepByIndex: AuthStep[] = ['login', 'details', 'password', 'done']
+    const nextStep = stepByIndex[index]
+
+    if (nextStep === 'login') {
+      voltarParaLogin()
+      return
+    }
+
+    setError('')
+    setStep(nextStep)
+  }
 
   const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -145,10 +152,32 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
     }
   }
 
-  const handleDetails = (event: FormEvent<HTMLFormElement>) => {
+  const handleDetails = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setError('')
-    setStep('password')
+    setLoading(true)
+
+    try {
+      const response = await fetch(
+        `/api/auth/register?email=${encodeURIComponent(profile.email)}`
+      )
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Erro ao validar e-mail.')
+      }
+
+      if (data.exists) {
+        setError('Este e-mail já está cadastrado. Faça login ou use outro e-mail.')
+        return
+      }
+
+      setStep('password')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao validar e-mail.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleRegister = async (event: FormEvent<HTMLFormElement>) => {
@@ -204,40 +233,32 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
   return (
     <div className="flex min-h-screen w-full flex-col bg-[#f3f3f3] text-black">
       <header className="w-full border-t border-black bg-white">
-        {step === 'login' && (
-          <div className="flex h-16 w-full items-center justify-between px-10">
-            <EdenredLogo />
-            <button
-              type="button"
-              className="flex items-center gap-1 rounded-full bg-[#ff2b1d] px-7 py-2.5 text-sm font-medium text-white"
-            >
-              Entrar
-              <ChevronDown size={14} />
-            </button>
-          </div>
-        )}
-
-        <div className="flex h-10 items-center justify-center">
-          <Card0Logo className="h-8 w-auto" priority />
-        </div>
-
-        <div className="px-4 pb-5">
-          <div className="grid h-[54px] w-full grid-cols-6 items-center rounded-xl bg-[#a7a7a7] px-8">
-            {iconItems.map((Icon, index) => (
-              <div key={index} className="flex justify-center text-black">
-                <Icon size={28} strokeWidth={2.5} />
-              </div>
-            ))}
-          </div>
+        <div className="flex h-14 w-full items-center justify-between px-10">
+          <EdenredLogo className="h-10 w-24" />
+          <button
+            type="button"
+            onClick={voltarParaLogin}
+            className="flex items-center gap-1 rounded-full bg-[#ff2b1d] px-7 py-2.5 text-sm font-medium text-white"
+          >
+            Entrar
+            <ChevronDown size={14} />
+          </button>
         </div>
       </header>
 
-      <main className="flex w-full flex-1 flex-col px-4 pb-16">
-        <Stepper activeIndex={stepIndex[step]} />
+      <div className="flex h-9 items-center justify-center bg-[#f3f3f3]">
+        <Card0Logo className="h-5 w-auto" priority />
+      </div>
+
+      <main className="flex w-full flex-1 flex-col px-4 pb-10">
+        <Stepper
+          activeIndex={stepIndex[step]}
+          onStepClick={cadastroAtivo ? navegarEtapaAnterior : undefined}
+        />
 
         {step === 'login' && (
-          <section className="mx-auto flex min-h-[568px] w-full max-w-[568px] flex-col rounded-xl bg-white px-[70px] py-14">
-            <div className="mb-14 flex justify-center">
+          <section className="mx-auto flex min-h-[540px] w-full max-w-[725px] flex-col rounded-xl bg-[#dfdfdf] px-12 py-12">
+            <div className="mb-12 flex justify-center">
               <div className="flex items-center gap-3 text-[#ff2b1d]">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#ff2b1d] text-xs font-black text-white">
                   Ticket
@@ -254,6 +275,7 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
                   type="email"
                   value={loginData.email}
                   placeholder="seunome@email.com"
+                  inputClassName="h-[47px] rounded-full border-0 px-6"
                   onChange={(value) => setLoginData({ ...loginData, email: value })}
                 />
                 <Field
@@ -261,6 +283,7 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
                   type="password"
                   value={loginData.password}
                   placeholder="sua senha aqui"
+                  inputClassName="h-[47px] rounded-full border-0 px-6"
                   onChange={(value) =>
                     setLoginData({ ...loginData, password: value })
                   }
@@ -285,7 +308,11 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setStep('details')}
+                  onClick={() => {
+                    setError('')
+                    setStep('details')
+                    router.push('/cadastro')
+                  }}
                   className="block w-full text-sm"
                 >
                   Ainda nao tem conta? Cadastre-se agora.
@@ -343,6 +370,8 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
               <div className="flex justify-center pt-2">
                 <PrimaryButton label="Proximo" loading={loading} />
               </div>
+
+              <LoginShortcut onClick={voltarParaLogin} />
             </form>
           </section>
         )}
@@ -398,6 +427,8 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
               <div className="flex justify-center">
                 <PrimaryButton label="Proximo" loading={loading} />
               </div>
+
+              <LoginShortcut onClick={voltarParaLogin} />
             </form>
           </section>
         )}
@@ -521,6 +552,21 @@ function PrimaryButton({
       {loading ? 'Processando...' : label}
       {!loading && <ArrowRight size={16} />}
     </button>
+  )
+}
+
+function LoginShortcut({ onClick }: { onClick: () => void }) {
+  return (
+    <p className="text-center text-sm">
+      Já possui login?{' '}
+      <button
+        type="button"
+        onClick={onClick}
+        className="font-semibold text-[#e91d2a] hover:underline"
+      >
+        Fazer login
+      </button>
+    </p>
   )
 }
 

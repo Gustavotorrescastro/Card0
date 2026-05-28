@@ -20,9 +20,9 @@ export default function AuthenticatedLayout({
         
         {/* Conteúdo da página */}
         <div className="flex-1 w-full px-4 md:px-8 py-4 flex flex-col">
-          <div className="my-6 flex w-full justify-center">
+          <div className="my-2 flex w-full justify-center">
             <Link href="/dashboard" className="inline-flex hover:opacity-85 transition-opacity">
-              <Card0Logo className="h-10 w-auto" priority />
+              <Card0Logo className="h-6 w-auto" priority />
             </Link>
           </div>
           
