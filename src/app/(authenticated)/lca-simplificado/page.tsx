@@ -1,543 +1,479 @@
 'use client'
 
-import { useState, useMemo } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  Recycle, HelpCircle, ChevronRight, Play, ArrowLeft,
-  Building, Truck, Monitor, Trash2
+import { useMemo, useState } from 'react'
+import type { ReactNode } from 'react'
+import {
+  ChevronDown,
+  CreditCard,
+  Factory,
+  MapPin,
+  Recycle,
+  Search,
+  Trash2,
+  Truck,
 } from 'lucide-react'
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
+
+type FaseKey = 'producao' | 'transporte' | 'uso' | 'descarte'
+
+const RED = '#ff2b1d'
+const ROSE = '#ff7770'
+const LIGHT = '#ffb4ae'
+const PALE = '#ffe5e5'
+
+const matrizEnergetica = {
+  br: { label: 'Brasil', mult: 1 },
+  ue: { label: 'União Europeia', mult: 2.2 },
+  usa: { label: 'Estados Unidos', mult: 2.8 },
+}
+
+const co2Base = {
+  producao: 0.072,
+  transporte: 0.031,
+  uso: 0.048,
+  descarte: 0.021,
+}
+
+function formatKg(value: number) {
+  return value.toLocaleString('pt-BR', { maximumFractionDigits: 0 })
+}
+
+function formatTon(value: number) {
+  return value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
 
 export default function LcaSimplificadoPage() {
-  // --- Estados do Simulador Principal ---
   const [quantidade, setQuantidade] = useState(13600)
-  const [material, setMaterial] = useState('pvc')
-  const [matriz, setMatriz] = useState('br')
+  const [matriz, setMatriz] = useState<keyof typeof matrizEnergetica>('br')
+  const [taxaReciclagem, setTaxaReciclagem] = useState(60)
+  const [cartoesDescarte, setCartoesDescarte] = useState(5000)
 
-  // --- Estado da Fase Selecionada para Detalhamento ---
-  const [faseDetalhe, setFaseDetalhe] = useState<'producao' | 'transporte' | 'uso' | 'descarte' | null>(null)
+  const lca = useMemo(() => {
+    const multMatriz = matrizEnergetica[matriz].mult
 
-  // --- Fatores de Cálculo ---
-  const fatoresMaterial = {
-    pvc: { label: 'PVC Convencional', mult: 1.0 },
-    pvc_rec: { label: 'PVC Reciclado', mult: 0.6 },
-    metal: { label: 'Metal Premium', mult: 2.5 }
-  }
+    const prodFisKg = quantidade * co2Base.producao
+    const transFisKg = quantidade * co2Base.transporte * multMatriz
+    const usoFisKg = quantidade * co2Base.uso * multMatriz
+    const descFisKg = quantidade * co2Base.descarte
+    const totalFisKg = prodFisKg + transFisKg + usoFisKg + descFisKg
 
-  const fatoresMatriz = {
-    br: { label: 'Brasil (Limpa/Hidro)', mult: 1.0 },
-    ue: { label: 'União Europeia', mult: 2.2 },
-    usa: { label: 'Estados Unidos', mult: 2.8 }
-  }
-
-  // Pegada de carbono base por cartão físico nas fases (em kg CO2e)
-  // Total base: 0.172 kg CO2e por cartão (2.34 tCO2e para 13.600 cartões)
-  const co2Base = {
-    producao: 0.072,  // 42%
-    transporte: 0.031, // 18%
-    uso: 0.048,        // 28%
-    descarte: 0.021    // 12%
-  }
-
-  // --- Cálculos de Ciclo de Vida ---
-  const lcaCalculos = useMemo(() => {
-    const matMult = fatoresMaterial[material as keyof typeof fatoresMaterial]?.mult || 1.0
-    const matzMult = fatoresMatriz[matriz as keyof typeof fatoresMatriz]?.mult || 1.0
-
-    // Valores em kg CO2e
-    const prodFis = quantidade * co2Base.producao * matMult
-    const transFis = quantidade * co2Base.transporte * matzMult
-    const usoFis = quantidade * co2Base.uso * matzMult
-    const descFis = quantidade * co2Base.descarte * matMult
-
-    const totalFis = prodFis + transFis + usoFis + descFis
-
-    // Reduções do digital
-    const prodDig = prodFis * 0.22  // -78%
-    const transDig = transFis * 0.17 // -83%
-    const usoDig = usoFis * 0.48     // -52%
-    const descDig = descFis * 0.18   // -82%
-    const totalDig = prodDig + transDig + usoDig + descDig
-
-    // Árvores equivalentes
-    // 1 árvore da Mata Atlântica absorve em média 15.6 kg CO2e por ano
-    const arvoresEquivalentes = Math.max(1, Math.round(totalFis / 15.6))
+    const prodDigKg = prodFisKg * 0.22
+    const transDigKg = transFisKg * 0.17
+    const usoDigKg = usoFisKg * 0.48
+    const descDigKg = descFisKg * 0.18
+    const totalDigKg = prodDigKg + transDigKg + usoDigKg + descDigKg
+    const carbonoCompensacaoKg = (quantidade / 13600) * 40 * multMatriz
 
     return {
-      prodFis: prodFis / 1000, // em tCO2e
-      transFis: transFis / 1000,
-      usoFis: usoFis / 1000,
-      descFis: descFis / 1000,
-      totalFis: totalFis / 1000,
-
-      prodDig: prodDig / 1000,
-      transDig: transDig / 1000,
-      usoDig: usoDig / 1000,
-      descDig: descDig / 1000,
-      totalDig: totalDig / 1000,
-
-      arvores: arvoresEquivalentes,
-      totalFisKg: totalFis,
-      totalDigKg: totalDig
+      fases: {
+        producao: { fisico: prodFisKg / 1000, digital: prodDigKg / 1000, percentual: 42 },
+        transporte: { fisico: transFisKg / 1000, digital: transDigKg / 1000, percentual: 18 },
+        uso: { fisico: usoFisKg / 1000, digital: usoDigKg / 1000, percentual: 28 },
+        descarte: { fisico: descFisKg / 1000, digital: descDigKg / 1000, percentual: 12 },
+      },
+      totalFisKg,
+      totalDigKg,
+      totalFisTon: totalFisKg / 1000,
+      totalDigTon: totalDigKg / 1000,
+      carbonoCompensacaoKg,
+      reducaoPercentual: Math.round((1 - totalDigKg / totalFisKg) * 100),
+      arvores: Math.max(1, Math.round(carbonoCompensacaoKg / 15.6)),
     }
-  }, [quantidade, material, matriz])
+  }, [quantidade, matriz])
 
-  // --- Dados do Donut Chart ---
-  const chartData = [
-    { name: 'Produção', value: lcaCalculos.prodFis, color: '#162056' },
-    { name: 'Transporte', value: lcaCalculos.transFis, color: '#7FC2E4' },
-    { name: 'Uso', value: lcaCalculos.usoFis, color: '#E1EA80' },
-    { name: 'Descarte', value: lcaCalculos.descFis, color: '#F72717' }
+  const logistica = useMemo(() => {
+    const impactoBruto = cartoesDescarte * co2Base.descarte
+    const impactoReciclado = impactoBruto * (1 - taxaReciclagem / 100) * 0.9
+    return {
+      pvcRecuperado: cartoesDescarte * (taxaReciclagem / 100) * 0.0083,
+      co2Evitado: Math.max(0, impactoBruto - impactoReciclado),
+      metaisNobres: cartoesDescarte * (taxaReciclagem / 100) * 0.00017,
+      impactoBruto,
+      impactoReciclado,
+    }
+  }, [cartoesDescarte, taxaReciclagem])
+
+  const fases: Array<{
+    key: FaseKey
+    titulo: string
+    icon: ReactNode
+    color: string
+    details: string[]
+  }> = [
+    {
+      key: 'producao',
+      titulo: 'Produção',
+      icon: <Factory size={16} />,
+      color: RED,
+      details: ['PVC/plástico - 32%', 'Chip NFC/EMV - 18%', 'Antena metálica - 9%', 'Impressão - 7%', 'Embalagem - 6%'],
+    },
+    { key: 'transporte', titulo: 'Transporte', icon: <Truck size={16} />, color: ROSE, details: [] },
+    { key: 'uso', titulo: 'Uso', icon: <CreditCard size={16} />, color: LIGHT, details: [] },
+    { key: 'descarte', titulo: 'Descarte', icon: <Trash2 size={16} />, color: PALE, details: [] },
   ]
 
-  // Detalhes por fase para exibição interativa
-  const detalhesFase = {
-    producao: {
-      titulo: 'Produção',
-      total: lcaCalculos.prodFis,
-      percent: '42%',
-      itens: [
-        { label: 'Extração e Refino de PVC', val: (lcaCalculos.prodFis * 0.5).toFixed(2) },
-        { label: 'Fabricação do Substrato', val: (lcaCalculos.prodFis * 0.3).toFixed(2) },
-        { label: 'Laminação e Impressão', val: (lcaCalculos.prodFis * 0.2).toFixed(2) }
-      ]
-    },
-    transporte: {
-      titulo: 'Transporte',
-      total: lcaCalculos.transFis,
-      percent: '18%',
-      itens: [
-        { label: 'Frete Fábrica - Centro de Distribuição', val: (lcaCalculos.transFis * 0.4).toFixed(2) },
-        { label: 'Embalagem de Envio Postal', val: (lcaCalculos.transFis * 0.2).toFixed(2) },
-        { label: 'Entrega Final (Last Mile)', val: (lcaCalculos.transFis * 0.4).toFixed(2) }
-      ]
-    },
-    uso: {
-      titulo: 'Uso',
-      total: lcaCalculos.usoFis,
-      percent: '28%',
-      itens: [
-        { label: 'Maquininhas POS nas transações', val: (lcaCalculos.usoFis * 0.35).toFixed(2) },
-        { label: 'Reemissão operacional (perda/roubo)', val: (lcaCalculos.usoFis * 0.15).toFixed(2) },
-        { label: 'Processamento em nuvem das bandeiras', val: (lcaCalculos.usoFis * 0.2).toFixed(2) },
-        { label: 'Energia da infraestrutura bancária', val: (lcaCalculos.usoFis * 0.3).toFixed(2) }
-      ]
-    },
-    descarte: {
-      titulo: 'Descarte',
-      total: lcaCalculos.descFis,
-      percent: '12%',
-      itens: [
-        { label: 'Coleta de Lixo Eletrônico', val: (lcaCalculos.descFis * 0.3).toFixed(2) },
-        { label: 'Incineração/Aterro (PVC Tradicional)', val: (lcaCalculos.descFis * 0.6).toFixed(2) },
-        { label: 'Emissões de Fragmentação de Microplásticos', val: (lcaCalculos.descFis * 0.1).toFixed(2) }
-      ]
-    }
-  }
+  const donutStops = `#ff2b1d 0 42%, #ff7770 42% 60%, #ffb4ae 60% 88%, #ffe5e5 88% 100%`
+  const maxFase = Math.max(...fases.map((fase) => lca.fases[fase.key].fisico))
 
   return (
-    <div className="space-y-8 pb-16 w-full px-1 md:px-0">
-      
-      {/* CABEÇALHO DA PÁGINA */}
-      <section className="pb-2">
-        <h1 className="text-3xl font-bold text-[#162056] tracking-tight">Operação e execução</h1>
-        <p className="text-slate-500 text-sm font-medium mt-1 leading-relaxed max-w-4xl">
+    <div className="w-full space-y-8 pb-16 font-sans text-[#111111]">
+      <section>
+        <h1 className="text-3xl font-black tracking-tight">Operação e execução</h1>
+        <p className="mt-1 max-w-xl text-sm font-medium leading-relaxed text-[#252525]">
           Gerencie o ciclo de vida dos seus cartões físicos através do descarte consciente e compensação de carbono.
         </p>
       </section>
 
-      {/* SEÇÃO 1: INPUTS E CARBONO GERADO */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
-        {/* Card de Configuração (Borda Azul conforme Imagem) */}
-        <div className="lg:col-span-7 bg-white p-8 rounded-3xl border-2 border-[#1E90FF] shadow-sm flex flex-col justify-center space-y-6">
-          <div className="flex flex-col md:flex-row gap-8 items-center justify-between">
-            {/* Slider de Quantidade */}
-            <div className="flex-1 w-full space-y-4">
-              <div className="flex justify-between items-center text-xs">
-                <span className="font-extrabold text-[#162056] uppercase tracking-wider text-sm">Quantidade de cartões</span>
-                <span className="font-black text-[#162056] text-lg bg-slate-50 px-4 py-1.5 rounded-xl border border-slate-100">{quantidade.toLocaleString('pt-BR')}</span>
+      <div className="grid grid-cols-1 gap-7 lg:grid-cols-12">
+        <section className="rounded-xl bg-white p-6 shadow-[0_10px_24px_rgba(0,0,0,0.16)] lg:col-span-6">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-[1fr_180px]">
+            <div>
+              <div className="mb-4 flex items-center justify-between gap-4">
+                <h2 className="text-sm font-black">Quantidade de cartões</h2>
+                <strong className="text-xl font-black">{quantidade.toLocaleString('pt-BR')}</strong>
               </div>
-              
-              <input 
+              <input
                 type="range"
-                min="100"
-                max="100000"
-                step="100"
+                min={100}
+                max={100000}
+                step={100}
                 value={quantidade}
-                onChange={(e) => setQuantidade(Number(e.target.value))}
-                className="w-full h-2 bg-slate-200 rounded-full appearance-none cursor-pointer accent-[#162056]"
+                onChange={(event) => setQuantidade(Number(event.target.value))}
+                className="h-2 w-full cursor-pointer appearance-none rounded-full bg-[#ffb4ae] accent-[#ff2b1d]"
               />
-              
-              <div className="flex justify-between text-[10px] text-slate-400 font-extrabold">
+              <div className="mt-2 flex justify-between text-xs font-semibold text-[#252525]">
                 <span>100</span>
                 <span>100.000</span>
               </div>
             </div>
 
-            {/* Dropdown de Matriz Energética */}
-            <div className="w-full md:w-56 space-y-2">
-              <label className="text-xs font-black text-[#162056] uppercase tracking-wider block">Matriz energética</label>
-              <select 
-                value={matriz}
-                onChange={(e) => setMatriz(e.target.value)}
-                className="w-full bg-[#EAEAEA] border-none text-xs rounded-xl p-4 font-bold text-[#162056] focus:outline-none appearance-none cursor-pointer"
-                style={{ backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23162056' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 16px center', backgroundSize: '12px' }}
-              >
-                {Object.entries(fatoresMatriz).map(([key, val]) => (
-                  <option key={key} value={key}>{val.label.split(' ')[0]}</option>
-                ))}
-              </select>
-            </div>
+            <label className="block">
+              <span className="mb-3 block text-sm font-black">Matriz energética</span>
+              <span className="relative block">
+                <select
+                  value={matriz}
+                  onChange={(event) => setMatriz(event.target.value as keyof typeof matrizEnergetica)}
+                  className="h-12 w-full appearance-none rounded-2xl bg-[#ff2b1d] px-4 pr-10 text-sm font-bold text-white outline-none"
+                >
+                  {Object.entries(matrizEnergetica).map(([key, value]) => (
+                    <option key={key} value={key}>
+                      {value.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-white" size={16} />
+              </span>
+            </label>
           </div>
-        </div>
+        </section>
 
-        {/* Card Carbono Gerado com Árvore Vetorial Estilizada */}
-        <div className="lg:col-span-5 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm relative overflow-hidden flex flex-col justify-between min-h-[220px]">
-          <div className="relative z-10 space-y-4">
-            <span className="text-xs font-black text-[#162056] uppercase tracking-wider block">Carbono gerado</span>
-            <div className="flex items-baseline gap-1">
-              <span className="text-6xl font-black tracking-tight text-[#162056]">{Math.round(lcaCalculos.totalFisKg)}kg</span>
-            </div>
-            <p className="text-[11px] text-slate-500 font-semibold max-w-[240px] leading-snug">
-              de CO₂ são gerados durante o ciclo dos vida dos cartões físicos.
-            </p>
-          </div>
-
-          <div className="relative z-10 border-t border-slate-100 pt-4 flex items-center gap-1.5 text-slate-400">
-             <span className="text-[10px] font-bold">↑ O processo físico gera {(lcaCalculos.totalFisKg - lcaCalculos.totalDigKg).toFixed(1)} kg de CO₂ a mais que o digital</span>
-          </div>
-
-          {/* Árvore Vetorial do Canto Direito (Conforme Imagem) */}
-          <div className="absolute right-6 bottom-4 flex flex-col items-center select-none pointer-events-none">
-            {/* Copa da Árvore (círculos translúcidos sobrepostos) */}
-            <div className="relative w-36 h-28 flex items-center justify-center">
-              <div className="absolute w-16 h-16 rounded-full bg-[#E1EA80]/50" style={{ transform: 'translate(-16px, -12px)' }} />
-              <div className="absolute w-16 h-16 rounded-full bg-[#E1EA80]/50" style={{ transform: 'translate(16px, -12px)' }} />
-              <div className="absolute w-16 h-16 rounded-full bg-[#E1EA80]/60" style={{ transform: 'translate(0px, -24px)' }} />
-              <div className="absolute w-14 h-14 rounded-full bg-[#E1EA80]/40" style={{ transform: 'translate(-24px, 12px)' }} />
-              <div className="absolute w-14 h-14 rounded-full bg-[#E1EA80]/40" style={{ transform: 'translate(24px, 12px)' }} />
-              <div className="absolute w-16 h-16 rounded-full bg-[#E1EA80]/70" style={{ transform: 'translate(0px, 8px)' }} />
-            </div>
-            {/* Tronco da Árvore */}
-            <div className="w-3.5 h-16 bg-[#8B0000] rounded-full -mt-4 shadow-inner" />
-            
-            {/* Texto de Equivalência */}
-            <span className="text-[8px] font-semibold text-slate-400 tracking-tight mt-2">Equivalente a {lcaCalculos.arvores} {lcaCalculos.arvores === 1 ? 'árvore' : 'árvores'}/ano</span>
-          </div>
-        </div>
-
+        <section className="relative min-h-[190px] overflow-hidden rounded-xl bg-white p-6 shadow-[0_10px_24px_rgba(0,0,0,0.16)] lg:col-span-6">
+          <h2 className="text-sm font-black">Carbono gerado</h2>
+          <div className="mt-8 text-5xl font-black tracking-tight">{formatKg(lca.carbonoCompensacaoKg)}kg</div>
+          <p className="mt-2 max-w-[250px] text-[11px] font-medium leading-snug">
+            de CO₂ são gerados durante o ciclo dos vida dos cartões físicos.
+          </p>
+          <p className="absolute bottom-6 left-6 text-[9px] font-semibold text-[#555]">
+            ↑ O processo físico gera {(lca.carbonoCompensacaoKg * lca.reducaoPercentual / 100).toLocaleString('pt-BR', { maximumFractionDigits: 2 })} kg de CO₂ a mais que o digital
+          </p>
+          <TreeGraphic arvores={lca.arvores} />
+        </section>
       </div>
 
-      {/* SEÇÃO 2: INTELIGÊNCIA DE CICLO DE VIDA (LCA) SIMPLIFICADO */}
-      <section className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
-        <div>
-          <h2 className="text-lg font-black text-[#162056] uppercase tracking-tight">
-            Inteligência de Ciclo de Vida (LCA) simplificado
-          </h2>
-          <p className="text-slate-400 text-xs font-semibold mt-1">
-            Impacto ambiental por fase de ciclo de vida do cartão físico.
-          </p>
-        </div>
+      <section className="rounded-xl bg-white p-6 shadow-[0_10px_24px_rgba(0,0,0,0.16)]">
+        <h2 className="text-lg font-black">Inteligência de Ciclo de Vida (LCA) simplificado</h2>
+        <p className="text-xs font-medium text-[#555]">Impacto ambiental por fase de ciclo de vida do cartão físico.</p>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          {/* Gráfico Donut (Col-Span 5) */}
-          <div className="lg:col-span-5 h-[260px] relative flex items-center justify-center bg-slate-50/50 rounded-2xl p-4 border border-slate-100">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={chartData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={65}
-                  outerRadius={95}
-                  paddingAngle={4}
-                  dataKey="value"
-                >
-                  {chartData.map((entry, index) => (
-                    <Cell 
-                      key={`cell-${index}`} 
-                      fill={entry.color} 
-                      className="cursor-pointer hover:opacity-85 transition-opacity outline-none"
-                    />
-                  ))}
-                </Pie>
-                <Tooltip 
-                  formatter={(value: any) => [`${Number(value || 0).toFixed(2)} tCO₂e`, 'Emissão']}
-                  contentStyle={{ borderRadius: '12px', border: 'none', fontSize: '11px' }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-
-            {/* Texto Centralizado */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <span className="text-2xl font-black text-[#162056] tracking-tight">{lcaCalculos.totalFis.toFixed(2)} tCO₂e</span>
-              <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Pegada Total</span>
+        <div className="mt-5 grid grid-cols-1 items-center gap-5 lg:grid-cols-[280px_1fr]">
+          <div className="flex justify-center">
+            <div
+              className="grid h-56 w-56 place-items-center rounded-full"
+              style={{ background: `conic-gradient(${donutStops})` }}
+            >
+              <div className="grid h-28 w-28 place-items-center rounded-full bg-white text-center">
+                <span className="text-lg font-black">{formatTon(lca.totalFisTon)} tCO₂e</span>
+              </div>
             </div>
           </div>
 
-          {/* Cards Laterais / Modo de Detalhamento Dinâmico (Col-Span 7) */}
-          <div className="lg:col-span-7 relative min-h-[220px]">
-            <AnimatePresence mode="wait">
-              {faseDetalhe === null ? (
-                // --- LISTA GERAL DAS FASES ---
-                <motion.div 
-                  key="list"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="grid grid-cols-2 md:grid-cols-4 gap-4"
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
+            {fases.map((fase, index) => {
+              const faseData = lca.fases[fase.key]
+              const isActive = index === 0
+              return (
+                <article
+                  key={fase.key}
+                  className={`min-h-[180px] rounded-2xl p-4 ${
+                    isActive ? 'bg-[#ff2b1d] text-white' : 'text-black'
+                  }`}
+                  style={{ backgroundColor: isActive ? RED : fase.color }}
                 >
-                  {/* Produção */}
-                  <div 
-                    onClick={() => setFaseDetalhe('producao')}
-                    className="bg-[#EAEAEA] p-5 rounded-2xl border border-transparent hover:border-slate-300 transition-all cursor-pointer text-center group flex flex-col justify-between h-[180px]"
-                  >
-                    <div className="mx-auto p-2.5 bg-white/70 rounded-xl text-[#162056] group-hover:scale-110 transition-transform">
-                      <Building size={16} />
-                    </div>
-                    <span className="text-[11px] font-black text-[#162056] uppercase tracking-wider block mt-2">Produção</span>
-                    <div>
-                      <p className="text-2xl font-black text-[#162056]">42%</p>
-                      <p className="text-[10px] text-[#162056]/60 font-semibold">{lcaCalculos.prodFis.toFixed(2)} tCO₂e</p>
-                    </div>
-                    <span className="text-[9px] font-bold text-slate-500 mt-2 bg-white/80 py-1 rounded-lg">Ver detalhes</span>
+                  <div className="mb-4 flex items-center gap-2 text-sm font-bold">
+                    {fase.icon}
+                    <span>{fase.titulo}</span>
                   </div>
 
-                  {/* Transporte */}
-                  <div 
-                    onClick={() => setFaseDetalhe('transporte')}
-                    className="bg-[#EAEAEA] p-5 rounded-2xl border border-transparent hover:border-slate-300 transition-all cursor-pointer text-center group flex flex-col justify-between h-[180px]"
-                  >
-                    <div className="mx-auto p-2.5 bg-white/70 rounded-xl text-[#7FC2E4] group-hover:scale-110 transition-transform">
-                      <Truck size={16} />
+                  {isActive ? (
+                    <div className="space-y-1 text-[10px] font-medium">
+                      {fase.details.map((detail) => (
+                        <p key={detail}>{detail}</p>
+                      ))}
+                      <p className="pt-2 text-center font-black">Total estimado:<br />{formatTon(faseData.fisico)} tCO₂e</p>
+                      <p className="text-center text-[9px]">42% do ciclo de vida total</p>
+                      <button className="mx-auto mt-1 block rounded-full border border-white/80 px-7 py-1 text-[9px] font-bold">Voltar</button>
                     </div>
-                    <span className="text-[11px] font-black text-[#162056] uppercase tracking-wider block mt-2">Transporte</span>
-                    <div>
-                      <p className="text-2xl font-black text-[#162056]">18%</p>
-                      <p className="text-[10px] text-[#162056]/60 font-semibold">{lcaCalculos.transFis.toFixed(2)} tCO₂e</p>
+                  ) : (
+                    <div className="flex h-[115px] flex-col items-center justify-center text-center">
+                      <strong className="text-3xl font-black">{faseData.percentual}%</strong>
+                      <span className="mt-2 text-xs font-medium">{formatTon(faseData.fisico)}tCO₂e</span>
+                      <button className="mt-6 rounded-full border border-black px-5 py-1 text-[9px] font-semibold">Ver detalhes</button>
                     </div>
-                    <span className="text-[9px] font-bold text-slate-500 mt-2 bg-white/80 py-1 rounded-lg">Ver detalhes</span>
-                  </div>
-
-                  {/* Uso */}
-                  <div 
-                    onClick={() => setFaseDetalhe('uso')}
-                    className="bg-[#EAEAEA] p-5 rounded-2xl border border-transparent hover:border-slate-300 transition-all cursor-pointer text-center group flex flex-col justify-between h-[180px]"
-                  >
-                    <div className="mx-auto p-2.5 bg-white/70 rounded-xl text-[#E1EA80] group-hover:scale-110 transition-transform">
-                      <Monitor size={16} />
-                    </div>
-                    <span className="text-[11px] font-black text-[#162056] uppercase tracking-wider block mt-2">Uso</span>
-                    <div>
-                      <p className="text-2xl font-black text-[#162056]">28%</p>
-                      <p className="text-[10px] text-[#162056]/60 font-semibold">{lcaCalculos.usoFis.toFixed(2)} tCO₂e</p>
-                    </div>
-                    <span className="text-[9px] font-bold text-slate-500 mt-2 bg-white/80 py-1 rounded-lg">Ver detalhes</span>
-                  </div>
-
-                  {/* Descarte */}
-                  <div 
-                    onClick={() => setFaseDetalhe('descarte')}
-                    className="bg-[#EAEAEA] p-5 rounded-2xl border border-transparent hover:border-slate-300 transition-all cursor-pointer text-center group flex flex-col justify-between h-[180px]"
-                  >
-                    <div className="mx-auto p-2.5 bg-white/70 rounded-xl text-[#F72717] group-hover:scale-110 transition-transform">
-                      <Trash2 size={16} />
-                    </div>
-                    <span className="text-[11px] font-black text-[#162056] uppercase tracking-wider block mt-2">Descarte</span>
-                    <div>
-                      <p className="text-2xl font-black text-[#162056]">12%</p>
-                      <p className="text-[10px] text-[#162056]/60 font-semibold">{lcaCalculos.descFis.toFixed(2)} tCO₂e</p>
-                    </div>
-                    <span className="text-[9px] font-bold text-slate-500 mt-2 bg-white/80 py-1 rounded-lg">Ver detalhes</span>
-                  </div>
-                </motion.div>
-              ) : (
-                // --- DETALHES DE UMA FASE SELECIONADA ---
-                <motion.div 
-                  key="detail"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  className="bg-[#B0B4C0]/50 p-6 rounded-3xl border border-slate-300/40 space-y-4"
-                >
-                  <div className="flex justify-between items-center border-b border-slate-300 pb-3">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-black text-[#162056] uppercase tracking-wider">Fase de {detalhesFase[faseDetalhe].titulo}</span>
-                      <span className="text-[9px] font-black bg-[#162056] text-white px-2 py-0.5 rounded-full">{detalhesFase[faseDetalhe].percent}</span>
-                    </div>
-                    <span className="text-xs font-black text-[#162056]">{detalhesFase[faseDetalhe].total.toFixed(2)} tCO₂e</span>
-                  </div>
-
-                  <div className="space-y-2">
-                    {detalhesFase[faseDetalhe].itens.map((item, idx) => (
-                      <div key={idx} className="flex justify-between items-center text-[11px] font-semibold text-slate-600">
-                        <span>{item.label}</span>
-                        <span className="font-extrabold text-[#162056]">{item.val} tCO₂e</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="pt-3 border-t border-slate-300 flex justify-between items-center">
-                    <span className="text-[9px] font-black text-[#162056]/50 uppercase tracking-widest">Apoio a tomada de decisão</span>
-                    <button 
-                      onClick={() => setFaseDetalhe(null)}
-                      className="bg-white/80 text-[#162056] hover:bg-white text-[10px] font-bold px-4 py-1.5 rounded-xl border border-slate-300 transition-all flex items-center gap-1"
-                    >
-                      <ArrowLeft size={12} /> Voltar
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  )}
+                </article>
+              )
+            })}
           </div>
         </div>
       </section>
 
-      {/* SEÇÃO 3: COMPARAR IMPACTO FÍSICO VS. DIGITAL POR FASE */}
-      <section className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
-        <div>
-          <h2 className="text-lg font-black text-[#162056] uppercase tracking-tight">
-            Comparar impacto físico vs. digital por fase
-          </h2>
-          <p className="text-slate-400 text-xs font-semibold mt-1">
-            Valores em tCO₂e
-          </p>
-        </div>
+      <section className="rounded-xl bg-white p-6 shadow-[0_10px_24px_rgba(0,0,0,0.16)]">
+        <h2 className="text-lg font-black">Comparar impacto físico vs. digital por fase</h2>
+        <p className="text-xs font-medium text-[#555]">Valores em tCO₂e</p>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-          
-          {/* Produção */}
-          <div className="p-4 bg-slate-50/50 rounded-2xl border border-slate-100 flex flex-col justify-between">
-            <span className="text-[10px] font-black text-[#162056] uppercase tracking-wider flex items-center gap-1">
-              <Building size={12} /> Produção
-            </span>
-            <div className="mt-4 space-y-2">
-              <div className="flex justify-between items-center text-[10px]">
-                <span className="text-slate-400 font-semibold">Físico</span>
-                <span className="font-black text-[#162056]">{lcaCalculos.prodFis.toFixed(2)}</span>
-              </div>
-              <div className="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
-                <div className="bg-[#162056] h-full rounded-full" style={{ width: '100%' }} />
-              </div>
-              
-              <div className="flex justify-between items-center text-[10px] pt-1">
-                <span className="text-slate-400 font-semibold">Digital</span>
-                <span className="font-black text-[#162056]">{lcaCalculos.prodDig.toFixed(2)}</span>
-              </div>
-              <div className="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
-                <div className="bg-[#7FC2E4] h-full rounded-full" style={{ width: '22%' }} />
-              </div>
-            </div>
-            <div className="mt-4 text-[9px] font-black text-[#F72717] flex items-center gap-0.5">
-               <span>↓ 78% menor</span>
-            </div>
+        <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-[1fr_170px]">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-4">
+            {fases.map((fase) => {
+              const fisico = lca.fases[fase.key].fisico
+              const digital = lca.fases[fase.key].digital
+              const reducao = Math.round((1 - digital / fisico) * 100)
+
+              return (
+                <article key={fase.key} className="border-r border-[#ddd] pr-4 last:border-r-0">
+                  <div className="mb-5 flex items-center gap-2 text-sm font-bold">
+                    {fase.icon}
+                    <span>{fase.titulo}</span>
+                  </div>
+                  <MiniBar label="Físico" value={fisico} max={maxFase} color={RED} />
+                  <MiniBar label="Digital" value={digital} max={maxFase} color={LIGHT} />
+                  <p className="mt-5 text-center text-sm font-semibold">↓ {reducao}% menor</p>
+                </article>
+              )
+            })}
           </div>
 
-          {/* Transporte */}
-          <div className="p-4 bg-slate-50/50 rounded-2xl border border-slate-100 flex flex-col justify-between">
-            <span className="text-[10px] font-black text-[#162056] uppercase tracking-wider flex items-center gap-1">
-              <Truck size={12} /> Transporte
-            </span>
-            <div className="mt-4 space-y-2">
-              <div className="flex justify-between items-center text-[10px]">
-                <span className="text-slate-400 font-semibold">Físico</span>
-                <span className="font-black text-[#162056]">{lcaCalculos.transFis.toFixed(2)}</span>
-              </div>
-              <div className="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
-                <div className="bg-[#162056] h-full rounded-full" style={{ width: '100%' }} />
-              </div>
-              
-              <div className="flex justify-between items-center text-[10px] pt-1">
-                <span className="text-slate-400 font-semibold">Digital</span>
-                <span className="font-black text-[#162056]">{lcaCalculos.transDig.toFixed(2)}</span>
-              </div>
-              <div className="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
-                <div className="bg-[#7FC2E4] h-full rounded-full" style={{ width: '17%' }} />
-              </div>
+          <aside className="rounded-2xl bg-[#ff2b1d] p-4 text-white">
+            <h3 className="text-center text-sm font-black">Total do ciclo de vida</h3>
+            <div className="mt-3 space-y-2 text-sm">
+              <div className="flex justify-between"><span>Físico</span><strong>{formatTon(lca.totalFisTon)} tCO₂e</strong></div>
+              <div className="flex justify-between"><span>Digital</span><strong>{formatTon(lca.totalDigTon)} tCO₂e</strong></div>
             </div>
-            <div className="mt-4 text-[9px] font-black text-[#F72717] flex items-center gap-0.5">
-               <span>↓ 83% menor</span>
-            </div>
-          </div>
-
-          {/* Uso */}
-          <div className="p-4 bg-slate-50/50 rounded-2xl border border-slate-100 flex flex-col justify-between">
-            <span className="text-[10px] font-black text-[#162056] uppercase tracking-wider flex items-center gap-1">
-              <Monitor size={12} /> Uso
-            </span>
-            <div className="mt-4 space-y-2">
-              <div className="flex justify-between items-center text-[10px]">
-                <span className="text-slate-400 font-semibold">Físico</span>
-                <span className="font-black text-[#162056]">{lcaCalculos.usoFis.toFixed(2)}</span>
-              </div>
-              <div className="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
-                <div className="bg-[#162056] h-full rounded-full" style={{ width: '100%' }} />
-              </div>
-              
-              <div className="flex justify-between items-center text-[10px] pt-1">
-                <span className="text-slate-400 font-semibold">Digital</span>
-                <span className="font-black text-[#162056]">{lcaCalculos.usoDig.toFixed(2)}</span>
-              </div>
-              <div className="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
-                <div className="bg-[#7FC2E4] h-full rounded-full" style={{ width: '48%' }} />
-              </div>
-            </div>
-            <div className="mt-4 text-[9px] font-black text-[#F72717] flex items-center gap-0.5">
-               <span>↓ 52% menor</span>
-            </div>
-          </div>
-
-          {/* Descarte */}
-          <div className="p-4 bg-slate-50/50 rounded-2xl border border-slate-100 flex flex-col justify-between">
-            <span className="text-[10px] font-black text-[#162056] uppercase tracking-wider flex items-center gap-1">
-              <Trash2 size={12} /> Descarte
-            </span>
-            <div className="mt-4 space-y-2">
-              <div className="flex justify-between items-center text-[10px]">
-                <span className="text-slate-400 font-semibold">Físico</span>
-                <span className="font-black text-[#162056]">{lcaCalculos.descFis.toFixed(2)}</span>
-              </div>
-              <div className="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
-                <div className="bg-[#162056] h-full rounded-full" style={{ width: '100%' }} />
-              </div>
-              
-              <div className="flex justify-between items-center text-[10px] pt-1">
-                <span className="text-slate-400 font-semibold">Digital</span>
-                <span className="font-black text-[#162056]">{lcaCalculos.descDig.toFixed(2)}</span>
-              </div>
-              <div className="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
-                <div className="bg-[#7FC2E4] h-full rounded-full" style={{ width: '18%' }} />
-              </div>
-            </div>
-            <div className="mt-4 text-[9px] font-black text-[#F72717] flex items-center gap-0.5">
-               <span>↓ 82% menor</span>
-            </div>
-          </div>
-
-          {/* Total do Ciclo de Vida (Card Cinza Escuro conforme Imagem) */}
-          <div className="p-5 bg-[#B0B4C0] rounded-2xl flex flex-col justify-between text-black">
-            <span className="text-[10px] font-black uppercase tracking-wider">Total do ciclo de vida</span>
-            
-            <div className="mt-4 space-y-3">
-              <div className="flex justify-between items-center border-b border-black/10 pb-1.5">
-                <span className="text-[10px] font-bold text-black/60">Físico</span>
-                <span className="text-sm font-black">{lcaCalculos.totalFis.toFixed(2)} tCO₂e</span>
-              </div>
-              <div className="flex justify-between items-center pb-1">
-                <span className="text-[10px] font-bold text-black/60">Digital</span>
-                <span className="text-sm font-black">{lcaCalculos.totalDig.toFixed(2)} tCO₂e</span>
-              </div>
-            </div>
-
-            <div className="mt-4 text-xs font-black flex items-center gap-0.5">
-               <span>↓ 72% menor</span>
-            </div>
-          </div>
-
+            <div className="my-3 border-t border-white/70" />
+            <p className="text-center text-lg font-black">↓{lca.reducaoPercentual}% menor</p>
+          </aside>
         </div>
       </section>
 
+      <div className="grid grid-cols-1 gap-7 lg:grid-cols-2">
+        <section className="rounded-xl bg-white p-6 shadow-[0_10px_24px_rgba(0,0,0,0.16)]">
+          <h2 className="text-lg font-black">Simulador de logística reversa</h2>
+          <p className="text-xs font-medium text-[#555]">Simule o benefício de reciclagem de cartões físicos</p>
+
+          <div className="mt-5 grid grid-cols-1 gap-8 md:grid-cols-[1fr_150px]">
+            <div className="space-y-7">
+              <SliderControl
+                icon={<Recycle size={17} />}
+                label="Taxa de reciclagem"
+                value={taxaReciclagem}
+                suffix="%"
+                min={0}
+                max={100}
+                step={1}
+                onChange={setTaxaReciclagem}
+              />
+              <SliderControl
+                icon={<CreditCard size={17} />}
+                label="Quantidade de cartões"
+                value={cartoesDescarte}
+                min={1000}
+                max={20000}
+                step={100}
+                onChange={setCartoesDescarte}
+              />
+            </div>
+
+            <div className="flex items-end justify-center gap-5">
+              <ImpactColumn value={logistica.impactoBruto} max={Math.max(logistica.impactoBruto, 1)} label="Impacto bruto sem reciclagem" color={RED} />
+              <ImpactColumn value={logistica.impactoReciclado} max={Math.max(logistica.impactoBruto, 1)} label="Impacto após reciclagem" color={LIGHT} />
+            </div>
+          </div>
+
+          <div className="mt-7 grid grid-cols-3 gap-4">
+            <MetricCard label="PVC recuperado" value={`${formatKg(logistica.pvcRecuperado)}kg`} />
+            <MetricCard label="CO₂ evitado" value={`${formatKg(logistica.co2Evitado)}kg`} />
+            <MetricCard label="Metais nobres" value={`${logistica.metaisNobres.toFixed(2)}g`} />
+          </div>
+        </section>
+
+        <section className="rounded-xl bg-white p-6 shadow-[0_10px_24px_rgba(0,0,0,0.16)]">
+          <h2 className="text-lg font-black">Pontos de coleta para descarte seguro</h2>
+          <p className="text-xs font-medium text-[#555]">Encontre locais próximos para descarte de cartões com chip</p>
+
+          <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+            <div className="flex h-11 flex-1 items-center gap-2 rounded-full border border-black px-4 text-xs font-medium">
+              <MapPin size={15} />
+              Recife, PE
+            </div>
+            <button className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#ff2b1d] px-5 text-[10px] font-bold text-white">
+              <Search size={13} />
+              Buscar pontos de coleta
+            </button>
+          </div>
+
+          <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-[1fr_160px]">
+            <div className="relative min-h-[230px] overflow-hidden rounded-xl bg-[#f3d8b6]">
+              <div className="absolute inset-0 opacity-70 [background-image:linear-gradient(90deg,rgba(255,255,255,.55)_1px,transparent_1px),linear-gradient(rgba(255,255,255,.55)_1px,transparent_1px)] [background-size:28px_28px]" />
+              <div className="absolute left-16 top-12 h-56 w-2 -rotate-45 rounded-full bg-[#f8c84d]" />
+              <div className="absolute right-12 top-0 h-64 w-3 rotate-12 rounded-full bg-[#f8c84d]" />
+              <div className="absolute bottom-0 right-0 h-28 w-44 rounded-tl-[70px] bg-[#8fd0f0]" />
+              <div className="absolute left-1/2 top-1/2 grid h-9 w-9 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white shadow-lg">
+                <MapPin className="text-[#3aa0ff]" fill="#3aa0ff" size={24} />
+              </div>
+            </div>
+
+            <aside className="rounded-xl border border-black p-4 text-[10px]">
+              <strong>1 ponto encontrado</strong>
+              <div className="mt-5 rounded-lg bg-white p-2 shadow-sm">
+                <p className="font-black">Cooperativa De Trabalho Esperança Viva</p>
+                <p className="mt-1 text-[#555]">R. Imperial, 748 - São José, Recife - PE</p>
+              </div>
+              <button className="mt-20 w-full rounded-lg border border-black py-3 text-[10px] font-bold">Ver todos no mapa</button>
+            </aside>
+          </div>
+        </section>
+      </div>
+
+      <section className="rounded-xl bg-white p-8 shadow-[0_10px_24px_rgba(0,0,0,0.16)]">
+        <h2 className="text-lg font-black">Compensação (Carbon Offset)</h2>
+        <p className="max-w-md text-xs font-medium leading-relaxed text-[#555]">
+          Para emissões que ainda não podem ser evitadas, oferecemos a opção de compensação direta. Seus investimentos são direcionados a projetos certificados.
+        </p>
+
+        <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[1fr_1fr]">
+          <div className="max-w-md space-y-6">
+            <OffsetCard title="Reflorestamento Amazônico" description="Proteção de áreas degradadas e plantio de espécies nativas." cost="R$ 15,00" />
+            <OffsetCard title="Parques Eólicos Nordeste" description="Geração de energia limpa substituindo fontes fósseis." cost="R$ 12,00" />
+          </div>
+
+          <div className="flex flex-col items-center justify-center text-center">
+            <span className="text-sm font-black">Total para compensar</span>
+            <strong className="mt-1 text-5xl font-black">
+              {lca.carbonoCompensacaoKg.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}kg
+            </strong>
+            <span className="mt-1 text-sm italic text-[#777]">CO₂ equivalente gerado</span>
+            <button className="mt-6 rounded-2xl bg-[#ff2b1d] px-14 py-4 text-lg font-black text-white shadow-lg shadow-[#ff2b1d]/20 transition-all hover:bg-[#e51f13]">
+              Compensar agora
+            </button>
+          </div>
+        </div>
+      </section>
     </div>
+  )
+}
+
+function TreeGraphic({ arvores }: { arvores: number }) {
+  return (
+    <div className="pointer-events-none absolute bottom-5 right-8 flex flex-col items-center">
+      <div className="relative h-28 w-36">
+        <span className="absolute left-2 top-8 h-16 w-16 rounded-full bg-[#eef59a]/70" />
+        <span className="absolute left-8 top-2 h-20 w-20 rounded-full bg-[#eef59a]/70" />
+        <span className="absolute right-2 top-8 h-16 w-16 rounded-full bg-[#eef59a]/70" />
+        <span className="absolute left-12 top-9 h-20 w-20 rounded-full bg-[#eef59a]/70" />
+        <span className="absolute left-14 top-14 h-16 w-16 rounded-full bg-[#eef59a]/70" />
+      </div>
+      <div className="-mt-5 h-16 w-5 rounded-t-full bg-[#8b1b10]" />
+      <span className="mt-1 text-[8px] font-medium text-[#555]">Equivalente a {arvores} árvores/ano</span>
+    </div>
+  )
+}
+
+function MiniBar({ label, value, max, color }: { label: string; value: number; max: number; color: string }) {
+  return (
+    <div className="mb-3 grid grid-cols-[46px_1fr_36px] items-center gap-2 text-[10px]">
+      <span>{label}</span>
+      <div className="h-2 bg-transparent">
+        <div className="h-2" style={{ width: `${Math.max(8, (value / max) * 100)}%`, backgroundColor: color }} />
+      </div>
+      <span>{formatTon(value)}</span>
+    </div>
+  )
+}
+
+function SliderControl({
+  icon,
+  label,
+  value,
+  suffix = '',
+  min,
+  max,
+  step,
+  onChange,
+}: {
+  icon: ReactNode
+  label: string
+  value: number
+  suffix?: string
+  min: number
+  max: number
+  step: number
+  onChange: (value: number) => void
+}) {
+  return (
+    <div>
+      <div className="mb-2 flex items-center justify-between">
+        <span className="inline-flex items-center gap-1 text-xs font-bold">{icon}{label}</span>
+        <strong className="text-xl font-black">{value.toLocaleString('pt-BR')}{suffix}</strong>
+      </div>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(event) => onChange(Number(event.target.value))}
+        className="h-2 w-full cursor-pointer appearance-none rounded-full bg-[#ffb4ae] accent-[#ff2b1d]"
+      />
+      <div className="mt-1 flex justify-between text-[10px] font-medium">
+        <span>{min.toLocaleString('pt-BR')}</span>
+        <span>{max.toLocaleString('pt-BR')}</span>
+      </div>
+    </div>
+  )
+}
+
+function ImpactColumn({ value, max, label, color }: { value: number; max: number; label: string; color: string }) {
+  return (
+    <div className="flex h-44 flex-col items-center justify-end">
+      <span className="mb-1 text-[9px] font-medium">{value.toFixed(2)} kgCO₂e</span>
+      <div className="w-14" style={{ height: `${Math.max(18, (value / max) * 120)}px`, backgroundColor: color }} />
+      <span className="mt-2 max-w-[70px] text-center text-[8px] leading-tight">{label}</span>
+    </div>
+  )
+}
+
+function MetricCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl bg-[#ffb4ae] p-4 text-center">
+      <span className="block text-xs font-bold">{label}</span>
+      <strong className="mt-3 block text-2xl font-black">{value}</strong>
+    </div>
+  )
+}
+
+function OffsetCard({ title, description, cost }: { title: string; description: string; cost: string }) {
+  return (
+    <article className="rounded-xl bg-[#ffb4ae] p-5">
+      <h3 className="font-black">{title}</h3>
+      <p className="mt-4 text-[11px] font-medium leading-relaxed">{description}</p>
+      <p className="mt-5 text-[10px] font-black">Custo por ton: {cost}</p>
+    </article>
   )
 }
