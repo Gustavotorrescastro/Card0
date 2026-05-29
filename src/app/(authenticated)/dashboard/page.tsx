@@ -1,8 +1,10 @@
 'use client'
 
+import Link from 'next/link'
 import { useMemo, useState } from 'react'
 import { BarChart3, ChevronDown, Edit2, Save, X } from 'lucide-react'
 import { useUser } from '@/context/UserContext'
+import { dashboardNavigation } from '@/config/navigation'
 
 const produtosEmpresa = ['Taggy', 'Ticket Log', 'Repom', 'Pagbem']
 
@@ -254,6 +256,39 @@ export default function Dashboard() {
           </p>
         </section>
       </div>
+
+      <section className="rounded-[2rem] border border-[#ffe1de] bg-white p-6 shadow-sm">
+        <div className="mb-5 flex items-center justify-between gap-4">
+          <div>
+            <h3 className="text-sm font-black tracking-tight text-brand-text">
+              Atalhos do dashboard
+            </h3>
+            <p className="text-xs font-semibold text-slate-500">
+              Navegue entre as rotas principais sem perder o contexto da conta.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {dashboardNavigation
+            .filter((item) => item.href !== '/dashboard')
+            .map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="group rounded-2xl border border-slate-200 bg-slate-50 p-5 transition-all hover:-translate-y-0.5 hover:border-[#f72717]/40 hover:bg-white hover:shadow-md"
+              >
+                <div className="mb-4 inline-flex rounded-2xl bg-[#fff1ef] p-3 text-[#f72717] transition-colors group-hover:bg-[#f72717] group-hover:text-white">
+                  <item.icon size={18} />
+                </div>
+                <h4 className="text-sm font-black text-brand-text">{item.label}</h4>
+                <p className="mt-2 text-xs font-medium leading-relaxed text-slate-500">
+                  {item.description}
+                </p>
+              </Link>
+            ))}
+        </div>
+      </section>
     </div>
   )
 }
