@@ -4,7 +4,7 @@
 
 @theme {
   /* Variáveis de cor para usar como utilitários (ex: bg-brand-primary) */
-  --font-sans: Arial, Helvetica, sans-serif;
+  --font-sans: var(--font-montserrat), sans-serif;
   --color-brand-primary: #F72717;
   --color-brand-secondary: #162056;
   --color-brand-tertiary: #7FC2E4;
