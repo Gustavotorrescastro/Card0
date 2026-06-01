@@ -41,6 +41,10 @@ function formatTon(value: number) {
   return value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value))
+}
+
 export default function LcaSimplificadoPage() {
   const [quantidade, setQuantidade] = useState(13600)
   const [matriz, setMatriz] = useState<keyof typeof matrizEnergetica>('br')
@@ -113,6 +117,7 @@ export default function LcaSimplificadoPage() {
 
   const donutStops = `#ff2b1d 0 42%, #ff7770 42% 60%, #ffb4ae 60% 88%, #ffe5e5 88% 100%`
   const maxFase = Math.max(...fases.map((fase) => lca.fases[fase.key].fisico))
+  const maxImpactoLogistica = 20000 * co2Base.descarte
 
   return (
     <div className="w-full space-y-8 pb-16 font-sans text-[#111111]">
@@ -172,10 +177,10 @@ export default function LcaSimplificadoPage() {
           <p className="mt-2 max-w-[250px] text-[11px] font-medium leading-snug">
             de CO₂ são gerados durante o ciclo dos vida dos cartões físicos.
           </p>
-          <p className="absolute bottom-6 left-6 text-[9px] font-semibold text-[#555]">
+          <p className="absolute bottom-3 left-6 max-w-[260px] text-[9px] font-semibold text-[#555]">
             ↑ O processo físico gera {(lca.carbonoCompensacaoKg * lca.reducaoPercentual / 100).toLocaleString('pt-BR', { maximumFractionDigits: 2 })} kg de CO₂ a mais que o digital
           </p>
-          <TreeGraphic arvores={lca.arvores} />
+          <TreeGraphic arvores={lca.arvores} carbonoKg={lca.carbonoCompensacaoKg} />
         </section>
       </div>
 
@@ -260,7 +265,7 @@ export default function LcaSimplificadoPage() {
             })}
           </div>
 
-          <aside className="rounded-2xl bg-[#ff2b1d] p-4 text-white">
+          <aside className="self-start rounded-2xl bg-[#ff2b1d] p-4 text-white lg:-mt-4">
             <h3 className="text-center text-sm font-black">Total do ciclo de vida</h3>
             <div className="mt-3 space-y-2 text-sm">
               <div className="flex justify-between"><span>Físico</span><strong>{formatTon(lca.totalFisTon)} tCO₂e</strong></div>
@@ -301,8 +306,8 @@ export default function LcaSimplificadoPage() {
             </div>
 
             <div className="flex items-end justify-center gap-5">
-              <ImpactColumn value={logistica.impactoBruto} max={Math.max(logistica.impactoBruto, 1)} label="Impacto bruto sem reciclagem" color={RED} />
-              <ImpactColumn value={logistica.impactoReciclado} max={Math.max(logistica.impactoBruto, 1)} label="Impacto após reciclagem" color={LIGHT} />
+              <ImpactColumn value={logistica.impactoBruto} max={maxImpactoLogistica} label="Impacto bruto sem reciclagem" color={RED} />
+              <ImpactColumn value={logistica.impactoReciclado} max={maxImpactoLogistica} label="Impacto após reciclagem" color={LIGHT} />
             </div>
           </div>
 
@@ -329,14 +334,13 @@ export default function LcaSimplificadoPage() {
           </div>
 
           <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-[1fr_160px]">
-            <div className="relative min-h-[230px] overflow-hidden rounded-xl bg-[#f3d8b6]">
-              <div className="absolute inset-0 opacity-70 [background-image:linear-gradient(90deg,rgba(255,255,255,.55)_1px,transparent_1px),linear-gradient(rgba(255,255,255,.55)_1px,transparent_1px)] [background-size:28px_28px]" />
-              <div className="absolute left-16 top-12 h-56 w-2 -rotate-45 rounded-full bg-[#f8c84d]" />
-              <div className="absolute right-12 top-0 h-64 w-3 rotate-12 rounded-full bg-[#f8c84d]" />
-              <div className="absolute bottom-0 right-0 h-28 w-44 rounded-tl-[70px] bg-[#8fd0f0]" />
-              <div className="absolute left-1/2 top-1/2 grid h-9 w-9 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white shadow-lg">
-                <MapPin className="text-[#3aa0ff]" fill="#3aa0ff" size={24} />
-              </div>
+            <div className="relative min-h-[230px] overflow-hidden rounded-xl bg-[#e8eef2]">
+              <iframe
+                title="Mapa real de pontos de coleta no Brasil"
+                src="https://www.openstreetmap.org/export/embed.html?bbox=-35.0200%2C-8.1800%2C-34.8200%2C-7.9800&layer=mapnik&marker=-8.0476%2C-34.8770"
+                className="absolute inset-0 h-full w-full border-0"
+                loading="lazy"
+              />
             </div>
 
             <aside className="rounded-xl border border-black p-4 text-[10px]">
@@ -363,7 +367,7 @@ export default function LcaSimplificadoPage() {
             <OffsetCard title="Parques Eólicos Nordeste" description="Geração de energia limpa substituindo fontes fósseis." cost="R$ 12,00" />
           </div>
 
-          <div className="flex flex-col items-center justify-center text-center">
+          <div className="flex flex-col items-center justify-start pt-2 text-center lg:-mt-4 lg:pt-0">
             <span className="text-sm font-black">Total para compensar</span>
             <strong className="mt-1 text-5xl font-black">
               {lca.carbonoCompensacaoKg.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}kg
@@ -379,15 +383,17 @@ export default function LcaSimplificadoPage() {
   )
 }
 
-function TreeGraphic({ arvores }: { arvores: number }) {
+function TreeGraphic({ arvores, carbonoKg }: { arvores: number; carbonoKg: number }) {
+  const scale = clamp(Math.sqrt(carbonoKg / 40), 0.62, 1.65)
+
   return (
-    <div className="pointer-events-none absolute bottom-5 right-8 flex flex-col items-center">
+    <div className="pointer-events-none absolute bottom-7 right-8 flex origin-bottom flex-col items-center transition-transform duration-300" style={{ transform: `scale(${scale})` }}>
       <div className="relative h-28 w-36">
-        <span className="absolute left-2 top-8 h-16 w-16 rounded-full bg-[#eef59a]/70" />
-        <span className="absolute left-8 top-2 h-20 w-20 rounded-full bg-[#eef59a]/70" />
-        <span className="absolute right-2 top-8 h-16 w-16 rounded-full bg-[#eef59a]/70" />
-        <span className="absolute left-12 top-9 h-20 w-20 rounded-full bg-[#eef59a]/70" />
-        <span className="absolute left-14 top-14 h-16 w-16 rounded-full bg-[#eef59a]/70" />
+        <span className="absolute left-2 top-8 h-16 w-16 rounded-full bg-[#eef59a]/70 transition-all duration-300" />
+        <span className="absolute left-8 top-2 h-20 w-20 rounded-full bg-[#eef59a]/70 transition-all duration-300" />
+        <span className="absolute right-2 top-8 h-16 w-16 rounded-full bg-[#eef59a]/70 transition-all duration-300" />
+        <span className="absolute left-12 top-9 h-20 w-20 rounded-full bg-[#eef59a]/70 transition-all duration-300" />
+        <span className="absolute left-14 top-14 h-16 w-16 rounded-full bg-[#eef59a]/70 transition-all duration-300" />
       </div>
       <div className="-mt-5 h-16 w-5 rounded-t-full bg-[#8b1b10]" />
       <span className="mt-1 text-[8px] font-medium text-[#555]">Equivalente a {arvores} árvores/ano</span>
