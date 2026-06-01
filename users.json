@@ -68,5 +68,34 @@
     "name": "maria augusta",
     "email": "mariaaugustahdf@gmail.com",
     "password": "Sbm160597*"
+  },
+  {
+    "name": "Arthur",
+    "email": "mourygodoy@gmail.com",
+    "password": "Moury*15"
+  },
+  {
+    "name": "Teste",
+    "email": "teste10@gmail.com",
+    "password": "Teste*123",
+    "birthDate": "2007-12-12",
+    "city": "Recife",
+    "state": "Pernambuco"
+  },
+  {
+    "name": "Teste",
+    "email": "teste1000@gmail.com",
+    "password": "Teste*123",
+    "birthDate": "2007-12-12",
+    "city": "Recife",
+    "state": "Pernambuco"
+  },
+  {
+    "name": "Teste100",
+    "email": "teste100@gmail.com",
+    "password": "Teste*123",
+    "birthDate": "2007-12-12",
+    "city": "Recife",
+    "state": "Pernambuco"
   }
 ]
