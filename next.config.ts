@@ -21,7 +21,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/',
-        destination: '/simulador-risco-operacional',
+        destination: '/dashboard',
         permanent: false,
       },
     ];

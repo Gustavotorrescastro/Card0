@@ -1,21 +1,38 @@
 'use client'
 
-import { useState } from 'react'
-import { Edit2, ChevronDown, X, Save } from 'lucide-react'
+import Link from 'next/link'
+import { useMemo, useState } from 'react'
+import { BarChart3, ChevronDown, Edit2, Save, X } from 'lucide-react'
 import { useUser } from '@/context/UserContext'
+import { dashboardNavigation } from '@/config/navigation'
+
+const produtosEmpresa = ['Taggy', 'Ticket Log', 'Repom', 'Pagbem']
+
+type OperationalMetrics = {
+  co2EvitadoKg?: number
+  materiaPrimaReduzidaKg?: number
+  transacoesCompensadas?: number
+}
+
+function clamp(valor: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, valor))
+}
+
+function lerMetricasSalvas(): OperationalMetrics {
+  if (typeof window === 'undefined') return {}
+
+  try {
+    return JSON.parse(localStorage.getItem('card0OperationalMetrics') || '{}')
+  } catch {
+    return {}
+  }
+}
 
 export default function Dashboard() {
   const { profile, updateProfile } = useUser()
-
-  // Estado do modal de edição de perfil
   const [editando, setEditando] = useState(false)
   const [formData, setFormData] = useState({ ...profile })
 
-  // Estado do modal de adicionar cartão
-  const [adicionandoCartao, setAdicionandoCartao] = useState(false)
-  const [novoCartao, setNovoCartao] = useState('')
-
-  // Sincroniza o form com o perfil atual ao abrir
   const abrirEdicao = () => {
     setFormData({ ...profile })
     setEditando(true)
@@ -26,18 +43,63 @@ export default function Dashboard() {
     setEditando(false)
   }
 
-  const primeiroNome = profile.name.split(' ')[0]
+  const nomeConta = profile.name?.trim() || 'Conta'
+  const primeiroNome = nomeConta.split(' ')[0]
+
+  const metricas = useMemo(() => {
+    const salvas = lerMetricasSalvas()
+    const camposPreenchidos = [
+      profile.name,
+      profile.email,
+      profile.empresa,
+      profile.dataNascimento,
+      profile.localizacao,
+    ].filter((campo) => campo && campo !== 'Não informado').length
+    const completude = camposPreenchidos / 5
+
+    const co2EvitadoKg =
+      salvas.co2EvitadoKg ?? Number((completude * 28 + produtosEmpresa.length * 4.5).toFixed(1))
+    const materiaPrimaReduzidaKg =
+      salvas.materiaPrimaReduzidaKg ?? Number((completude * 5.5 + produtosEmpresa.length * 0.9).toFixed(1))
+    const transacoesCompensadas =
+      salvas.transacoesCompensadas ?? Math.round(completude * produtosEmpresa.length * 560)
+
+    const score = clamp(
+      Math.round(
+        25 +
+          Math.min(co2EvitadoKg * 0.55, 30) +
+          Math.min(materiaPrimaReduzidaKg * 2.4, 20) +
+          Math.min(transacoesCompensadas / 140, 25)
+      ),
+      0,
+      100
+    )
+
+    return {
+      co2EvitadoKg,
+      materiaPrimaReduzidaKg,
+      transacoesCompensadas,
+      score,
+      custo: clamp(Math.round(45 + score * 0.45), 0, 100),
+      impacto: clamp(Math.round(100 - score * 0.74), 0, 100),
+      metaAnualKg: Number((Math.max(2, co2EvitadoKg * 0.08)).toFixed(1)),
+    }
+  }, [profile])
+
+  const gaugeLength = 236
+  const gaugeOffset = gaugeLength - (gaugeLength * metricas.score) / 100
+  const gaugeAngle = Math.PI - (metricas.score / 100) * Math.PI
+  const knobX = 110 + 75 * Math.cos(gaugeAngle)
+  const knobY = 115 - 75 * Math.sin(gaugeAngle)
 
   return (
-    <div className="space-y-6 pb-16 w-full max-w-7xl mx-auto px-1 md:px-0 font-sans">
-
-      {/* ===== MODAL EDITAR PERFIL ===== */}
+    <div className="w-full space-y-8 pb-16 font-sans">
       {editando && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-3xl shadow-2xl border border-brand-border w-full max-w-md p-8 space-y-5">
-            <div className="flex justify-between items-center">
-              <h2 className="text-lg font-black text-brand-secondary uppercase tracking-tight">Editar Perfil</h2>
-              <button onClick={() => setEditando(false)} className="text-slate-400 hover:text-brand-primary transition-colors">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md space-y-5 rounded-3xl border border-brand-border bg-white p-8 shadow-2xl">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-black uppercase tracking-tight text-[#f72717]">Editar Perfil</h2>
+              <button onClick={() => setEditando(false)} className="text-slate-400 transition-colors hover:text-[#f72717]">
                 <X size={20} />
               </button>
             </div>
@@ -47,17 +109,17 @@ export default function Dashboard() {
                 { label: 'Nome Completo', key: 'name', type: 'text' },
                 { label: 'E-mail', key: 'email', type: 'email' },
                 { label: 'Empresa', key: 'empresa', type: 'text' },
-                { label: 'Data de Nascimento', key: 'dataNascimento', type: 'text', placeholder: 'dd/mm/aa' },
+                { label: 'Data de Nascimento', key: 'dataNascimento', type: 'text', placeholder: 'dd/mm/aaaa' },
                 { label: 'Localização', key: 'localizacao', type: 'text' },
               ].map(({ label, key, type, placeholder }) => (
                 <div key={key} className="space-y-1">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">{label}</label>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400">{label}</label>
                   <input
                     type={type}
                     value={formData[key as keyof typeof formData]}
                     placeholder={placeholder}
-                    onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-secondary/30 focus:border-brand-secondary transition-all"
+                    onChange={(event) => setFormData({ ...formData, [key]: event.target.value })}
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-brand-text outline-none transition-all focus:border-[#f72717] focus:ring-2 focus:ring-[#f72717]/25"
                   />
                 </div>
               ))}
@@ -66,13 +128,13 @@ export default function Dashboard() {
             <div className="flex gap-3 pt-2">
               <button
                 onClick={() => setEditando(false)}
-                className="flex-1 border border-slate-200 text-slate-500 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider hover:bg-slate-50 transition-all"
+                className="flex-1 rounded-2xl border border-slate-200 py-2.5 text-xs font-black uppercase tracking-wider text-slate-500 transition-all hover:bg-slate-50"
               >
                 Cancelar
               </button>
               <button
                 onClick={salvarEdicao}
-                className="flex-1 bg-brand-secondary text-white py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-md"
+                className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[#f72717] py-2.5 text-xs font-black uppercase tracking-wider text-white shadow-md transition-all hover:bg-[#df1e12]"
               >
                 <Save size={14} /> Salvar
               </button>
@@ -81,240 +143,194 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* ===== MODAL ADICIONAR CARTÃO ===== */}
-      {adicionandoCartao && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-3xl shadow-2xl border border-brand-border w-full max-w-sm p-8 space-y-5">
-            <div className="flex justify-between items-center">
-              <h2 className="text-lg font-black text-brand-secondary uppercase tracking-tight">Adicionar Cartão</h2>
-              <button onClick={() => setAdicionandoCartao(false)} className="text-slate-400 hover:text-brand-primary transition-colors">
-                <X size={20} />
-              </button>
-            </div>
-            <div className="space-y-1">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Número do Cartão</label>
-              <input
-                type="text"
-                value={novoCartao}
-                placeholder="0000 0000 0000 0000"
-                maxLength={19}
-                onChange={(e) => {
-                  const digits = e.target.value.replace(/\D/g, '').slice(0, 16)
-                  const formatted = digits.replace(/(.{4})/g, '$1 ').trim()
-                  setNovoCartao(formatted)
-                }}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold text-brand-text tracking-widest focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary transition-all"
-              />
-            </div>
-            <div className="flex gap-3 pt-2">
-              <button
-                onClick={() => setAdicionandoCartao(false)}
-                className="flex-1 border border-slate-200 text-slate-500 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider hover:bg-slate-50 transition-all"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={() => {
-                  alert(`Cartão ${novoCartao} adicionado!`)
-                  setNovoCartao('')
-                  setAdicionandoCartao(false)
-                }}
-                className="flex-1 bg-brand-primary text-white py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider hover:opacity-90 transition-all shadow-md"
-              >
-                Adicionar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Mensagem de Boas-vindas */}
-      <h1 className="text-2xl md:text-3xl font-black text-brand-text tracking-tight pt-2">
+      <h1 className="pt-2 text-2xl font-black tracking-tight text-brand-text md:text-3xl">
         Olá, {primeiroNome}.
       </h1>
 
-      {/* LINHA 1: PERFIL + MEUS CARTÕES */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-
-        {/* Card de Perfil */}
-        <div className="lg:col-span-7 bg-brand-surface p-8 rounded-[2rem] border border-brand-border shadow-sm flex flex-col md:flex-row gap-8 items-center relative min-h-[300px]">
-          {/* Botão Editar — abre modal */}
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+        <section className="relative flex min-h-[280px] flex-col items-center gap-8 rounded-[2rem] border border-[#ffe1de] bg-white p-8 shadow-sm md:flex-row lg:col-span-7">
           <button
             onClick={abrirEdicao}
-            className="absolute top-6 right-6 text-slate-400 hover:text-brand-secondary transition-colors"
+            className="absolute right-6 top-6 text-slate-400 transition-colors hover:text-[#f72717]"
             title="Editar perfil"
           >
             <Edit2 size={18} />
           </button>
 
-          {/* Avatar SVG */}
           <div className="shrink-0">
-            <svg className="w-40 h-40 text-brand-text" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="50" cy="50" r="46" stroke="currentColor" strokeWidth="6" fill="white"/>
-              <circle cx="50" cy="40" r="16" fill="currentColor"/>
-              <path d="M18 78C18 64.7452 28.7452 54 42 54H58C71.2548 54 82 64.7452 82 78V82H18V78Z" fill="currentColor"/>
+            <svg className="h-40 w-40 text-[#f72717]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="50" r="46" stroke="currentColor" strokeWidth="6" fill="white" />
+              <circle cx="50" cy="40" r="16" fill="currentColor" />
+              <path d="M18 78C18 64.7452 28.7452 54 42 54H58C71.2548 54 82 64.7452 82 78V82H18V78Z" fill="currentColor" />
             </svg>
           </div>
 
-          {/* Dados do perfil — dinâmicos via contexto */}
-          <div className="space-y-4 text-left w-full">
-            <h2 className="text-2xl font-black text-brand-text tracking-tight">{profile.name}</h2>
-            <div className="space-y-2 text-xs md:text-sm font-semibold">
-              <div className="flex gap-2">
-                <span className="text-slate-400 font-bold min-w-[100px]">Empresa:</span>
-                <span className="text-brand-text">{profile.empresa}</span>
-              </div>
-              <div className="flex gap-2">
-                <span className="text-slate-400 font-bold min-w-[100px]">Data de Nasc.:</span>
-                <span className="text-brand-text">{profile.dataNascimento}</span>
-              </div>
-              <div className="flex gap-2">
-                <span className="text-slate-400 font-bold min-w-[100px]">Local:</span>
-                <span className="text-brand-text">{profile.localizacao}</span>
-              </div>
-              <div className="flex gap-2">
-                <span className="text-slate-400 font-bold min-w-[100px]">Email:</span>
-                <span className="text-brand-text font-bold">{profile.email}</span>
-              </div>
+          <div className="w-full space-y-4 text-left">
+            <h2 className="text-2xl font-black tracking-tight text-brand-text">{profile.name}</h2>
+            <div className="space-y-3 text-xs font-semibold md:text-sm">
+              <ProfileLine label="Empresa:" value={profile.empresa} />
+              <ProfileLine label="Data de Nasc.:" value={profile.dataNascimento} />
+              <ProfileLine label="Local:" value={profile.localizacao} />
+              <ProfileLine label="Email:" value={profile.email} strong />
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* Card Meus Cartões */}
-        <div className="lg:col-span-5 bg-brand-surface p-8 rounded-[2rem] border border-brand-border shadow-sm flex flex-col justify-between min-h-[300px]">
-          <div>
-            <h3 className="text-sm font-black text-brand-text uppercase tracking-wider mb-4">Meus Cartões Ticket:</h3>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Número do Cartão</label>
-              <div className="bg-[#EAEAEA] p-3 rounded-xl text-xs font-bold text-brand-text tracking-wider text-center select-all">
-                6033 **** **** 1234
-              </div>
-            </div>
+        <section className="flex min-h-[280px] flex-col justify-center rounded-[2rem] border border-[#ffe1de] bg-white p-8 shadow-sm lg:col-span-5">
+          <h3 className="mb-5 text-sm font-black tracking-tight text-brand-text">Meus Cartões Ticket:</h3>
+          <p className="mb-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Produtos ativos da empresa</p>
 
-            {/* Grid de Bandeiras */}
-            <div className="grid grid-cols-2 gap-3 mt-4">
-              <div className="border border-brand-border rounded-xl p-2 flex items-center justify-center bg-white h-12 shadow-sm cursor-pointer hover:border-brand-secondary/40 transition-all">
-                <span className="font-extrabold text-[#115C34] text-xs italic tracking-tighter flex items-center gap-0.5">
-                  Taggy <span className="w-2 h-2 bg-[#84CC16] rounded-full animate-pulse" />
-                </span>
+          <div className="grid grid-cols-2 gap-3">
+            {produtosEmpresa.map((produto) => (
+              <div
+                key={produto}
+                className="flex h-16 items-center justify-center rounded-xl border border-[#ffb4ae] bg-[#fff7f7] px-3 text-center shadow-sm transition-all hover:border-[#f72717]"
+              >
+                <span className="text-sm font-black italic tracking-tight text-[#f72717]">{produto}</span>
               </div>
-              <div className="border border-brand-border rounded-xl p-2 flex flex-col items-center justify-center bg-white h-12 shadow-sm cursor-pointer hover:border-brand-secondary/40 transition-all">
-                <div className="flex items-center gap-0.5">
-                  <span className="font-black text-brand-secondary text-[10px]">Ticket</span>
-                  <span className="font-black text-green-600 text-[10px]">Log</span>
-                </div>
-              </div>
-              <div className="border border-brand-border rounded-xl p-2 flex items-center justify-center gap-1.5 bg-white h-12 shadow-sm cursor-pointer hover:border-brand-secondary/40 transition-all">
-                <span className="font-black text-black text-[10px] italic">Repom</span>
-                <div className="w-2.5 h-2.5 rounded-full bg-orange-600" />
-              </div>
-              <div className="border border-brand-border rounded-xl p-2 flex items-center justify-center bg-white h-12 shadow-sm cursor-pointer hover:border-brand-secondary/40 transition-all">
-                <div className="border border-green-600 px-1 py-0.5 rounded flex items-center gap-0.5">
-                  <span className="text-slate-400 font-semibold text-[8px]">pag</span>
-                  <span className="text-green-600 font-extrabold text-[9px]">bem</span>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
-
-          {/* Botão Adicionar Cartão — abre modal */}
-          <button
-            onClick={() => setAdicionandoCartao(true)}
-            className="w-full bg-brand-primary text-white py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all mt-6 shadow-sm"
-          >
-            Adicionar cartão
-          </button>
-        </div>
+        </section>
       </div>
 
-      {/* LINHA 2: CUSTO/IMPACTO + SCORE */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+        <section className="min-h-[360px] rounded-[2rem] border border-[#ffe1de] bg-white p-6 shadow-sm lg:col-span-5">
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-xs font-black tracking-tight text-brand-text">Painel de custo/impacto</h3>
+            <button className="flex items-center gap-1 rounded-lg border border-[#ffb4ae] bg-[#fff7f7] px-3 py-1 text-[10px] font-semibold text-brand-text transition-all hover:bg-[#ffe5e5]">
+              Ver histórico <ChevronDown size={12} />
+            </button>
+          </div>
 
-        {/* Painel de Custo/Impacto */}
-        <div className="lg:col-span-5 bg-brand-surface p-8 rounded-[2rem] border border-brand-border shadow-sm flex flex-col justify-between min-h-[360px]">
-          <div>
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xs font-black text-brand-text uppercase tracking-wider">Painel de custo/impacto</h3>
-              <button className="flex items-center gap-1 bg-white border border-brand-border px-3 py-1 rounded-xl text-[10px] font-black text-slate-500 uppercase tracking-wider hover:bg-slate-50 active:scale-95 transition-all">
-                Ver histórico <ChevronDown size={12} />
-              </button>
+          <div className="border-t border-slate-300 pt-3">
+            <div className="grid h-40 grid-cols-2 items-end gap-8 px-6">
+              <MetricBar label={`${metricas.custo}%`} value={metricas.custo} />
+              <MetricBar label={`${metricas.impacto}%`} value={metricas.impacto} />
             </div>
 
-            <div className="grid grid-cols-2 gap-4 h-48 items-end relative py-4">
-              <div className="flex flex-col items-center h-full justify-end">
-                <div className="w-16 bg-slate-200 rounded-2xl h-36 relative overflow-hidden flex flex-col justify-end">
-                  <div className="bg-brand-secondary w-full h-[78%] rounded-2xl flex items-center justify-center">
-                    <span className="text-white font-black text-xs">78%</span>
-                  </div>
-                </div>
-                <div className="mt-4 flex flex-col items-center gap-1">
-                  <div className="bg-slate-100 p-2 rounded-xl">
-                    <svg className="w-4 h-4 text-brand-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
-                      <rect x="2" y="5" width="20" height="14" rx="2" />
-                      <circle cx="12" cy="12" r="3" />
-                    </svg>
-                  </div>
-                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Custo</span>
-                </div>
-              </div>
-
-              <div className="absolute left-1/2 top-4 bottom-16 w-px bg-brand-border -translate-x-1/2" />
-
-              <div className="flex flex-col items-center h-full justify-end">
-                <div className="w-16 bg-slate-200 rounded-2xl h-36 relative overflow-hidden flex flex-col justify-end">
-                  <div className="bg-brand-secondary w-full h-[21%] rounded-2xl flex items-center justify-center">
-                    <span className="text-white font-black text-[10px]">21%</span>
-                  </div>
-                </div>
-                <div className="mt-4 flex flex-col items-center gap-1">
-                  <div className="bg-slate-100 p-2 rounded-xl">
-                    <svg className="w-4 h-4 text-brand-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
-                      <path d="M3 3v18h18" strokeLinecap="round" strokeLinejoin="round" />
-                      <path d="M18.7 8l-5.1 5.2-2.8-2.7-4.8 4.8" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </div>
-                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Impacto</span>
-                </div>
-              </div>
+            <div className="mt-5 grid grid-cols-2 border-t border-slate-300 pt-5">
+              <MetricIcon label="Custo" icon="money" />
+              <MetricIcon label="Impacto" icon="chart" bordered />
             </div>
           </div>
 
-          <div className="border-t border-brand-border pt-4 text-center">
-            <p className="text-[10px] text-slate-400 font-bold">
-              Sua meta estimada para este ano é de até 2,0 kg CO₂
+          <p className="mt-6 text-center text-[10px] font-semibold text-slate-500">
+            Sua meta estimada para este ano é de até {metricas.metaAnualKg.toLocaleString('pt-BR')} kg CO₂
+          </p>
+        </section>
+
+        <section className="flex min-h-[360px] flex-col rounded-[2rem] border border-[#ffe1de] bg-white p-7 shadow-sm lg:col-span-7">
+          <h3 className="text-xs font-black tracking-tight text-brand-text">Score de Sustentabilidade Operacional</h3>
+
+          <div className="relative flex flex-1 items-center justify-center">
+            <svg className="h-[230px] w-[320px]" viewBox="0 0 220 145" aria-hidden="true">
+              <path
+                d="M 35 115 A 75 75 0 0 1 185 115"
+                fill="none"
+                stroke="#ffb4ae"
+                strokeLinecap="round"
+                strokeWidth="22"
+              />
+              <path
+                d="M 35 115 A 75 75 0 0 1 185 115"
+                fill="none"
+                stroke="#f72717"
+                strokeDasharray={gaugeLength}
+                strokeDashoffset={gaugeOffset}
+                strokeLinecap="round"
+                strokeWidth="22"
+              />
+              <circle cx={knobX} cy={knobY} r="16" fill="#ff7770" />
+            </svg>
+
+            <div className="absolute translate-y-8 flex flex-col items-center text-center">
+              <span className="text-2xl font-black leading-tight text-[#f72717]">Eficiência</span>
+              <span className="text-3xl font-black leading-none text-black">{metricas.score}%</span>
+            </div>
+          </div>
+
+          <p className="mx-auto max-w-md text-center text-[10px] font-semibold leading-relaxed text-slate-500">
+            O score considera {metricas.co2EvitadoKg.toLocaleString('pt-BR')} kg CO₂ evitados,
+            {' '}{metricas.materiaPrimaReduzidaKg.toLocaleString('pt-BR')} kg de matéria-prima reduzida e
+            {' '}{metricas.transacoesCompensadas.toLocaleString('pt-BR')} transações compensadas.
+          </p>
+        </section>
+      </div>
+
+      <section className="rounded-[2rem] border border-[#ffe1de] bg-white p-6 shadow-sm">
+        <div className="mb-5 flex items-center justify-between gap-4">
+          <div>
+            <h3 className="text-sm font-black tracking-tight text-brand-text">
+              Atalhos do dashboard
+            </h3>
+            <p className="text-xs font-semibold text-slate-500">
+              Navegue entre as rotas principais sem perder o contexto da conta.
             </p>
           </div>
         </div>
 
-        {/* Score de Sustentabilidade */}
-        <div className="lg:col-span-7 bg-brand-surface p-8 rounded-[2rem] border border-brand-border shadow-sm flex flex-col justify-between min-h-[360px]">
-          <h3 className="text-xs font-black text-brand-text uppercase tracking-wider">Score de Sustentabilidade Operacional</h3>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {dashboardNavigation
+            .filter((item) => item.href !== '/dashboard')
+            .map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="group rounded-2xl border border-slate-200 bg-slate-50 p-5 transition-all hover:-translate-y-0.5 hover:border-[#f72717]/40 hover:bg-white hover:shadow-md"
+              >
+                <div className="mb-4 inline-flex rounded-2xl bg-[#fff1ef] p-3 text-[#f72717] transition-colors group-hover:bg-[#f72717] group-hover:text-white">
+                  <item.icon size={18} />
+                </div>
+                <h4 className="text-sm font-black text-brand-text">{item.label}</h4>
+                <p className="mt-2 text-xs font-medium leading-relaxed text-slate-500">
+                  {item.description}
+                </p>
+              </Link>
+            ))}
+        </div>
+      </section>
+    </div>
+  )
+}
 
-          <div className="flex items-center justify-center h-48 relative">
-            <svg width="200" height="200" viewBox="0 0 100 100" className="rotate-90">
-              <path d="M 20,80 A 38,38 0 1,1 80,80" fill="none" stroke="#CBD5E1" strokeWidth="8" strokeLinecap="round"/>
-              <path
-                d="M 20,80 A 38,38 0 1,1 80,80"
-                fill="none"
-                stroke="#162056"
-                strokeWidth="8"
-                strokeLinecap="round"
-                strokeDasharray="180"
-                strokeDashoffset={180 - (180 * 82) / 100}
-              />
-              <circle cx="50" cy="12" r="6" fill="#6B7280" />
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-2">
-              <span className="text-xs font-black text-brand-text uppercase tracking-widest">Eficiência</span>
-              <span className="text-4xl font-black text-brand-text tracking-tighter">82%</span>
-            </div>
-          </div>
+function ProfileLine({ label, value, strong = false }: { label: string; value: string; strong?: boolean }) {
+  return (
+    <div className="flex gap-2">
+      <span className="min-w-[112px] font-bold text-slate-400">{label}</span>
+      <span className={`text-brand-text ${strong ? 'font-bold' : ''}`}>{value}</span>
+    </div>
+  )
+}
 
-          <p className="text-[10px] text-slate-500 font-bold text-center max-w-sm mx-auto leading-relaxed pb-2">
-            82% dos insumos operacionais e transações desta conta utilizam fontes compensadas.
-          </p>
+function MetricBar({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="flex h-full flex-col items-center justify-end">
+      <div className="flex h-32 w-16 flex-col justify-end overflow-hidden rounded-xl bg-[#ffb4ae]">
+        <div
+          className="flex w-full items-center justify-center rounded-t-xl bg-[#f72717] text-[10px] font-semibold text-white"
+          style={{ height: `${value}%` }}
+        >
+          {label}
         </div>
       </div>
+    </div>
+  )
+}
+
+function MetricIcon({ label, icon, bordered = false }: { label: string; icon: 'money' | 'chart'; bordered?: boolean }) {
+  return (
+    <div className={`flex flex-col items-center gap-2 ${bordered ? 'border-l border-slate-300' : ''}`}>
+      <div className="text-[#f72717]">
+        {icon === 'money' ? (
+          <svg className="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <rect x="3" y="6" width="18" height="12" rx="2" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+        ) : (
+          <BarChart3 size={40} strokeWidth={2.5} />
+        )}
+      </div>
+      <span className="text-[10px] font-semibold text-brand-text">{label}</span>
     </div>
   )
 }

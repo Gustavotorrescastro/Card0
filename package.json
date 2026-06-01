@@ -28,7 +28,7 @@
     "@types/react": "^19.2.14",
     "autoprefixer": "^10.5.0",
     "axios": "^1.15.0",
-    "framer-motion": "^12.38.0",
+    "framer-motion": "^12.40.0",
     "lucide-react": "^1.8.0",
     "next": "^16.2.3",
     "postcss": "^8.5.9",

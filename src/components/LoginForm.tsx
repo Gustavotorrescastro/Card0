@@ -3,9 +3,24 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Card0Logo from './Card0Logo'
 
 interface LoginFormProps {
   onLogin?: (email: string, password: string) => void
+}
+
+function formatarData(data?: string) {
+  if (!data) return 'Não informado'
+
+  const [ano, mes, dia] = data.split('-')
+  if (ano && mes && dia) return `${dia}/${mes}/${ano}`
+
+  return data
+}
+
+function formatarLocalizacao(city?: string, state?: string) {
+  const partes = [city, state].filter(Boolean)
+  return partes.length > 0 ? `${partes.join(' - ')}, Brasil` : 'Não informado'
 }
 
 const LoginForm = ({ onLogin }: LoginFormProps): React.JSX.Element => {
@@ -39,6 +54,17 @@ const LoginForm = ({ onLogin }: LoginFormProps): React.JSX.Element => {
       localStorage.setItem('userLoggedIn', 'true')
       localStorage.setItem('userEmail', data.user?.email || email)
       localStorage.setItem('userName', data.user?.name || 'Renata Gouveia')
+      localStorage.setItem(
+        'userProfile',
+        JSON.stringify({
+          name: data.user?.name || 'Renata Gouveia',
+          email: data.user?.email || email,
+          empresa: 'Edenred',
+          dataNascimento: formatarData(data.user?.birthDate),
+          localizacao: formatarLocalizacao(data.user?.city, data.user?.state),
+        })
+      )
+      window.dispatchEvent(new Event('userProfileUpdated'))
       
       // REDIRECIONAMENTO PARA A ROTA /dashboard
       router.push('/dashboard')
@@ -54,7 +80,9 @@ const LoginForm = ({ onLogin }: LoginFormProps): React.JSX.Element => {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="text-center">
           <h2 className="text-3xl font-bold text-brand-primary">Login</h2>
-          <p className="text-brand-textSecondary mt-2">Card0 - Edenred</p>
+          <div className="mt-3 flex justify-center">
+            <Card0Logo className="h-7 w-auto" />
+          </div>
         </div>
 
         {error && (

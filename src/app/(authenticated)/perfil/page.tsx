@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { User, Mail, Shield, MapPin, Edit2, Leaf, X, Save, LogOut } from 'lucide-react'
+import { User, Mail, Shield, MapPin, Edit2, Leaf, X, Save, LogOut, CalendarDays } from 'lucide-react'
 import { useUser } from '@/context/UserContext'
 import { useRouter } from 'next/navigation'
 
@@ -31,7 +31,7 @@ export default function PerfilPage() {
   }
 
   return (
-    <div className="space-y-8 pb-16 w-full max-w-4xl mx-auto px-1 md:px-0 font-sans">
+    <div className="space-y-8 pb-16 w-full px-1 md:px-0 font-sans">
 
       {/* ===== MODAL EDITAR PERFIL ===== */}
       {editando && (
@@ -132,6 +132,11 @@ export default function PerfilPage() {
               icon={<Shield className="text-brand-secondary" size={18} />}
               label="Empresa"
               value={profile.empresa}
+            />
+            <InfoCard
+              icon={<CalendarDays className="text-brand-secondary" size={18} />}
+              label="Data de Nascimento"
+              value={profile.dataNascimento}
             />
             <InfoCard
               icon={<MapPin className="text-brand-secondary" size={18} />}

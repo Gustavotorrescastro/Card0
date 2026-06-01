@@ -10,7 +10,7 @@ export default function TimelinePage() {
   const { impactData, loading, error, calcularImpacto } = useLinhaDoTempo()
 
   return (
-    <div className="space-y-8 pb-16 w-full max-w-3xl mx-auto px-1 md:px-0">
+    <div className="space-y-8 pb-16 w-full px-1 md:px-0">
       <div className="bg-white p-10 rounded-3xl shadow-sm border border-slate-200 transition-all">
         
         <div className="text-center mb-10">

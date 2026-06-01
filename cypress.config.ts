@@ -1,12 +1,10 @@
-import { defineConfig } from "cypress";
+export default {
+  allowCypressEnv: false,
 
-export default defineConfig({
   e2e: {
-    setupNodeEvents(
-      on: Cypress.PluginEvents,
-      config: Cypress.PluginConfigOptions
-    ) {
-      return config;
+    setupNodeEvents(on: unknown, config: unknown) {
+      void on
+      return config
     },
   },
-});
+}

@@ -16,7 +16,7 @@ import CardCustoTotal from './CardCustoTotal'
 import GraficoCamadas from './GraficoCamadas'
 import GraficoProjecao from './GraficoProjecao'
 import CardComparativo from './CardComparativo'
-import TermometroCerteza from './TermometroCerteza' // <-- Adicionado com segurança
+import TermometroCerteza from './TermometroCerteza'
 
 const TABS = [
   { id: 'custos', label: 'Custos e Impacto Financeiro' },
@@ -45,7 +45,7 @@ export default function CalculadoraImpactoPage() {
     [valorPorCartao]
   )
 
-  // Percentual ilustrativo: quanto o custo total representa do orçamento
+  // Percentual ilustrativo
   const percentualOperacao = useMemo(() => {
     const maxProjecao = Math.max(...projecao.map((p) => p.tcoFisico))
     return maxProjecao > 0
@@ -53,25 +53,22 @@ export default function CalculadoraImpactoPage() {
       : 0
   }, [projecao, resultado])
 
-  // Lógica funcional do Termômetro: detecta se o usuário refinou os valores padrões mínimos
- // Lógica corrigida: o dado só é considerado "refinado" se o usuário 
-  // tirar os sliders dos valores padrões que vêm carregados de fábrica
+  // Lógica de detecção de movimento para o Termômetro
   const checklistCampos = useMemo(() => {
     return [
       { 
         name: 'Ajustar o Volume Inicial de Cartões', 
-        preenchido: quantidade !== 1000 // Mude aqui caso o inicial mude
+        preenchido: quantidade !== 1000 
       },
       { 
         name: 'Personalizar o Custo do Cartão (tirar de R$ 50,00)', 
-        preenchido: valorPorCartao !== 50 // Mude aqui caso o inicial mude
+        preenchido: valorPorCartao !== 50 
       },
     ]
   }, [quantidade, valorPorCartao])
 
   return (
     <div className="space-y-8 pb-16 w-full max-w-7xl mx-auto px-1 md:px-0">
-      {/* Tab navigation centralizada */}
       <section className="flex justify-center">
         <TabNavigation
           tabs={TABS}
@@ -80,7 +77,6 @@ export default function CalculadoraImpactoPage() {
         />
       </section>
 
-      {/* Título dinâmico e descrição */}
       <section className="text-center">
         <h1 className="text-4xl font-black text-[#162056] uppercase tracking-tighter mb-4">
           {TABS.find(t => t.id === abaAtiva)?.label}
@@ -92,7 +88,6 @@ export default function CalculadoraImpactoPage() {
 
       {abaAtiva === 'custos' && (
         <>
-          {/* Controles + Explicação + NOVO TERMÔMETRO */}
           <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <ControleQuantidade
               valor={quantidade}
@@ -110,7 +105,6 @@ export default function CalculadoraImpactoPage() {
               onChange={setValorPorCartao}
             />
 
-            {/* Inserção da Funcionalidade Secundária perfeitamente alinhada ao grid */}
             <TermometroCerteza camposObrigatorios={checklistCampos} />
 
             <div className="bg-[#162056] p-6 rounded-3xl text-white relative overflow-hidden flex flex-col justify-between">
@@ -131,7 +125,6 @@ export default function CalculadoraImpactoPage() {
             </div>
           </section>
 
-          {/* Linha de cards: Custo total + Composição */}
           <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <CardCustoTotal
               valor={resultado.fisico.custoTotal}
@@ -140,7 +133,6 @@ export default function CalculadoraImpactoPage() {
             <GraficoCamadas resultado={resultado} />
           </section>
 
-          {/* Linha: Projeção + Comparativo */}
           <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <GraficoProjecao
               pontos={projecao}
