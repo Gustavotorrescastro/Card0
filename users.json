@@ -97,5 +97,16 @@
     "birthDate": "2007-12-12",
     "city": "Recife",
     "state": "Pernambuco"
+  },
+  {
+    "name": "andré",
+    "email": "dedebviana@gmail.com",
+    "password": "@Andre2007",
+    "birthDate": "2007-05-23",
+    "city": "Recife",
+    "state": "Pernambuco",
+    "emailVerified": true,
+    "verificationToken": null,
+    "verificationExpires": null
   }
 ]

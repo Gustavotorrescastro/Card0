@@ -1,5 +1,7 @@
 node_modules
 .env
 .next
-users.json.next/
+users.json
+.next/
 tsconfig.tsbuildinfo
+.env.local

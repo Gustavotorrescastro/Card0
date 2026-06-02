@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Card0Logo from './Card0Logo'
+import { Mail } from 'lucide-react'
 
 interface LoginFormProps {
   onLogin?: (email: string, password: string) => void
@@ -11,10 +12,8 @@ interface LoginFormProps {
 
 function formatarData(data?: string) {
   if (!data) return 'Não informado'
-
   const [ano, mes, dia] = data.split('-')
   if (ano && mes && dia) return `${dia}/${mes}/${ano}`
-
   return data
 }
 
@@ -27,6 +26,7 @@ const LoginForm = ({ onLogin }: LoginFormProps): React.JSX.Element => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [emailNotVerified, setEmailNotVerified] = useState(false)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
@@ -34,6 +34,7 @@ const LoginForm = ({ onLogin }: LoginFormProps): React.JSX.Element => {
     e.preventDefault()
     setLoading(true)
     setError('')
+    setEmailNotVerified(false)
 
     try {
       const response = await fetch('/api/auth/login', {
@@ -44,29 +45,32 @@ const LoginForm = ({ onLogin }: LoginFormProps): React.JSX.Element => {
 
       const data = await response.json()
 
+      if (response.status === 403) {
+        // E-mail não verificado — mostra aviso específico
+        setEmailNotVerified(true)
+        return
+      }
+
       if (!response.ok) {
         throw new Error(data.error || 'Email ou senha incorretos.')
       }
 
       if (onLogin) onLogin(email, password)
-      
-      // Salva no localStorage para mock de autenticação
+
       localStorage.setItem('userLoggedIn', 'true')
       localStorage.setItem('userEmail', data.user?.email || email)
-      localStorage.setItem('userName', data.user?.name || 'Renata Gouveia')
+      localStorage.setItem('userName', data.user?.name || 'Usuário')
       localStorage.setItem(
-        'userProfile',
-        JSON.stringify({
-          name: data.user?.name || 'Renata Gouveia',
-          email: data.user?.email || email,
-          empresa: 'Edenred',
-          dataNascimento: formatarData(data.user?.birthDate),
-          localizacao: formatarLocalizacao(data.user?.city, data.user?.state),
-        })
+          'userProfile',
+          JSON.stringify({
+            name: data.user?.name || 'Usuário',
+            email: data.user?.email || email,
+            empresa: 'Edenred',
+            dataNascimento: formatarData(data.user?.birthDate),
+            localizacao: formatarLocalizacao(data.user?.city, data.user?.state),
+          })
       )
       window.dispatchEvent(new Event('userProfileUpdated'))
-      
-      // REDIRECIONAMENTO PARA A ROTA /dashboard
       router.push('/dashboard')
     } catch (err: any) {
       setError(err.message)
@@ -76,58 +80,80 @@ const LoginForm = ({ onLogin }: LoginFormProps): React.JSX.Element => {
   }
 
   return (
-    <div className="w-full max-w-md p-8 bg-brand-surface rounded-xl shadow-2xl border border-brand-border">
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-brand-primary">Login</h2>
-          <div className="mt-3 flex justify-center">
-            <Card0Logo className="h-7 w-auto" />
+      <div className="w-full max-w-md p-8 bg-brand-surface rounded-xl shadow-2xl border border-brand-border">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-brand-primary">Login</h2>
+            <div className="mt-3 flex justify-center">
+              <Card0Logo className="h-7 w-auto" />
+            </div>
           </div>
-        </div>
 
-        {error && (
-          <div className="bg-red-50 border-l-4 border-brand-primary text-red-700 p-4 text-sm rounded animate-pulse">
-            {error}
+          {/* Erro genérico */}
+          {error && (
+              <div className="bg-red-50 border-l-4 border-brand-primary text-red-700 p-4 text-sm rounded animate-pulse">
+                {error}
+              </div>
+          )}
+
+          {/* Aviso de e-mail não verificado */}
+          {emailNotVerified && (
+              <div className="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 p-4 text-sm rounded">
+                <div className="flex items-start gap-2">
+                  <Mail className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-semibold mb-1">E-mail não verificado</p>
+                    <p>
+                      Acesse sua caixa de entrada e clique no link que enviamos para{' '}
+                      <strong>{email}</strong> para ativar sua conta.
+                    </p>
+                  </div>
+                </div>
+              </div>
+          )}
+
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-brand-text">Email</label>
+            <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-2 border border-brand-border rounded-lg focus:ring-2 focus:ring-brand-primary outline-none text-brand-text"
+                placeholder="seu@email.com"
+                required
+            />
           </div>
-        )}
 
-        <div className="space-y-2">
-          <label className="block text-sm font-semibold text-brand-text">Email</label>
-          <input 
-            type="email" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
-            className="w-full px-4 py-2 border border-brand-border rounded-lg focus:ring-2 focus:ring-brand-primary outline-none text-brand-text" 
-            placeholder="seu@email.com" 
-            required 
-          />
-        </div>
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-brand-text">Senha</label>
+            <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-2 border border-brand-border rounded-lg focus:ring-2 focus:ring-brand-primary outline-none text-brand-text"
+                placeholder="••••••••"
+                required
+            />
+          </div>
 
-        <div className="space-y-2">
-          <label className="block text-sm font-semibold text-brand-text">Senha</label>
-          <input 
-            type="password" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-            className="w-full px-4 py-2 border border-brand-border rounded-lg focus:ring-2 focus:ring-brand-primary outline-none text-brand-text" 
-            placeholder="••••••••" 
-            required 
-          />
-        </div>
+          <button
+              type="submit"
+              disabled={loading}
+              className={`w-full py-3 rounded-lg font-bold text-white transition-all transform active:scale-95 ${
+                  loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-brand-primary hover:bg-brand-secondary shadow-md hover:shadow-lg'
+              }`}
+          >
+            {loading ? 'Entrando...' : 'Entrar'}
+          </button>
 
-        <button 
-          type="submit" 
-          disabled={loading} 
-          className={`w-full py-3 rounded-lg font-bold text-white transition-all transform active:scale-95 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-brand-primary hover:bg-brand-secondary shadow-md hover:shadow-lg'}`}
-        >
-          {loading ? 'Entrando...' : 'Entrar'}
-        </button>
-
-        <p className="text-center text-sm text-brand-textSecondary mt-4">
-          Não tem conta? <Link href="/cadastro" className="text-brand-primary font-bold hover:underline">Cadastre-se</Link>
-        </p>
-      </form>
-    </div>
+          <p className="text-center text-sm text-brand-textSecondary mt-4">
+            Não tem conta?{' '}
+            <Link href="/cadastro" className="text-brand-primary font-bold hover:underline">
+              Cadastre-se
+            </Link>
+          </p>
+        </form>
+      </div>
   )
 }
 
