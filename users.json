@@ -108,5 +108,16 @@
     "emailVerified": true,
     "verificationToken": null,
     "verificationExpires": null
+  },
+  {
+    "name": "Arthur Moury ",
+    "email": "teste5000@gmail.com",
+    "password": "Teste*15",
+    "birthDate": "2007-02-12",
+    "city": "Recife",
+    "state": "Pernambuco",
+    "emailVerified": false,
+    "verificationToken": "5bb9c859616fb3bdf12e26e393f70c40df81712c99131d8d3fe4c4add37c3f1d",
+    "verificationExpires": "2026-06-04T16:30:06.642Z"
   }
 ]

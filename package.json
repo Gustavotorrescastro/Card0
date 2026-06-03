@@ -8,7 +8,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run test:e2e",
+    "test:e2e": "cypress run",
+    "test:e2e:open": "cypress open"
   },
   "repository": {
     "type": "git",

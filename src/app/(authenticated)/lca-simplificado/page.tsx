@@ -173,11 +173,11 @@ export default function LcaSimplificadoPage() {
 
         <section className="relative min-h-[190px] overflow-hidden rounded-xl bg-white p-6 shadow-[0_10px_24px_rgba(0,0,0,0.16)] lg:col-span-6">
           <h2 className="text-sm font-black">Carbono gerado</h2>
-          <div className="mt-8 text-5xl font-black tracking-tight">{formatKg(lca.carbonoCompensacaoKg)}kg</div>
+          <div data-testid="carbono-gerado-valor" className="mt-8 text-5xl font-black tracking-tight">{formatKg(lca.carbonoCompensacaoKg)}kg</div>
           <p className="mt-2 max-w-[250px] text-[11px] font-medium leading-snug">
             de CO₂ são gerados durante o ciclo dos vida dos cartões físicos.
           </p>
-          <p className="absolute bottom-3 left-6 max-w-[260px] text-[9px] font-semibold text-[#555]">
+          <p data-testid="processo-fisico-diferenca" className="absolute bottom-3 left-6 max-w-[260px] text-[9px] font-semibold text-[#555]">
             ↑ O processo físico gera {(lca.carbonoCompensacaoKg * lca.reducaoPercentual / 100).toLocaleString('pt-BR', { maximumFractionDigits: 2 })} kg de CO₂ a mais que o digital
           </p>
           <TreeGraphic arvores={lca.arvores} carbonoKg={lca.carbonoCompensacaoKg} />
@@ -265,7 +265,7 @@ export default function LcaSimplificadoPage() {
             })}
           </div>
 
-          <aside className="self-start rounded-2xl bg-[#ff2b1d] p-4 text-white lg:-mt-4">
+          <aside data-testid="total-ciclo-vida" className="self-start rounded-2xl bg-[#ff2b1d] p-4 text-white lg:-mt-4">
             <h3 className="text-center text-sm font-black">Total do ciclo de vida</h3>
             <div className="mt-3 space-y-2 text-sm">
               <div className="flex justify-between"><span>Físico</span><strong>{formatTon(lca.totalFisTon)} tCO₂e</strong></div>
@@ -306,8 +306,8 @@ export default function LcaSimplificadoPage() {
             </div>
 
             <div className="flex items-end justify-center gap-5">
-              <ImpactColumn value={logistica.impactoBruto} max={maxImpactoLogistica} label="Impacto bruto sem reciclagem" color={RED} />
-              <ImpactColumn value={logistica.impactoReciclado} max={maxImpactoLogistica} label="Impacto após reciclagem" color={LIGHT} />
+              <ImpactColumn testId="impacto-bruto-barra" value={logistica.impactoBruto} max={maxImpactoLogistica} label="Impacto bruto sem reciclagem" color={RED} />
+              <ImpactColumn testId="impacto-reciclado-barra" value={logistica.impactoReciclado} max={maxImpactoLogistica} label="Impacto após reciclagem" color={LIGHT} />
             </div>
           </div>
 
@@ -369,7 +369,7 @@ export default function LcaSimplificadoPage() {
 
           <div className="flex flex-col items-center justify-start pt-2 text-center lg:-mt-4 lg:pt-0">
             <span className="text-sm font-black">Total para compensar</span>
-            <strong className="mt-1 text-5xl font-black">
+            <strong data-testid="total-compensar-valor" className="mt-1 text-5xl font-black">
               {lca.carbonoCompensacaoKg.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}kg
             </strong>
             <span className="mt-1 text-sm italic text-[#777]">CO₂ equivalente gerado</span>
@@ -387,7 +387,7 @@ function TreeGraphic({ arvores, carbonoKg }: { arvores: number; carbonoKg: numbe
   const scale = clamp(Math.sqrt(carbonoKg / 40), 0.62, 1.65)
 
   return (
-    <div className="pointer-events-none absolute bottom-7 right-8 flex origin-bottom flex-col items-center transition-transform duration-300" style={{ transform: `scale(${scale})` }}>
+    <div data-testid="carbono-arvore" className="pointer-events-none absolute bottom-7 right-8 flex origin-bottom flex-col items-center transition-transform duration-300" style={{ transform: `scale(${scale})` }}>
       <div className="relative h-28 w-36">
         <span className="absolute left-2 top-8 h-16 w-16 rounded-full bg-[#eef59a]/70 transition-all duration-300" />
         <span className="absolute left-8 top-2 h-20 w-20 rounded-full bg-[#eef59a]/70 transition-all duration-300" />
@@ -455,11 +455,11 @@ function SliderControl({
   )
 }
 
-function ImpactColumn({ value, max, label, color }: { value: number; max: number; label: string; color: string }) {
+function ImpactColumn({ value, max, label, color, testId }: { value: number; max: number; label: string; color: string; testId: string }) {
   return (
     <div className="flex h-44 flex-col items-center justify-end">
       <span className="mb-1 text-[9px] font-medium">{value.toFixed(2)} kgCO₂e</span>
-      <div className="w-14" style={{ height: `${Math.max(18, (value / max) * 120)}px`, backgroundColor: color }} />
+      <div data-testid={testId} className="w-14" style={{ height: `${Math.max(18, (value / max) * 120)}px`, backgroundColor: color }} />
       <span className="mt-2 max-w-[70px] text-center text-[8px] leading-tight">{label}</span>
     </div>
   )
