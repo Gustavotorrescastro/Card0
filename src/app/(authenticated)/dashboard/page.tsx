@@ -7,6 +7,12 @@ import { useUser } from '@/context/UserContext'
 import { dashboardNavigation } from '@/config/navigation'
 
 const produtosEmpresa = ['Taggy', 'Ticket Log', 'Repom', 'Pagbem']
+const produtoDetalhes: Record<string, { status: string; emissao: string; transacoes: string }> = {
+  Taggy: { status: 'Ativo para frotas leves', emissao: '12 cartões digitais', transacoes: '1.240 transações/mês' },
+  'Ticket Log': { status: 'Operação logística', emissao: '38 cartões digitais', transacoes: '3.890 transações/mês' },
+  Repom: { status: 'Gestão de transporte', emissao: '24 cartões digitais', transacoes: '2.160 transações/mês' },
+  Pagbem: { status: 'Pagamentos corporativos', emissao: '18 cartões digitais', transacoes: '1.780 transações/mês' },
+}
 
 type OperationalMetrics = {
   co2EvitadoKg?: number
@@ -32,6 +38,9 @@ export default function Dashboard() {
   const { profile, updateProfile } = useUser()
   const [editando, setEditando] = useState(false)
   const [formData, setFormData] = useState({ ...profile })
+  const [produtoSelecionado, setProdutoSelecionado] = useState(produtosEmpresa[0])
+  const [historicoAberto, setHistoricoAberto] = useState(false)
+  const [metricaAtiva, setMetricaAtiva] = useState<'custo' | 'impacto'>('custo')
 
   const abrirEdicao = () => {
     setFormData({ ...profile })
@@ -91,6 +100,17 @@ export default function Dashboard() {
   const gaugeAngle = Math.PI - (metricas.score / 100) * Math.PI
   const knobX = 110 + 75 * Math.cos(gaugeAngle)
   const knobY = 115 - 75 * Math.sin(gaugeAngle)
+  const detalheProduto = produtoDetalhes[produtoSelecionado]
+  const historico = [
+    { periodo: 'Jan', custo: metricas.custo - 8, impacto: metricas.impacto + 9 },
+    { periodo: 'Fev', custo: metricas.custo - 5, impacto: metricas.impacto + 6 },
+    { periodo: 'Mar', custo: metricas.custo - 2, impacto: metricas.impacto + 3 },
+    { periodo: 'Atual', custo: metricas.custo, impacto: metricas.impacto },
+  ].map((item) => ({
+    ...item,
+    custo: clamp(item.custo, 0, 100),
+    impacto: clamp(item.impacto, 0, 100),
+  }))
 
   return (
     <div className="w-full space-y-8 pb-16 font-sans">
@@ -182,13 +202,29 @@ export default function Dashboard() {
 
           <div className="grid grid-cols-2 gap-3">
             {produtosEmpresa.map((produto) => (
-              <div
+              <button
+                type="button"
                 key={produto}
-                className="flex h-16 items-center justify-center rounded-xl border border-[#ffb4ae] bg-[#fff7f7] px-3 text-center shadow-sm transition-all hover:border-[#f72717]"
+                onClick={() => setProdutoSelecionado(produto)}
+                className={`flex h-16 items-center justify-center rounded-xl border px-3 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-[#f72717] ${
+                  produtoSelecionado === produto ? 'border-[#f72717] bg-[#ff2b1d] text-white' : 'border-[#ffb4ae] bg-[#fff7f7]'
+                }`}
               >
-                <span className="text-sm font-black italic tracking-tight text-[#f72717]">{produto}</span>
-              </div>
+                <span className={`text-sm font-black italic tracking-tight ${produtoSelecionado === produto ? 'text-white' : 'text-[#f72717]'}`}>{produto}</span>
+              </button>
             ))}
+          </div>
+
+          <div className="mt-5 rounded-2xl border border-[#ffe1de] bg-[#fff7f7] p-4">
+            <div className="flex items-center justify-between gap-3">
+              <strong className="text-sm font-black text-brand-text">{produtoSelecionado}</strong>
+              <span className="rounded-full bg-[#ff2b1d] px-3 py-1 text-[9px] font-black uppercase tracking-wide text-white">Selecionado</span>
+            </div>
+            <p className="mt-2 text-xs font-semibold text-slate-500">{detalheProduto.status}</p>
+            <div className="mt-3 grid grid-cols-2 gap-3 text-[10px] font-bold text-brand-text">
+              <span className="rounded-xl bg-white px-3 py-2">{detalheProduto.emissao}</span>
+              <span className="rounded-xl bg-white px-3 py-2">{detalheProduto.transacoes}</span>
+            </div>
           </div>
         </section>
       </div>
@@ -197,8 +233,12 @@ export default function Dashboard() {
         <section className="min-h-[360px] rounded-[2rem] border border-[#ffe1de] bg-white p-6 shadow-sm lg:col-span-5">
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-xs font-black tracking-tight text-brand-text">Painel de custo/impacto</h3>
-            <button className="flex items-center gap-1 rounded-lg border border-[#ffb4ae] bg-[#fff7f7] px-3 py-1 text-[10px] font-semibold text-brand-text transition-all hover:bg-[#ffe5e5]">
-              Ver histórico <ChevronDown size={12} />
+            <button
+              type="button"
+              onClick={() => setHistoricoAberto((current) => !current)}
+              className="flex items-center gap-1 rounded-lg border border-[#ffb4ae] bg-[#fff7f7] px-3 py-1 text-[10px] font-semibold text-brand-text transition-all hover:bg-[#ffe5e5]"
+            >
+              {historicoAberto ? 'Ocultar histórico' : 'Ver histórico'} <ChevronDown className={historicoAberto ? 'rotate-180 transition-transform' : 'transition-transform'} size={12} />
             </button>
           </div>
 
@@ -209,10 +249,37 @@ export default function Dashboard() {
             </div>
 
             <div className="mt-5 grid grid-cols-2 border-t border-slate-300 pt-5">
-              <MetricIcon label="Custo" icon="money" />
-              <MetricIcon label="Impacto" icon="chart" bordered />
+              <MetricIcon label="Custo" icon="money" active={metricaAtiva === 'custo'} onClick={() => setMetricaAtiva('custo')} />
+              <MetricIcon label="Impacto" icon="chart" bordered active={metricaAtiva === 'impacto'} onClick={() => setMetricaAtiva('impacto')} />
             </div>
           </div>
+
+          {historicoAberto && (
+            <div className="mt-5 rounded-2xl border border-[#ffe1de] bg-[#fff7f7] p-4">
+              <div className="mb-3 flex items-center justify-between">
+                <strong className="text-xs font-black text-brand-text">
+                  Histórico de {metricaAtiva === 'custo' ? 'custo' : 'impacto'}
+                </strong>
+                <span className="text-[10px] font-bold text-[#f72717]">
+                  {metricaAtiva === 'custo' ? `${metricas.custo}%` : `${metricas.impacto}%`}
+                </span>
+              </div>
+              <div className="space-y-2">
+                {historico.map((item) => {
+                  const valor = metricaAtiva === 'custo' ? item.custo : item.impacto
+                  return (
+                    <div key={item.periodo} className="grid grid-cols-[44px_1fr_38px] items-center gap-3 text-[10px] font-bold">
+                      <span>{item.periodo}</span>
+                      <div className="h-2 overflow-hidden rounded-full bg-[#ffddd9]">
+                        <div className="h-full rounded-full bg-[#f72717]" style={{ width: `${valor}%` }} />
+                      </div>
+                      <span className="text-right">{valor}%</span>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
 
           <p className="mt-6 text-center text-[10px] font-semibold text-slate-500">
             Sua meta estimada para este ano é de até {metricas.metaAnualKg.toLocaleString('pt-BR')} kg CO₂
@@ -317,10 +384,28 @@ function MetricBar({ label, value }: { label: string; value: number }) {
   )
 }
 
-function MetricIcon({ label, icon, bordered = false }: { label: string; icon: 'money' | 'chart'; bordered?: boolean }) {
+function MetricIcon({
+  label,
+  icon,
+  bordered = false,
+  active = false,
+  onClick,
+}: {
+  label: string
+  icon: 'money' | 'chart'
+  bordered?: boolean
+  active?: boolean
+  onClick: () => void
+}) {
   return (
-    <div className={`flex flex-col items-center gap-2 ${bordered ? 'border-l border-slate-300' : ''}`}>
-      <div className="text-[#f72717]">
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex flex-col items-center gap-2 rounded-2xl py-2 transition-all hover:bg-[#fff1ef] ${
+        bordered ? 'border-l border-slate-300' : ''
+      } ${active ? 'bg-[#fff1ef]' : ''}`}
+    >
+      <div className={active ? 'text-[#f72717]' : 'text-[#f72717]/70'}>
         {icon === 'money' ? (
           <svg className="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <rect x="3" y="6" width="18" height="12" rx="2" />
@@ -330,7 +415,7 @@ function MetricIcon({ label, icon, bordered = false }: { label: string; icon: 'm
           <BarChart3 size={40} strokeWidth={2.5} />
         )}
       </div>
-      <span className="text-[10px] font-semibold text-brand-text">{label}</span>
-    </div>
+      <span className={`text-[10px] font-semibold ${active ? 'text-[#f72717]' : 'text-brand-text'}`}>{label}</span>
+    </button>
   )
 }

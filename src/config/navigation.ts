@@ -5,7 +5,6 @@ import {
   Calculator,
   Leaf,
   Recycle,
-  MapPin,
   User,
 } from 'lucide-react'
 
@@ -46,12 +45,6 @@ export const dashboardNavigation: NavigationItem[] = [
     label: 'Operação e Execução',
     description: 'Veja o ciclo de vida e a projeção operacional.',
     icon: Recycle,
-  },
-  {
-    href: '/logistica-reversa',
-    label: 'Logística Reversa',
-    description: 'Encontre descarte, reciclagem e offset de carbono.',
-    icon: MapPin,
   },
   {
     href: '/perfil',

@@ -80,3 +80,61 @@ export const getUserByEmail = (email: string) => {
   const users = getUsers();
   return users.find((u: any) => String(u.email).toLowerCase() === String(email).toLowerCase());
 };
+
+export const createPasswordResetCode = (email: string): { success: boolean; code?: string; message: string } => {
+  const users = getUsers();
+  const userIndex = users.findIndex(
+    (u: any) => String(u.email).toLowerCase() === String(email).toLowerCase()
+  );
+
+  if (userIndex === -1) {
+    return { success: false, message: 'E-mail não encontrado.' };
+  }
+
+  const code = String(crypto.randomInt(100000, 999999));
+  const passwordResetExpires = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+
+  users[userIndex] = {
+    ...users[userIndex],
+    passwordResetCode: code,
+    passwordResetExpires,
+  };
+  persistUsers(users);
+
+  return { success: true, code, message: 'Código de recuperação gerado.' };
+};
+
+export const resetPasswordWithCode = (
+  email: string,
+  code: string,
+  password: string
+): { success: boolean; message: string } => {
+  const users = getUsers();
+  const userIndex = users.findIndex(
+    (u: any) => String(u.email).toLowerCase() === String(email).toLowerCase()
+  );
+
+  if (userIndex === -1) {
+    return { success: false, message: 'E-mail não encontrado.' };
+  }
+
+  const user = users[userIndex];
+
+  if (!user.passwordResetCode || String(user.passwordResetCode) !== String(code).trim()) {
+    return { success: false, message: 'Código de verificação inválido.' };
+  }
+
+  if (!user.passwordResetExpires || new Date(user.passwordResetExpires) < new Date()) {
+    return { success: false, message: 'Código expirado. Solicite um novo código.' };
+  }
+
+  users[userIndex] = {
+    ...user,
+    password,
+    passwordResetCode: null,
+    passwordResetExpires: null,
+  };
+  persistUsers(users);
+
+  return { success: true, message: 'Senha alterada com sucesso.' };
+};

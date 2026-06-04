@@ -15,7 +15,7 @@ import Card0Logo from './Card0Logo'
 import EdenredLogo from './EdenredLogo'
 import Stepper from './Stepper'
 
-type AuthStep = 'login' | 'details' | 'password' | 'done'
+type AuthStep = 'login' | 'details' | 'password' | 'done' | 'forgot' | 'reset'
 
 type AuthScreenProps = {
   initialStep?: AuthStep
@@ -26,6 +26,8 @@ const stepIndex: Record<AuthStep, number> = {
   details: 1,
   password: 2,
   done: 3,
+  forgot: 0,
+  reset: 0,
 }
 
 const estados = ['Pernambuco', 'Sao Paulo', 'Rio de Janeiro', 'Minas Gerais', 'Bahia']
@@ -72,6 +74,8 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
   const [step, setStep] = useState<AuthStep>(initialStep)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [notice, setNotice] = useState('')
+  const [emailWarning, setEmailWarning] = useState('')
   const [loginData, setLoginData] = useState({ email: '', password: '' })
   const [profile, setProfile] = useState({
     name: '',
@@ -81,6 +85,12 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
     state: '',
   })
   const [passwords, setPasswords] = useState({
+    password: '',
+    confirmPassword: '',
+  })
+  const [resetData, setResetData] = useState({
+    email: '',
+    code: '',
     password: '',
     confirmPassword: '',
   })
@@ -99,10 +109,25 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
   )
 
   const allPasswordChecks = Object.values(passwordChecks).every(Boolean)
-  const cadastroAtivo = step !== 'login'
+  const resetPasswordChecks = useMemo(
+    () => ({
+      length: resetData.password.length >= 8,
+      uppercase: /[A-Z]/.test(resetData.password),
+      number: /\d/.test(resetData.password),
+      symbol: /[^A-Za-z0-9]/.test(resetData.password),
+      match:
+        resetData.password.length > 0 &&
+        resetData.password === resetData.confirmPassword,
+    }),
+    [resetData]
+  )
+  const allResetPasswordChecks = Object.values(resetPasswordChecks).every(Boolean)
+  const cadastroAtivo = step === 'details' || step === 'password' || step === 'done'
 
   const voltarParaLogin = () => {
     setError('')
+    setNotice('')
+    setEmailWarning('')
     setStep('login')
     router.push('/login')
   }
@@ -126,6 +151,7 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
     event.preventDefault()
     setLoading(true)
     setError('')
+    setNotice('')
 
     try {
       const response = await fetch('/api/auth/login', {
@@ -155,6 +181,8 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
   const handleDetails = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setError('')
+    setNotice('')
+    setEmailWarning('')
     setLoading(true)
 
     try {
@@ -168,7 +196,7 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
       }
 
       if (data.exists) {
-        setError('Este e-mail já está cadastrado. Faça login ou use outro e-mail.')
+        setEmailWarning('Este e-mail já está cadastrado. Faça login ou use outro e-mail.')
         return
       }
 
@@ -183,6 +211,7 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
   const handleRegister = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setError('')
+    setNotice('')
 
     if (!allPasswordChecks) {
       setError('A senha precisa cumprir todas as regras antes de continuar.')
@@ -218,6 +247,7 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
         state: profile.state,
       })
       setStep('done')
+      setNotice('Enviamos um e-mail de verificação. Confirme seu e-mail antes de fazer login.')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao realizar cadastro.')
     } finally {
@@ -226,8 +256,88 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
   }
 
   const finishRegistration = () => {
-    localStorage.setItem('userLoggedIn', 'true')
-    router.push('/dashboard')
+    setStep('login')
+    setLoginData((current) => ({ ...current, email: profile.email }))
+    setNotice('Depois de verificar seu e-mail, entre com sua senha para acessar o sistema.')
+    router.push('/login')
+  }
+
+  const solicitarRecuperacaoSenha = async () => {
+    const email = (loginData.email || resetData.email).trim()
+    setError('')
+    setNotice('')
+
+    if (!email) {
+      setError('Digite seu e-mail no campo de login para receber o código de verificação.')
+      return
+    }
+
+    setLoading(true)
+
+    try {
+      const response = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Erro ao enviar código de recuperação.')
+      }
+
+      setResetData({
+        email,
+        code: '',
+        password: '',
+        confirmPassword: '',
+      })
+      setNotice('Enviamos um código de verificação para o e-mail informado.')
+      setStep('reset')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao enviar código de recuperação.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleResetPassword = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setError('')
+    setNotice('')
+
+    if (!allResetPasswordChecks) {
+      setError('A nova senha precisa cumprir todas as regras antes de continuar.')
+      return
+    }
+
+    setLoading(true)
+
+    try {
+      const response = await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: resetData.email,
+          code: resetData.code,
+          password: resetData.password,
+        }),
+      })
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Erro ao redefinir senha.')
+      }
+
+      setLoginData({ email: resetData.email, password: '' })
+      setResetData({ email: '', code: '', password: '', confirmPassword: '' })
+      setStep('login')
+      setNotice('Senha alterada com sucesso. Faça login com a nova senha.')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao redefinir senha.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -291,6 +401,7 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
               </div>
 
               {error && <ErrorMessage message={error} />}
+              {notice && <NoticeMessage message={notice} />}
 
               <div className="mt-auto space-y-5 text-center">
                 <button
@@ -302,6 +413,8 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
                 </button>
                 <button
                   type="button"
+                  onClick={solicitarRecuperacaoSenha}
+                  disabled={loading}
                   className="block w-full text-sm font-medium text-[#ff2b1d]"
                 >
                   Esqueceu sua senha?
@@ -318,6 +431,91 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
                   Ainda nao tem conta? Cadastre-se agora.
                 </button>
               </div>
+            </form>
+          </section>
+        )}
+
+        {step === 'reset' && (
+          <section className="mx-auto w-full max-w-[725px] rounded-xl bg-[#dfdfdf] px-16 py-8">
+            <div className="text-center">
+              <div className="mb-2 flex justify-center">
+                <EdenredLogo />
+              </div>
+              <h1 className="text-3xl font-bold">Redefina sua senha</h1>
+              <p className="mt-1 text-lg">
+                Informe o código enviado por e-mail e escolha uma nova senha.
+              </p>
+            </div>
+
+            <form onSubmit={handleResetPassword} className="mt-8 space-y-7">
+              <Field
+                label="E-mail"
+                type="email"
+                value={resetData.email}
+                inputClassName="h-[47px] rounded-full border-0 px-6"
+                onChange={(value) => setResetData({ ...resetData, email: value })}
+              />
+              <Field
+                label="Código de verificação"
+                value={resetData.code}
+                placeholder="Digite o código recebido"
+                inputClassName="h-[47px] rounded-full border-0 px-6 text-center tracking-[0.35em]"
+                onChange={(value) => setResetData({ ...resetData, code: value })}
+              />
+              <Field
+                label="Nova senha"
+                type="password"
+                value={resetData.password}
+                placeholder="Digite aqui"
+                inputClassName="h-[47px] rounded-full border-0 px-6"
+                onChange={(value) => setResetData({ ...resetData, password: value })}
+              />
+              <Field
+                label="Confirme a nova senha"
+                type="password"
+                value={resetData.confirmPassword}
+                placeholder="Digite aqui"
+                inputClassName="h-[47px] rounded-full border-0 px-6"
+                onChange={(value) => setResetData({ ...resetData, confirmPassword: value })}
+              />
+
+              <div className="space-y-1 pl-5 text-sm">
+                <PasswordCheck ok={resetPasswordChecks.length}>
+                  Minimo de <strong>8 caracteres</strong>
+                </PasswordCheck>
+                <PasswordCheck ok={resetPasswordChecks.uppercase}>
+                  Incluir pelo menos <strong>uma letra maiuscula</strong>
+                </PasswordCheck>
+                <PasswordCheck ok={resetPasswordChecks.number}>
+                  Incluir pelo menos <strong>um numero</strong>
+                </PasswordCheck>
+                <PasswordCheck ok={resetPasswordChecks.symbol}>
+                  Incluir pelo menos <strong>um simbolo</strong>
+                </PasswordCheck>
+                <PasswordCheck ok={resetPasswordChecks.match}>
+                  Confirmacao igual a senha
+                </PasswordCheck>
+              </div>
+
+              {error && <ErrorMessage message={error} />}
+              {notice && <NoticeMessage message={notice} />}
+
+              <div className="flex justify-center">
+                <PrimaryButton label="Alterar senha" loading={loading} />
+              </div>
+
+              <p className="text-center text-sm">
+                Não recebeu o código?{' '}
+                <button
+                  type="button"
+                  onClick={solicitarRecuperacaoSenha}
+                  className="font-semibold text-[#e91d2a] hover:underline"
+                >
+                  Enviar novamente
+                </button>
+              </p>
+
+              <LoginShortcut onClick={voltarParaLogin} />
             </form>
           </section>
         )}
@@ -342,7 +540,11 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
                   value={profile.email}
                   placeholder="Digite aqui"
                   inputClassName="h-[47px] rounded-full border-0 px-6"
-                  onChange={(value) => setProfile({ ...profile, email: value })}
+                  onChange={(value) => {
+                    setEmailWarning('')
+                    setError('')
+                    setProfile({ ...profile, email: value })
+                  }}
                 />
                 <Field
                   label="Data de nascimento"
@@ -366,6 +568,9 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
                   onChange={(value) => setProfile({ ...profile, state: value })}
                 />
               </div>
+
+              {emailWarning && <ErrorMessage message={emailWarning} />}
+              {error && <ErrorMessage message={error} />}
 
               <div className="flex justify-center pt-2">
                 <PrimaryButton label="Proximo" loading={loading} />
@@ -437,9 +642,12 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
           <section className="mx-auto flex min-h-[635px] w-full max-w-[740px] flex-col items-center rounded-xl bg-[#dfdfdf] px-12 py-7 text-center">
             <EdenredLogo />
             <h1 className="mt-9 text-[44px] leading-tight">
-              Cadastro feito com sucesso!
+              Cadastro quase concluído!
             </h1>
-            <p className="mt-2 text-2xl">Preencha seus dados para criar sua conta</p>
+            <p className="mt-2 max-w-xl text-2xl">
+              Enviamos um e-mail de verificação para {profile.email}. Confirme seu e-mail antes de fazer login.
+            </p>
+            {notice && <NoticeMessage message={notice} />}
             <CheckCircle2
               className="mt-16 text-[#ff2b1d]"
               size={160}
@@ -450,7 +658,7 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
               onClick={finishRegistration}
               className="mt-auto h-11 min-w-[330px] rounded-full bg-[#e91d2a] px-10 text-xl text-white"
             >
-              Acesse nosso site agora!
+              Ir para o login
             </button>
           </section>
         )}
@@ -590,6 +798,14 @@ function PasswordCheck({
 function ErrorMessage({ message }: { message: string }) {
   return (
     <div className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-center text-sm font-medium text-red-700">
+      {message}
+    </div>
+  )
+}
+
+function NoticeMessage({ message }: { message: string }) {
+  return (
+    <div className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-center text-sm font-medium text-emerald-700">
       {message}
     </div>
   )

@@ -50,6 +50,11 @@ export default function LcaSimplificadoPage() {
   const [matriz, setMatriz] = useState<keyof typeof matrizEnergetica>('br')
   const [taxaReciclagem, setTaxaReciclagem] = useState(60)
   const [cartoesDescarte, setCartoesDescarte] = useState(5000)
+  const [faseDetalhe, setFaseDetalhe] = useState<FaseKey | null>('producao')
+  const [localColeta, setLocalColeta] = useState('Recife, PE')
+  const [buscaRealizada, setBuscaRealizada] = useState(false)
+  const [projetoOffset, setProjetoOffset] = useState<'amazonia' | 'eolico'>('amazonia')
+  const [compensacaoStatus, setCompensacaoStatus] = useState('')
 
   const lca = useMemo(() => {
     const multMatriz = matrizEnergetica[matriz].mult
@@ -203,13 +208,14 @@ export default function LcaSimplificadoPage() {
           <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
             {fases.map((fase, index) => {
               const faseData = lca.fases[fase.key]
-              const isActive = index === 0
+              const isActive = faseDetalhe === fase.key
               return (
                 <article
                   key={fase.key}
+                  onClick={() => setFaseDetalhe(fase.key)}
                   className={`min-h-[180px] rounded-2xl p-4 ${
                     isActive ? 'bg-[#ff2b1d] text-white' : 'text-black'
-                  }`}
+                  } cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg`}
                   style={{ backgroundColor: isActive ? RED : fase.color }}
                 >
                   <div className="mb-4 flex items-center gap-2 text-sm font-bold">
@@ -224,13 +230,31 @@ export default function LcaSimplificadoPage() {
                       ))}
                       <p className="pt-2 text-center font-black">Total estimado:<br />{formatTon(faseData.fisico)} tCO₂e</p>
                       <p className="text-center text-[9px]">42% do ciclo de vida total</p>
-                      <button className="mx-auto mt-1 block rounded-full border border-white/80 px-7 py-1 text-[9px] font-bold">Voltar</button>
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          setFaseDetalhe(null)
+                        }}
+                        className="mx-auto mt-1 block rounded-full border border-white/80 px-7 py-1 text-[9px] font-bold transition-all hover:bg-white hover:text-[#ff2b1d]"
+                      >
+                        Voltar
+                      </button>
                     </div>
                   ) : (
                     <div className="flex h-[115px] flex-col items-center justify-center text-center">
                       <strong className="text-3xl font-black">{faseData.percentual}%</strong>
                       <span className="mt-2 text-xs font-medium">{formatTon(faseData.fisico)}tCO₂e</span>
-                      <button className="mt-6 rounded-full border border-black px-5 py-1 text-[9px] font-semibold">Ver detalhes</button>
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          setFaseDetalhe(fase.key)
+                        }}
+                        className="mt-6 rounded-full border border-black px-5 py-1 text-[9px] font-semibold transition-all hover:bg-black hover:text-white"
+                      >
+                        Ver detalhes
+                      </button>
                     </div>
                   )}
                 </article>
@@ -323,11 +347,20 @@ export default function LcaSimplificadoPage() {
           <p className="text-xs font-medium text-[#555]">Encontre locais próximos para descarte de cartões com chip</p>
 
           <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-            <div className="flex h-11 flex-1 items-center gap-2 rounded-full border border-black px-4 text-xs font-medium">
+            <label className="flex h-11 flex-1 items-center gap-2 rounded-full border border-black px-4 text-xs font-medium">
               <MapPin size={15} />
-              Recife, PE
-            </div>
-            <button className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#ff2b1d] px-5 text-[10px] font-bold text-white">
+              <input
+                value={localColeta}
+                onChange={(event) => setLocalColeta(event.target.value)}
+                className="w-full bg-transparent outline-none"
+                aria-label="Local para busca de ponto de coleta"
+              />
+            </label>
+            <button
+              type="button"
+              onClick={() => setBuscaRealizada(true)}
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#ff2b1d] px-5 text-[10px] font-bold text-white transition-all hover:bg-[#e51f13]"
+            >
               <Search size={13} />
               Buscar pontos de coleta
             </button>
@@ -344,12 +377,24 @@ export default function LcaSimplificadoPage() {
             </div>
 
             <aside className="rounded-xl border border-black p-4 text-[10px]">
-              <strong>1 ponto encontrado</strong>
+              <strong>{buscaRealizada ? '2 pontos encontrados' : '1 ponto encontrado'}</strong>
               <div className="mt-5 rounded-lg bg-white p-2 shadow-sm">
                 <p className="font-black">Cooperativa De Trabalho Esperança Viva</p>
                 <p className="mt-1 text-[#555]">R. Imperial, 748 - São José, Recife - PE</p>
               </div>
-              <button className="mt-20 w-full rounded-lg border border-black py-3 text-[10px] font-bold">Ver todos no mapa</button>
+              {buscaRealizada && (
+                <div className="mt-3 rounded-lg bg-white p-2 shadow-sm">
+                  <p className="font-black">EcoPonto Empresarial {localColeta.split(',')[0] || 'Brasil'}</p>
+                  <p className="mt-1 text-[#555]">Ponto credenciado para descarte seguro.</p>
+                </div>
+              )}
+              <button
+                type="button"
+                onClick={() => window.open('https://www.openstreetmap.org/search?query=' + encodeURIComponent(localColeta), '_blank', 'noopener,noreferrer')}
+                className="mt-10 w-full rounded-lg border border-black py-3 text-[10px] font-bold transition-all hover:bg-black hover:text-white"
+              >
+                Ver todos no mapa
+              </button>
             </aside>
           </div>
         </section>
@@ -363,8 +408,26 @@ export default function LcaSimplificadoPage() {
 
         <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[1fr_1fr]">
           <div className="max-w-md space-y-6">
-            <OffsetCard title="Reflorestamento Amazônico" description="Proteção de áreas degradadas e plantio de espécies nativas." cost="R$ 15,00" />
-            <OffsetCard title="Parques Eólicos Nordeste" description="Geração de energia limpa substituindo fontes fósseis." cost="R$ 12,00" />
+            <OffsetCard
+              selected={projetoOffset === 'amazonia'}
+              onClick={() => {
+                setProjetoOffset('amazonia')
+                setCompensacaoStatus('')
+              }}
+              title="Reflorestamento Amazônico"
+              description="Proteção de áreas degradadas e plantio de espécies nativas."
+              cost="R$ 15,00"
+            />
+            <OffsetCard
+              selected={projetoOffset === 'eolico'}
+              onClick={() => {
+                setProjetoOffset('eolico')
+                setCompensacaoStatus('')
+              }}
+              title="Parques Eólicos Nordeste"
+              description="Geração de energia limpa substituindo fontes fósseis."
+              cost="R$ 12,00"
+            />
           </div>
 
           <div className="flex flex-col items-center justify-start pt-2 text-center lg:-mt-4 lg:pt-0">
@@ -373,9 +436,21 @@ export default function LcaSimplificadoPage() {
               {lca.carbonoCompensacaoKg.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}kg
             </strong>
             <span className="mt-1 text-sm italic text-[#777]">CO₂ equivalente gerado</span>
-            <button className="mt-6 rounded-2xl bg-[#ff2b1d] px-14 py-4 text-lg font-black text-white shadow-lg shadow-[#ff2b1d]/20 transition-all hover:bg-[#e51f13]">
+            <button
+              type="button"
+              onClick={() => {
+                const projeto = projetoOffset === 'amazonia' ? 'Reflorestamento Amazônico' : 'Parques Eólicos Nordeste'
+                setCompensacaoStatus(`Compensação registrada no projeto ${projeto}.`)
+              }}
+              className="mt-6 rounded-2xl bg-[#ff2b1d] px-14 py-4 text-lg font-black text-white shadow-lg shadow-[#ff2b1d]/20 transition-all hover:bg-[#e51f13]"
+            >
               Compensar agora
             </button>
+            {compensacaoStatus && (
+              <p className="mt-4 rounded-xl bg-[#ffe5e5] px-4 py-3 text-sm font-bold text-[#ff2b1d]">
+                {compensacaoStatus}
+              </p>
+            )}
           </div>
         </div>
       </section>
@@ -474,12 +549,30 @@ function MetricCard({ label, value }: { label: string; value: string }) {
   )
 }
 
-function OffsetCard({ title, description, cost }: { title: string; description: string; cost: string }) {
+function OffsetCard({
+  title,
+  description,
+  cost,
+  selected,
+  onClick,
+}: {
+  title: string
+  description: string
+  cost: string
+  selected: boolean
+  onClick: () => void
+}) {
   return (
-    <article className="rounded-xl bg-[#ffb4ae] p-5">
+    <button
+      type="button"
+      onClick={onClick}
+      className={`w-full rounded-xl p-5 text-left transition-all ${
+        selected ? 'bg-[#ff2b1d] text-white shadow-lg shadow-[#ff2b1d]/20' : 'bg-[#ffb4ae] hover:bg-[#ff9f98]'
+      }`}
+    >
       <h3 className="font-black">{title}</h3>
       <p className="mt-4 text-[11px] font-medium leading-relaxed">{description}</p>
       <p className="mt-5 text-[10px] font-black">Custo por ton: {cost}</p>
-    </article>
+    </button>
   )
 }

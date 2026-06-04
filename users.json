@@ -119,5 +119,29 @@
     "emailVerified": false,
     "verificationToken": "5bb9c859616fb3bdf12e26e393f70c40df81712c99131d8d3fe4c4add37c3f1d",
     "verificationExpires": "2026-06-04T16:30:06.642Z"
+  },
+  {
+    "name": "Arthur Moury",
+    "email": "mourygodoys@gmail.com",
+    "password": "Arthur*123",
+    "birthDate": "2007-02-12",
+    "city": "Recife",
+    "state": "Pernambuco",
+    "emailVerified": false,
+    "verificationToken": "6097b7f9e702556c79aa524f8d1826552ae258724b6f4b6fc2899d892a71de0e",
+    "verificationExpires": "2026-06-05T12:55:18.918Z"
+  },
+  {
+    "name": "ARTHUR MOURY FERNANDES DE GODOY SANTOS",
+    "email": "amfgs@cesar.school",
+    "password": "Arthur*1234",
+    "birthDate": "2007-02-12",
+    "city": "Recife",
+    "state": "Pernambuco",
+    "emailVerified": true,
+    "verificationToken": null,
+    "verificationExpires": null,
+    "passwordResetCode": null,
+    "passwordResetExpires": null
   }
 ]
