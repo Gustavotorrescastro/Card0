@@ -3,6 +3,11 @@ import { ResultadosImpactoProps } from './tipos'
 import { TEXTOS_INTERFACE } from './constantes'
 import CardMetricaImpacto from './CardMetricaImpacto'
 
+function formatarDataLocal(dateISO: string) {
+  const [year, month, day] = dateISO.split('-')
+  return year && month && day ? `${day}/${month}/${year}` : '--'
+}
+
 /**
  * Componente que exibe os resultados do cálculo de impacto
  */
@@ -35,7 +40,7 @@ export default function ResultadosImpacto({ dados }: ResultadosImpactoProps) {
 
       {/* Informação adicional */}
       <div className="text-center text-sm text-gray-500 dark:text-gray-400">
-        Desde {new Date(dados.startDate).toLocaleDateString('pt-BR')}
+        Desde {formatarDataLocal(dados.startDate)}
       </div>
     </div>
   )

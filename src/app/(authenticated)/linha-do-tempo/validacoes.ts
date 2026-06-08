@@ -8,6 +8,11 @@ interface ResultadoValidacao {
   erro?: string
 }
 
+function parseDataLocal(dateISO: string) {
+  const [year, month, day] = dateISO.split('-').map(Number)
+  return new Date(year, month - 1, day)
+}
+
 /**
  * Valida a data de adesão
  * 
@@ -22,7 +27,7 @@ export function validarDataAdesao(startDate: string): ResultadoValidacao {
     }
   }
 
-  const dataAdesao = new Date(startDate)
+  const dataAdesao = parseDataLocal(startDate)
   const hoje = new Date()
 
   // Zera as horas para comparar só a data
@@ -38,7 +43,7 @@ export function validarDataAdesao(startDate: string): ResultadoValidacao {
   }
 
   // Verifica data mínima
-  const dataMinima = new Date(CONFIGURACOES_FORMULARIO.DATA_ADESAO.MIN_DATE)
+  const dataMinima = parseDataLocal(CONFIGURACOES_FORMULARIO.DATA_ADESAO.MIN_DATE)
   if (dataAdesao < dataMinima) {
     return { 
       valido: false, 

@@ -5,6 +5,21 @@ import { NextResponse } from 'next/server'
  */
 const IMPACTO_POR_DIA_KG_CO2 = 0.5
 
+function parseDataLocal(dateISO: string) {
+  const [year, month, day] = dateISO.split('-').map(Number)
+  return new Date(year, month - 1, day)
+}
+
+function formatarDataLocal(date: Date) {
+  const day = String(date.getDate()).padStart(2, '0')
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  return `${day}/${month}/${date.getFullYear()}`
+}
+
+function inicioDoDia(date: Date) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate())
+}
+
 /**
  * Interface do resultado do cálculo
  */
@@ -21,10 +36,11 @@ interface ImpactoAcumulado {
  * @returns Dados de impacto acumulado
  */
 function calcularImpactoAcumulado(startDate: Date): ImpactoAcumulado {
-  const agora = new Date()
+  const hoje = inicioDoDia(new Date())
+  const inicio = inicioDoDia(startDate)
   
   // Calcula diferença em milissegundos
-  const diferencaMs = agora.getTime() - startDate.getTime()
+  const diferencaMs = hoje.getTime() - inicio.getTime()
   
   // Converte para dias (arredonda para baixo)
   const diferencaDias = Math.floor(diferencaMs / (1000 * 60 * 60 * 24))
@@ -35,7 +51,7 @@ function calcularImpactoAcumulado(startDate: Date): ImpactoAcumulado {
   return {
     days: diferencaDias,
     totalKgCO2: impactoTotal,
-    message: `Desde ${startDate.toLocaleDateString('pt-BR')}, você já evitou ${impactoTotal.toFixed(2)} kg de CO₂.`,
+    message: `Desde ${formatarDataLocal(startDate)}, você já evitou ${impactoTotal.toFixed(2)} kg de CO₂.`,
   }
 }
 
@@ -62,7 +78,7 @@ export async function GET(req: Request) {
     }
 
     // Parse da data
-    const startDate = new Date(startDateParam)
+    const startDate = parseDataLocal(startDateParam)
 
     // Validação: data válida
     if (isNaN(startDate.getTime())) {

@@ -2,6 +2,14 @@ import { useState } from 'react'
 import { FormularioImpactoProps } from './tipos'
 import { CONFIGURACOES_FORMULARIO, TEXTOS_INTERFACE } from './constantes'
 
+function hojeISO() {
+  const hoje = new Date()
+  const year = hoje.getFullYear()
+  const month = String(hoje.getMonth() + 1).padStart(2, '0')
+  const day = String(hoje.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 /**
  * Componente de formulário para calcular impacto
  */
@@ -17,7 +25,7 @@ export default function FormularioImpacto({
   }
 
   // Data máxima é hoje
-  const hoje = new Date().toISOString().split('T')[0]
+  const hoje = hojeISO()
 
   return (
     <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-6">

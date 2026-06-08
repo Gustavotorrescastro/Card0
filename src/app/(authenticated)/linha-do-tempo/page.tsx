@@ -6,14 +6,48 @@ import { CONFIGURACOES_FORMULARIO } from './constantes'
 import { useLinhaDoTempo } from './useLinhaDoTempo'
 import { saveOperationalMetrics } from '@/lib/operationalMetrics'
 
+const TIMELINE_INPUTS_KEY = 'card0TimelineInputs'
+
+type TimelineInputs = {
+  startDate: string
+  goalKg: string
+}
+
 function hojeISO() {
-  return new Date().toISOString().split('T')[0]
+  const hoje = new Date()
+  const year = hoje.getFullYear()
+  const month = String(hoje.getMonth() + 1).padStart(2, '0')
+  const day = String(hoje.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+function formatarDataLocal(dateISO: string) {
+  const [year, month, day] = dateISO.split('-')
+  return year && month && day ? `${day}/${month}/${year}` : '--'
+}
+
+function lerDadosSalvos(): TimelineInputs | null {
+  if (typeof window === 'undefined') return null
+
+  try {
+    const raw = localStorage.getItem(TIMELINE_INPUTS_KEY)
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    return null
+  }
+}
+
+function salvarDados(inputs: TimelineInputs) {
+  if (typeof window === 'undefined') return
+
+  localStorage.setItem(TIMELINE_INPUTS_KEY, JSON.stringify(inputs))
 }
 
 export default function TimelinePage() {
   const { impactData, loading, error, calcularImpacto } = useLinhaDoTempo()
   const [startDate, setStartDate] = useState('2024-01-15')
   const [goalKg, setGoalKg] = useState('')
+  const [dadosCarregados, setDadosCarregados] = useState(false)
 
   const userGoal = goalKg
     ? `${Number(goalKg).toLocaleString('pt-BR')} kg`
@@ -23,7 +57,7 @@ export default function TimelinePage() {
     const days = impactData?.accumulatedImpact.days ?? 0
     const total = impactData?.accumulatedImpact.totalKgCO2 ?? 0
     return [
-      { label: 'Adesão', value: startDate ? new Date(startDate).toLocaleDateString('pt-BR') : '--', progress: 12 },
+      { label: 'Adesão', value: startDate ? formatarDataLocal(startDate) : '--', progress: 12 },
       { label: 'Primeiro mês', value: `${Math.max(0, Math.round(total * 0.08)).toLocaleString('pt-BR')} kg`, progress: 36 },
       { label: 'Hoje', value: `${days.toLocaleString('pt-BR')} dias`, progress: impactData ? 72 : 50 },
       { label: 'Meta definida', value: userGoal, progress: 100 },
@@ -32,6 +66,7 @@ export default function TimelinePage() {
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault()
+    salvarDados({ startDate, goalKg })
     calcularImpacto({ startDate })
   }
 
@@ -39,6 +74,30 @@ export default function TimelinePage() {
   const days = impactData?.accumulatedImpact.days ?? 0
   const mediaMensal = totalKg > 0 && days > 0 ? (totalKg / days) * 30 : 0
   const metaKg = Number(goalKg || 0)
+
+  useEffect(() => {
+    const dadosSalvos = lerDadosSalvos()
+
+    if (dadosSalvos?.startDate) {
+      setStartDate(dadosSalvos.startDate)
+    }
+
+    if (dadosSalvos?.goalKg) {
+      setGoalKg(dadosSalvos.goalKg)
+    }
+
+    if (dadosSalvos?.startDate && dadosSalvos?.goalKg) {
+      calcularImpacto({ startDate: dadosSalvos.startDate })
+    }
+
+    setDadosCarregados(true)
+  }, [])
+
+  useEffect(() => {
+    if (!dadosCarregados || !startDate || !goalKg) return
+
+    salvarDados({ startDate, goalKg })
+  }, [dadosCarregados, goalKg, startDate])
 
   useEffect(() => {
     if (!impactData || metaKg <= 0) return
