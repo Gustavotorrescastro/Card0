@@ -8,19 +8,15 @@ export const linhaDoTempoAPI = {
   /**
    * Busca os dados de impacto acumulado
    * 
-   * @param userId - ID do usuário
    * @param startDate - Data de adesão (formato YYYY-MM-DD)
    * @returns Dados de impacto
    * 
    * @throws Error se a requisição falhar
    */
-  buscarImpacto: async (
-    userId: string, 
-    startDate: string
-  ): Promise<DadosImpacto> => {
+  buscarImpacto: async (startDate: string): Promise<DadosImpacto> => {
     try {
       const response = await axios.get<DadosImpacto>(
-        `/api/linha-do-tempo?userId=${userId}&startDate=${startDate}`
+        `/api/linha-do-tempo?startDate=${startDate}`
       )
       return response.data
     } catch (error) {

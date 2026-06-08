@@ -20,7 +20,7 @@ export function useLinhaDoTempo() {
     setError('')
 
     // Valida o formulário
-    const validacao = validarFormulario(dados.userId, dados.startDate)
+    const validacao = validarFormulario(dados.startDate)
     if (!validacao.valido) {
       setError(validacao.erro || MENSAGENS_ERRO.CAMPOS_OBRIGATORIOS)
       return
@@ -29,10 +29,7 @@ export function useLinhaDoTempo() {
     setLoading(true)
 
     try {
-      const resultado = await linhaDoTempoAPI.buscarImpacto(
-        dados.userId,
-        dados.startDate
-      )
+      const resultado = await linhaDoTempoAPI.buscarImpacto(dados.startDate)
       setImpactData(resultado)
     } catch (err) {
       if (err instanceof Error) {

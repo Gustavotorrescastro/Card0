@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import {
   ChevronDown,
@@ -12,6 +12,7 @@ import {
   Trash2,
   Truck,
 } from 'lucide-react'
+import { saveOperationalMetrics } from '@/lib/operationalMetrics'
 
 type FaseKey = 'producao' | 'transporte' | 'uso' | 'descarte'
 
@@ -100,6 +101,18 @@ export default function LcaSimplificadoPage() {
       impactoReciclado,
     }
   }, [cartoesDescarte, taxaReciclagem])
+
+  useEffect(() => {
+    saveOperationalMetrics('lca', {
+      cartoesAnalisados: quantidade,
+      co2EvitadoKg: Number((lca.totalFisKg - lca.totalDigKg + logistica.co2Evitado).toFixed(1)),
+      materiaPrimaReduzidaKg: Number(logistica.pvcRecuperado.toFixed(1)),
+      reducaoPercentual: lca.reducaoPercentual,
+      taxaReciclagem,
+      carbonoCompensacaoKg: lca.carbonoCompensacaoKg,
+      updatedAt: new Date().toISOString(),
+    })
+  }, [lca, logistica, quantidade, taxaReciclagem])
 
   const fases: Array<{
     key: FaseKey

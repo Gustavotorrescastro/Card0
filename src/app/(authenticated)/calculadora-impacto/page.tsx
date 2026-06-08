@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   BarChart3,
   CheckCircle2,
@@ -8,7 +8,6 @@ import {
   Minus,
   PieChart as PieChartIcon,
   Plus,
-  RotateCcw,
   Sparkles,
   TrendingDown,
   TrendingUp,
@@ -29,6 +28,7 @@ import {
   formatarMoeda,
   formatarMoedaAbreviada,
 } from './calculos'
+import { saveOperationalMetrics } from '@/lib/operationalMetrics'
 
 type ModoComposicao = 'barra' | 'donut'
 
@@ -39,11 +39,16 @@ const PALE = '#ffe5e5'
 
 const pontosProjecao = [1000, 3000, 5000, 8000, 10000, 25000, 50000, 75000, 100000]
 
+function clampPercent(value: number) {
+  return Math.min(100, Math.max(0, value))
+}
+
 export default function CalculadoraImpactoPage() {
   const [quantidade, setQuantidade] = useState(13600)
   const [valorPorCartao, setValorPorCartao] = useState(LIMITES.VALOR_POR_CARTAO.INICIAL)
   const [modoComposicao, setModoComposicao] = useState<ModoComposicao>('barra')
   const [termometroExpandido, setTermometroExpandido] = useState(false)
+  const [termometroInfoAberto, setTermometroInfoAberto] = useState(false)
 
   const resultado = useMemo(
     () => calcularResultadoCompleto(quantidade, valorPorCartao),
@@ -69,38 +74,58 @@ export default function CalculadoraImpactoPage() {
   }, [projecao, resultado.fisico.custoTotal])
 
   const termometro = useMemo(() => {
+    const volumeScore = Math.round(
+      ((quantidade - LIMITES.QUANTIDADE_CARTOES.MIN) /
+        (LIMITES.QUANTIDADE_CARTOES.MAX - LIMITES.QUANTIDADE_CARTOES.MIN)) *
+        100
+    )
+    const distanciaBordaValor = Math.min(
+      valorPorCartao - LIMITES.VALOR_POR_CARTAO.MIN,
+      LIMITES.VALOR_POR_CARTAO.MAX - valorPorCartao
+    )
+    const valorScore = Math.round(
+      50 + (distanciaBordaValor / ((LIMITES.VALOR_POR_CARTAO.MAX - LIMITES.VALOR_POR_CARTAO.MIN) / 2)) * 50
+    )
+    const camadasScore = Math.round(
+      [resultado.percentualDireto, resultado.percentualIndireto, resultado.percentualFalha]
+        .filter((percentual) => percentual > 0)
+        .length / 3 * 100
+    )
+    const economiaScore = Math.round(clampPercent(resultado.economiaPercentual))
     const checks = [
       {
-        label: 'Volume informado acima do cenário base',
-        done: quantidade >= 10000,
+        label: `Volume analisado: ${quantidade.toLocaleString('pt-BR')} cartões`,
+        value: clampPercent(volumeScore),
       },
       {
-        label: 'Custo unitário dentro da faixa realista',
-        done: valorPorCartao >= 15 && valorPorCartao <= 30,
+        label: `Custo unitário informado: R$ ${valorPorCartao.toFixed(2).replace('.', ',')}`,
+        value: clampPercent(valorScore),
       },
       {
-        label: 'Composição de custo revisada no gráfico',
-        done: modoComposicao === 'donut',
+        label: 'Camadas de TCO calculadas com os dados atuais',
+        value: clampPercent(camadasScore),
+      },
+      {
+        label: `Economia digital estimada: ${resultado.economiaPercentual.toFixed(1)}%`,
+        value: economiaScore,
       },
     ]
-    const score = Math.round((checks.filter((check) => check.done).length / checks.length) * 100)
-    const nivel = score >= 100 ? 'Alto' : score >= 67 ? 'Médio' : 'Baixo'
+    const score = Math.round(checks.reduce((sum, check) => sum + check.value, 0) / checks.length)
+    const nivel = score >= 80 ? 'Alto' : score >= 55 ? 'Médio' : 'Baixo'
     return { checks, score, nivel }
-  }, [quantidade, valorPorCartao, modoComposicao])
+  }, [quantidade, resultado, valorPorCartao])
 
-  const aplicarCenarioReferencia = () => {
-    setQuantidade(13600)
-    setValorPorCartao(19)
-    setModoComposicao('donut')
-    setTermometroExpandido(true)
-  }
-
-  const refinarCenario = () => {
-    setQuantidade((current) => Math.min(100000, Math.max(current, 25000)))
-    setValorPorCartao((current) => Math.min(30, Math.max(current, 19)))
-    setModoComposicao('donut')
-    setTermometroExpandido(true)
-  }
+  useEffect(() => {
+    saveOperationalMetrics('financial', {
+      cartoesAnalisados: quantidade,
+      economiaPercentual: resultado.economiaPercentual,
+      economiaAbsoluta: resultado.economiaAbsoluta,
+      tcoFisico: resultado.fisico.custoTotal,
+      tcoDigital: resultado.digital,
+      precisaoSimulacao: termometro.score,
+      updatedAt: new Date().toISOString(),
+    })
+  }, [quantidade, resultado, termometro.score])
 
   const camadas = [
     {
@@ -199,11 +224,27 @@ export default function CalculadoraImpactoPage() {
         <Card className="lg:col-span-12">
           <div className="grid grid-cols-1 gap-7 lg:grid-cols-[260px_1fr_260px] lg:items-center">
             <div>
-              <p className="text-sm font-black uppercase tracking-wide text-[#ff2b1d]">Termômetro de precisão</p>
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-black uppercase tracking-wide text-[#ff2b1d]">Termômetro de precisão</p>
+                <button
+                  type="button"
+                  onClick={() => setTermometroInfoAberto((current) => !current)}
+                  className="grid h-6 w-6 place-items-center rounded-full border border-[#ffb4ae] bg-[#ffe5e5] text-xs font-black text-[#ff2b1d] transition-all hover:bg-[#ff2b1d] hover:text-white"
+                  aria-label="Explicar termômetro de precisão"
+                  title="Explicar termômetro de precisão"
+                >
+                  i
+                </button>
+              </div>
               <h2 className="mt-1 text-2xl font-black">Confiança da simulação: {termometro.nivel}</h2>
               <p className="mt-2 text-sm font-medium text-[#555]">
-                Mede o quanto os parâmetros usados deixam o TCO mais confiável para decisão.
+                Mede a qualidade dos dados atuais informados na página para apoiar a leitura do TCO.
               </p>
+              {termometroInfoAberto && (
+                <div className="mt-4 rounded-2xl border border-[#ffb4ae] bg-[#fff7f7] p-4 text-xs font-semibold leading-relaxed text-[#555]">
+                  O termômetro combina volume de cartões, custo unitário informado, camadas de TCO calculadas e economia digital estimada. Ao alterar os dados da página, a precisão é recalculada automaticamente.
+                </div>
+              )}
             </div>
 
             <div>
@@ -218,42 +259,38 @@ export default function CalculadoraImpactoPage() {
                 />
               </div>
 
-              <div className={`mt-4 grid gap-2 ${termometroExpandido ? 'grid' : 'hidden md:grid'} md:grid-cols-3`}>
-                {termometro.checks.map((check) => (
-                  <div
-                    key={check.label}
-                    className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold ${
-                      check.done ? 'border-[#ffb4ae] bg-[#fff7f7] text-black' : 'border-slate-200 bg-slate-50 text-slate-500'
-                    }`}
-                  >
-                    <CheckCircle2 size={16} className={check.done ? 'text-[#ff2b1d]' : 'text-slate-300'} />
-                    {check.label}
-                  </div>
-                ))}
+              <div
+                className={`grid overflow-hidden transition-all duration-300 ${
+                  termometroExpandido ? 'mt-4 max-h-40 opacity-100' : 'mt-0 max-h-0 opacity-0'
+                }`}
+              >
+                <div className="grid gap-2 md:grid-cols-3">
+                  {termometro.checks.map((check) => (
+                    <div
+                      key={check.label}
+                      className={`flex items-center justify-between gap-3 rounded-xl border px-3 py-2 text-xs font-semibold ${
+                        check.value >= 70 ? 'border-[#ffb4ae] bg-[#fff7f7] text-black' : 'border-slate-200 bg-slate-50 text-slate-500'
+                      }`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <CheckCircle2 size={16} className={check.value >= 70 ? 'text-[#ff2b1d]' : 'text-slate-300'} />
+                        {check.label}
+                      </span>
+                      <strong className="text-[#ff2b1d]">{Math.round(check.value)}%</strong>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
-            <div className="flex flex-col gap-3">
-              <button
-                type="button"
-                onClick={aplicarCenarioReferencia}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#ff2b1d] px-5 py-3 text-sm font-black text-white transition-all hover:bg-[#e51f13]"
-              >
-                <CheckCircle2 size={17} />
-                Aplicar referência
-              </button>
-              <button
-                type="button"
-                onClick={refinarCenario}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#ffb4ae] bg-[#ffe5e5] px-5 py-3 text-sm font-black transition-all hover:bg-[#ffd6d3]"
-              >
-                <RotateCcw size={17} />
-                Refinar cenário
-              </button>
+            <div className="flex flex-col justify-center gap-3">
+              <p className="rounded-2xl bg-[#fff7f7] p-4 text-xs font-semibold leading-relaxed text-[#555]">
+                Atualiza em tempo real conforme quantidade de cartões e valor unitário mudam.
+              </p>
               <button
                 type="button"
                 onClick={() => setTermometroExpandido((current) => !current)}
-                className="text-xs font-bold text-[#ff2b1d] hover:underline"
+                className="inline-flex items-center justify-center rounded-2xl border border-[#ffb4ae] bg-[#ffe5e5] px-5 py-3 text-sm font-black text-[#ff2b1d] transition-all hover:bg-[#ffd6d3]"
               >
                 {termometroExpandido ? 'Ocultar critérios' : 'Ver critérios'}
               </button>
@@ -292,7 +329,13 @@ export default function CalculadoraImpactoPage() {
           </div>
 
           <div className="flex min-h-[300px] items-center justify-center">
-            {modoComposicao === 'barra' ? <StackedBar camadas={camadas} /> : <Donut camadas={camadas} />}
+            <div
+              key={modoComposicao}
+              className="will-change-transform"
+              style={{ animation: 'chartSwap 360ms cubic-bezier(.2,.8,.2,1)' }}
+            >
+              {modoComposicao === 'barra' ? <StackedBar camadas={camadas} /> : <Donut camadas={camadas} />}
+            </div>
           </div>
 
           <Legend camadas={camadas} />
@@ -368,6 +411,21 @@ export default function CalculadoraImpactoPage() {
           </div>
         </Card>
       </section>
+
+      <style jsx global>{`
+        @keyframes chartSwap {
+          0% {
+            opacity: 0;
+            transform: translateY(10px) scale(0.96);
+            filter: blur(3px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+          }
+        }
+      `}</style>
     </div>
   )
 }
@@ -402,7 +460,7 @@ function Gauge({ value }: { value: number }) {
         <text x="38" y="226" fontSize="13" fontWeight="700">0%</text>
         <text x="263" y="226" fontSize="13" fontWeight="700">100%</text>
       </svg>
-      <div className="absolute inset-x-0 bottom-6 text-center">
+      <div className="absolute inset-x-0 bottom-0 text-center">
         <strong className="block text-6xl font-black leading-none">{percent.toFixed(1)}%</strong>
         <span className="mt-2 block text-2xl">da operação</span>
       </div>

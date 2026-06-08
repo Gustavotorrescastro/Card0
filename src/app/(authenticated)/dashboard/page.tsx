@@ -1,10 +1,16 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { BarChart3, ChevronDown, Edit2, Save, X } from 'lucide-react'
 import { useUser } from '@/context/UserContext'
 import { dashboardNavigation } from '@/config/navigation'
+import {
+  calculateCostImpactPanel,
+  calculateOperationalScore,
+  readOperationalMetrics,
+  type OperationalMetricsStore,
+} from '@/lib/operationalMetrics'
 
 const produtosEmpresa = ['Taggy', 'Ticket Log', 'Repom', 'Pagbem']
 const produtoDetalhes: Record<string, { status: string; emissao: string; transacoes: string }> = {
@@ -14,26 +20,6 @@ const produtoDetalhes: Record<string, { status: string; emissao: string; transac
   Pagbem: { status: 'Pagamentos corporativos', emissao: '18 cartões digitais', transacoes: '1.780 transações/mês' },
 }
 
-type OperationalMetrics = {
-  co2EvitadoKg?: number
-  materiaPrimaReduzidaKg?: number
-  transacoesCompensadas?: number
-}
-
-function clamp(valor: number, min: number, max: number) {
-  return Math.min(max, Math.max(min, valor))
-}
-
-function lerMetricasSalvas(): OperationalMetrics {
-  if (typeof window === 'undefined') return {}
-
-  try {
-    return JSON.parse(localStorage.getItem('card0OperationalMetrics') || '{}')
-  } catch {
-    return {}
-  }
-}
-
 export default function Dashboard() {
   const { profile, updateProfile } = useUser()
   const [editando, setEditando] = useState(false)
@@ -41,6 +27,7 @@ export default function Dashboard() {
   const [produtoSelecionado, setProdutoSelecionado] = useState(produtosEmpresa[0])
   const [historicoAberto, setHistoricoAberto] = useState(false)
   const [metricaAtiva, setMetricaAtiva] = useState<'custo' | 'impacto'>('custo')
+  const [operationalMetrics, setOperationalMetrics] = useState<OperationalMetricsStore>({})
 
   const abrirEdicao = () => {
     setFormData({ ...profile })
@@ -55,45 +42,27 @@ export default function Dashboard() {
   const nomeConta = profile.name?.trim() || 'Conta'
   const primeiroNome = nomeConta.split(' ')[0]
 
-  const metricas = useMemo(() => {
-    const salvas = lerMetricasSalvas()
-    const camposPreenchidos = [
-      profile.name,
-      profile.email,
-      profile.empresa,
-      profile.dataNascimento,
-      profile.localizacao,
-    ].filter((campo) => campo && campo !== 'Não informado').length
-    const completude = camposPreenchidos / 5
+  useEffect(() => {
+    const syncMetrics = () => setOperationalMetrics(readOperationalMetrics())
 
-    const co2EvitadoKg =
-      salvas.co2EvitadoKg ?? Number((completude * 28 + produtosEmpresa.length * 4.5).toFixed(1))
-    const materiaPrimaReduzidaKg =
-      salvas.materiaPrimaReduzidaKg ?? Number((completude * 5.5 + produtosEmpresa.length * 0.9).toFixed(1))
-    const transacoesCompensadas =
-      salvas.transacoesCompensadas ?? Math.round(completude * produtosEmpresa.length * 560)
+    syncMetrics()
+    window.addEventListener('storage', syncMetrics)
+    window.addEventListener('focus', syncMetrics)
 
-    const score = clamp(
-      Math.round(
-        25 +
-          Math.min(co2EvitadoKg * 0.55, 30) +
-          Math.min(materiaPrimaReduzidaKg * 2.4, 20) +
-          Math.min(transacoesCompensadas / 140, 25)
-      ),
-      0,
-      100
-    )
-
-    return {
-      co2EvitadoKg,
-      materiaPrimaReduzidaKg,
-      transacoesCompensadas,
-      score,
-      custo: clamp(Math.round(45 + score * 0.45), 0, 100),
-      impacto: clamp(Math.round(100 - score * 0.74), 0, 100),
-      metaAnualKg: Number((Math.max(2, co2EvitadoKg * 0.08)).toFixed(1)),
+    return () => {
+      window.removeEventListener('storage', syncMetrics)
+      window.removeEventListener('focus', syncMetrics)
     }
-  }, [profile])
+  }, [])
+
+  const metricas = useMemo(() => {
+    const score = calculateOperationalScore(operationalMetrics)
+    return score
+  }, [operationalMetrics])
+  const painelCustoImpacto = useMemo(
+    () => calculateCostImpactPanel(operationalMetrics),
+    [operationalMetrics]
+  )
 
   const gaugeLength = 236
   const gaugeOffset = gaugeLength - (gaugeLength * metricas.score) / 100
@@ -101,16 +70,12 @@ export default function Dashboard() {
   const knobX = 110 + 75 * Math.cos(gaugeAngle)
   const knobY = 115 - 75 * Math.sin(gaugeAngle)
   const detalheProduto = produtoDetalhes[produtoSelecionado]
-  const historico = [
-    { periodo: 'Jan', custo: metricas.custo - 8, impacto: metricas.impacto + 9 },
-    { periodo: 'Fev', custo: metricas.custo - 5, impacto: metricas.impacto + 6 },
-    { periodo: 'Mar', custo: metricas.custo - 2, impacto: metricas.impacto + 3 },
-    { periodo: 'Atual', custo: metricas.custo, impacto: metricas.impacto },
-  ].map((item) => ({
-    ...item,
-    custo: clamp(item.custo, 0, 100),
-    impacto: clamp(item.impacto, 0, 100),
-  }))
+  const painelDetalhes = painelCustoImpacto.detalhe
+    .map((item) => ({
+      label: item.label,
+      valor: metricaAtiva === 'custo' ? item.custo : item.impacto,
+    }))
+    .filter((item): item is { label: string; valor: number } => typeof item.valor === 'number')
 
   return (
     <div className="w-full space-y-8 pb-16 font-sans">
@@ -178,7 +143,7 @@ export default function Dashboard() {
           </button>
 
           <div className="shrink-0">
-            <svg className="h-40 w-40 text-[#f72717]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg className="h-40 w-40 text-black" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="50" cy="50" r="46" stroke="currentColor" strokeWidth="6" fill="white" />
               <circle cx="50" cy="40" r="16" fill="currentColor" />
               <path d="M18 78C18 64.7452 28.7452 54 42 54H58C71.2548 54 82 64.7452 82 78V82H18V78Z" fill="currentColor" />
@@ -244,8 +209,8 @@ export default function Dashboard() {
 
           <div className="border-t border-slate-300 pt-3">
             <div className="grid h-40 grid-cols-2 items-end gap-8 px-6">
-              <MetricBar label={`${metricas.custo}%`} value={metricas.custo} />
-              <MetricBar label={`${metricas.impacto}%`} value={metricas.impacto} />
+              <MetricBar label={`${painelCustoImpacto.custo}%`} value={painelCustoImpacto.custo} />
+              <MetricBar label={`${painelCustoImpacto.impacto}%`} value={painelCustoImpacto.impacto} />
             </div>
 
             <div className="mt-5 grid grid-cols-2 border-t border-slate-300 pt-5">
@@ -261,28 +226,31 @@ export default function Dashboard() {
                   Histórico de {metricaAtiva === 'custo' ? 'custo' : 'impacto'}
                 </strong>
                 <span className="text-[10px] font-bold text-[#f72717]">
-                  {metricaAtiva === 'custo' ? `${metricas.custo}%` : `${metricas.impacto}%`}
+                  {metricaAtiva === 'custo' ? `${painelCustoImpacto.custo}%` : `${painelCustoImpacto.impacto}%`}
                 </span>
               </div>
-              <div className="space-y-2">
-                {historico.map((item) => {
-                  const valor = metricaAtiva === 'custo' ? item.custo : item.impacto
-                  return (
-                    <div key={item.periodo} className="grid grid-cols-[44px_1fr_38px] items-center gap-3 text-[10px] font-bold">
-                      <span>{item.periodo}</span>
+              {painelDetalhes.length > 0 ? (
+                <div className="space-y-2">
+                  {painelDetalhes.map((item) => (
+                    <div key={`${metricaAtiva}-${item.label}`} className="grid grid-cols-[92px_1fr_38px] items-center gap-3 text-[10px] font-bold">
+                      <span>{item.label}</span>
                       <div className="h-2 overflow-hidden rounded-full bg-[#ffddd9]">
-                        <div className="h-full rounded-full bg-[#f72717]" style={{ width: `${valor}%` }} />
+                        <div className="h-full rounded-full bg-[#f72717]" style={{ width: `${item.valor}%` }} />
                       </div>
-                      <span className="text-right">{valor}%</span>
+                      <span className="text-right">{item.valor}%</span>
                     </div>
-                  )
-                })}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-[10px] font-semibold text-slate-500">
+                  Use {metricaAtiva === 'custo' ? 'Impacto Financeiro ou Risco Operacional' : 'Operação e Execução, Linha do Tempo ou Risco Operacional'} para alimentar este indicador.
+                </p>
+              )}
             </div>
           )}
 
           <p className="mt-6 text-center text-[10px] font-semibold text-slate-500">
-            Sua meta estimada para este ano é de até {metricas.metaAnualKg.toLocaleString('pt-BR')} kg CO₂
+            Painel alimentado por {painelCustoImpacto.fontesAtivas} ferramenta{painelCustoImpacto.fontesAtivas === 1 ? '' : 's'} usada{painelCustoImpacto.fontesAtivas === 1 ? '' : 's'} na plataforma.
           </p>
         </section>
 
@@ -319,7 +287,7 @@ export default function Dashboard() {
           <p className="mx-auto max-w-md text-center text-[10px] font-semibold leading-relaxed text-slate-500">
             O score considera {metricas.co2EvitadoKg.toLocaleString('pt-BR')} kg CO₂ evitados,
             {' '}{metricas.materiaPrimaReduzidaKg.toLocaleString('pt-BR')} kg de matéria-prima reduzida e
-            {' '}{metricas.transacoesCompensadas.toLocaleString('pt-BR')} transações compensadas.
+            {' '}{metricas.transacoesCompensadas.toLocaleString('pt-BR')} operações compensadas a partir de {metricas.fontesAtivas} ferramenta{metricas.fontesAtivas === 1 ? '' : 's'}.
           </p>
         </section>
       </div>

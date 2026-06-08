@@ -45,28 +45,18 @@ function calcularImpactoAcumulado(startDate: Date): ImpactoAcumulado {
  * Retorna o impacto ambiental acumulado de um usuário
  * 
  * Query params:
- * - userId: ID do usuário
  * - startDate: Data de adesão (formato YYYY-MM-DD)
  */
 export async function GET(req: Request) {
   try {
     // Extrai parâmetros da URL
     const { searchParams } = new URL(req.url)
-    const userId = searchParams.get('userId')
     const startDateParam = searchParams.get('startDate')
 
     // Validação: parâmetros obrigatórios
-    if (!userId || !startDateParam) {
+    if (!startDateParam) {
       return NextResponse.json(
-        { error: 'Parâmetros obrigatórios: userId e startDate' },
-        { status: 400 }
-      )
-    }
-
-    // Validação: userId não vazio
-    if (userId.trim().length === 0) {
-      return NextResponse.json(
-        { error: 'userId não pode ser vazio' },
+        { error: 'Parâmetro obrigatório: startDate' },
         { status: 400 }
       )
     }
@@ -96,7 +86,6 @@ export async function GET(req: Request) {
 
     // Retorna sucesso
     return NextResponse.json({
-      userId,
       startDate: startDateParam,
       accumulatedImpact: impacto,
     })

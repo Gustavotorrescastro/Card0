@@ -13,7 +13,6 @@ export interface ImpactoAcumulado {
  * Resposta completa da API
  */
 export interface DadosImpacto {
-  userId: string
   startDate: string
   accumulatedImpact: ImpactoAcumulado
 }
@@ -22,7 +21,6 @@ export interface DadosImpacto {
  * Estado do formulário
  */
 export interface FormularioState {
-  userId: string
   startDate: string
 }
 
