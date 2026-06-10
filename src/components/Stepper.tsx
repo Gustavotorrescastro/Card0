@@ -19,10 +19,12 @@ export default function Stepper({ activeIndex, onStepClick }: StepperProps) {
               disabled={!clickable}
               onClick={() => onStepClick?.(index)}
               aria-label={`Etapa ${index + 1}`}
-              className={`h-9 w-9 rounded-full transition-transform ${
+              className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-black text-white transition-transform ${
                 completed ? 'bg-[#4ee263]' : 'bg-[#666666]'
               } ${clickable ? 'cursor-pointer hover:scale-105' : 'cursor-default'}`}
-            />
+            >
+              {index + 1}
+            </button>
             {index < steps.length - 1 && (
               <div
                 className={`h-0.5 flex-1 ${

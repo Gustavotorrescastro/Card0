@@ -15,18 +15,6 @@ const nextConfig: NextConfig = {
   // A internacionalização agora é feita via middleware e pastas [lang].
   // Se você estiver usando App Router, pode remover a chave i18n.
 
-
-
-  async redirects() {
-    return [
-      {
-        source: '/',
-        destination: '/dashboard',
-        permanent: false,
-      },
-    ];
-  },
-
   // 3. appDir não é mais necessário em 'experimental', já é o padrão.
 };
 

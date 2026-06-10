@@ -26,6 +26,7 @@
     background-color: #F5F5F5;
     color: #252525;
     color-scheme: light;
+    scroll-behavior: smooth;
   }
 
   /* Configuração para o Modo Escuro (Ativado pela classe .dark) */

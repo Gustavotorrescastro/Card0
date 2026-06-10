@@ -2,12 +2,16 @@
 
 import { useMemo, useState } from 'react'
 import type { FormEvent, ReactNode } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
   ArrowRight,
+  CalendarDays,
   Check,
   CheckCircle2,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react'
 
 import AuthFooter from './AuthFooter'
@@ -31,6 +35,21 @@ const stepIndex: Record<AuthStep, number> = {
 }
 
 const estados = ['Pernambuco', 'Sao Paulo', 'Rio de Janeiro', 'Minas Gerais', 'Bahia']
+const nomesMeses = [
+  'Janeiro',
+  'Fevereiro',
+  'Março',
+  'Abril',
+  'Maio',
+  'Junho',
+  'Julho',
+  'Agosto',
+  'Setembro',
+  'Outubro',
+  'Novembro',
+  'Dezembro',
+]
+const diasSemana = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S']
 
 type StoredUser = {
   name?: string
@@ -344,7 +363,13 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
     <div className="flex min-h-screen w-full flex-col bg-[#f3f3f3] text-black">
       <header className="w-full border-t border-black bg-white">
         <div className="flex h-14 w-full items-center justify-between px-10">
-          <EdenredLogo className="h-10 w-24" />
+          <Link
+            href="/"
+            aria-label="Voltar para a página inicial"
+            className="inline-flex rounded-full outline-none transition-transform hover:scale-105 focus-visible:ring-2 focus-visible:ring-[#ff2b1d]/40"
+          >
+            <EdenredLogo className="h-10 w-24" />
+          </Link>
           <button
             type="button"
             onClick={voltarParaLogin}
@@ -415,9 +440,12 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
                   type="button"
                   onClick={solicitarRecuperacaoSenha}
                   disabled={loading}
-                  className="block w-full text-sm font-medium text-[#ff2b1d]"
+                  className="group mx-auto flex w-fit items-center justify-center text-sm font-semibold text-[#ff2b1d] transition-all duration-300 hover:-translate-y-0.5 hover:tracking-wide disabled:opacity-50"
                 >
-                  Esqueceu sua senha?
+                  <span className="relative">
+                    Esqueceu sua senha?
+                    <span className="absolute -bottom-1 left-1/2 h-0.5 w-0 -translate-x-1/2 rounded-full bg-[#ff2b1d] transition-all duration-300 group-hover:w-full" />
+                  </span>
                 </button>
                 <button
                   type="button"
@@ -426,9 +454,12 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
                     setStep('details')
                     router.push('/cadastro')
                   }}
-                  className="block w-full text-sm"
+                  className="group mx-auto inline-flex items-center justify-center rounded-full px-4 py-2 text-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:px-6 hover:text-[#ff2b1d] hover:shadow-[0_10px_24px_rgba(255,43,29,0.16)]"
                 >
-                  Ainda nao tem conta? Cadastre-se agora.
+                  <span>Ainda nao tem conta?</span>
+                  <span className="ml-1 font-semibold transition-all duration-300 group-hover:ml-2">
+                    Cadastre-se agora.
+                  </span>
                 </button>
               </div>
             </form>
@@ -548,12 +579,11 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
                 />
                 <Field
                   label="Data de nascimento"
-                  type="date"
                   value={profile.birthDate}
-                  inputClassName="h-[47px] rounded-full border-0 px-6"
                   onChange={(value) =>
                     setProfile({ ...profile, birthDate: value })
                   }
+                  renderInput={(inputProps) => <BirthDatePicker {...inputProps} />}
                 />
                 <Field
                   label="Cidade"
@@ -689,6 +719,7 @@ function Field({
   type = 'text',
   labelClassName = '',
   inputClassName = '',
+  renderInput,
 }: {
   label: string
   value: string
@@ -697,22 +728,239 @@ function Field({
   type?: string
   labelClassName?: string
   inputClassName?: string
+  renderInput?: (props: {
+    value: string
+    onChange: (value: string) => void
+    placeholder?: string
+  }) => ReactNode
 }) {
   return (
     <label className="block space-y-2">
       <span className={`block text-base font-medium ${labelClassName}`}>
         {label}
       </span>
-      <input
-        type={type}
-        value={value}
-        placeholder={placeholder}
-        onChange={(event) => onChange(event.target.value)}
-        required
-        className={`h-6 w-full rounded-md border border-[#555555] bg-white px-2 text-sm outline-none placeholder:text-[#b4b4b4] focus:ring-2 focus:ring-[#ff2b1d]/30 ${inputClassName}`}
-      />
+      {renderInput ? (
+        renderInput({ value, onChange, placeholder })
+      ) : (
+        <input
+          type={type}
+          value={value}
+          placeholder={placeholder}
+          onChange={(event) => onChange(event.target.value)}
+          required
+          className={`h-6 w-full rounded-md border border-[#555555] bg-white px-2 text-sm outline-none placeholder:text-[#b4b4b4] focus:ring-2 focus:ring-[#ff2b1d]/30 ${inputClassName}`}
+        />
+      )}
     </label>
   )
+}
+
+function BirthDatePicker({
+  value,
+  onChange,
+}: {
+  value: string
+  onChange: (value: string) => void
+}) {
+  const selectedDate = parseLocalDate(value)
+  const today = new Date()
+  const initialMonth = selectedDate || new Date(today.getFullYear() - 25, today.getMonth(), 1)
+  const [open, setOpen] = useState(false)
+  const [visibleMonth, setVisibleMonth] = useState(
+    new Date(initialMonth.getFullYear(), initialMonth.getMonth(), 1)
+  )
+  const yearOptions = Array.from({ length: 101 }, (_, index) => today.getFullYear() - index)
+  const calendarDays = getCalendarDays(visibleMonth)
+
+  const selectDate = (date: Date) => {
+    if (isFutureDate(date, today)) return
+
+    onChange(toDateInputValue(date))
+    setVisibleMonth(new Date(date.getFullYear(), date.getMonth(), 1))
+    setOpen(false)
+  }
+
+  const changeMonth = (offset: number) => {
+    setVisibleMonth(
+      (current) => new Date(current.getFullYear(), current.getMonth() + offset, 1)
+    )
+  }
+
+  const changeYear = (year: string) => {
+    setVisibleMonth((current) => new Date(Number(year), current.getMonth(), 1))
+  }
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((current) => !current)}
+        className="flex h-[47px] w-full items-center justify-between rounded-full border-0 bg-white px-5 text-left text-sm text-[#777777] outline-none shadow-sm transition-all hover:bg-[#fff7f7] focus:ring-2 focus:ring-[#ff2b1d]/30"
+      >
+        <span className={value ? 'font-semibold text-black' : ''}>
+          {value ? formatarData(value) : 'dd/mm/aa'}
+        </span>
+        <span className="grid h-8 w-8 place-items-center rounded-full bg-[#ffe5e5] text-[#ff2b1d]">
+          <CalendarDays size={17} />
+        </span>
+      </button>
+
+      {open && (
+        <div className="absolute left-1/2 top-[calc(100%+10px)] z-30 w-[315px] -translate-x-1/2 rounded-3xl border border-[#ffe1de] bg-white p-4 text-black shadow-[0_18px_40px_rgba(0,0,0,0.18)]">
+          <div className="mb-4 flex items-center justify-between gap-2">
+            <button
+              type="button"
+              onClick={() => changeMonth(-1)}
+              className="grid h-9 w-9 place-items-center rounded-full bg-[#fff1ef] text-[#ff2b1d] transition-all hover:bg-[#ff2b1d] hover:text-white"
+              aria-label="Mês anterior"
+            >
+              <ChevronLeft size={18} />
+            </button>
+
+            <div className="flex flex-1 items-center justify-center gap-2">
+              <select
+                value={visibleMonth.getMonth()}
+                onChange={(event) =>
+                  setVisibleMonth(
+                    new Date(visibleMonth.getFullYear(), Number(event.target.value), 1)
+                  )
+                }
+                className="h-9 rounded-full bg-[#fff1ef] px-3 text-xs font-black outline-none focus:ring-2 focus:ring-[#ff2b1d]/25"
+              >
+                {nomesMeses.map((mes, index) => (
+                  <option key={mes} value={index}>
+                    {mes}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={visibleMonth.getFullYear()}
+                onChange={(event) => changeYear(event.target.value)}
+                className="h-9 rounded-full bg-[#fff1ef] px-3 text-xs font-black outline-none focus:ring-2 focus:ring-[#ff2b1d]/25"
+              >
+                {yearOptions.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => changeMonth(1)}
+              className="grid h-9 w-9 place-items-center rounded-full bg-[#fff1ef] text-[#ff2b1d] transition-all hover:bg-[#ff2b1d] hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+              aria-label="Próximo mês"
+              disabled={
+                visibleMonth.getFullYear() === today.getFullYear() &&
+                visibleMonth.getMonth() >= today.getMonth()
+              }
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-black text-[#ff2b1d]">
+            {diasSemana.map((dia, index) => (
+              <span key={`${dia}-${index}`} className="py-1">
+                {dia}
+              </span>
+            ))}
+          </div>
+
+          <div className="mt-1 grid grid-cols-7 gap-1">
+            {calendarDays.map(({ date, inCurrentMonth }) => {
+              const selected = selectedDate && isSameDay(date, selectedDate)
+              const todayDate = isSameDay(date, today)
+              const disabled = isFutureDate(date, today)
+
+              return (
+                <button
+                  key={date.toISOString()}
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => selectDate(date)}
+                  className={`grid h-9 place-items-center rounded-full text-xs font-black transition-all ${
+                    selected
+                      ? 'bg-[#ff2b1d] text-white shadow-lg shadow-[#ff2b1d]/25'
+                      : todayDate
+                        ? 'bg-[#ffe5e5] text-[#ff2b1d]'
+                        : inCurrentMonth
+                          ? 'text-black hover:bg-[#fff1ef]'
+                          : 'text-[#c7c7c7] hover:bg-[#fff7f7]'
+                  } ${disabled ? 'cursor-not-allowed opacity-30 hover:bg-transparent' : ''}`}
+                >
+                  {date.getDate()}
+                </button>
+              )
+            })}
+          </div>
+
+          <div className="mt-4 flex items-center justify-between border-t border-[#ffe1de] pt-3 text-xs font-semibold text-[#777777]">
+            <button
+              type="button"
+              onClick={() => {
+                onChange('')
+                setOpen(false)
+              }}
+              className="text-[#ff2b1d] hover:underline"
+            >
+              Limpar
+            </button>
+            <span>{value ? formatarData(value) : 'Selecione uma data'}</span>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function parseLocalDate(value: string) {
+  const [year, month, day] = value.split('-').map(Number)
+
+  if (!year || !month || !day) return null
+
+  return new Date(year, month - 1, day)
+}
+
+function toDateInputValue(date: Date) {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+
+  return `${year}-${month}-${day}`
+}
+
+function isSameDay(first: Date, second: Date) {
+  return (
+    first.getFullYear() === second.getFullYear() &&
+    first.getMonth() === second.getMonth() &&
+    first.getDate() === second.getDate()
+  )
+}
+
+function isFutureDate(date: Date, today: Date) {
+  const value = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
+  const current = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime()
+
+  return value > current
+}
+
+function getCalendarDays(monthDate: Date) {
+  const year = monthDate.getFullYear()
+  const month = monthDate.getMonth()
+  const firstDay = new Date(year, month, 1)
+  const startDate = new Date(year, month, 1 - firstDay.getDay())
+
+  return Array.from({ length: 42 }, (_, index) => {
+    const date = new Date(startDate)
+    date.setDate(startDate.getDate() + index)
+
+    return {
+      date,
+      inCurrentMonth: date.getMonth() === month,
+    }
+  })
 }
 
 function SelectField({
