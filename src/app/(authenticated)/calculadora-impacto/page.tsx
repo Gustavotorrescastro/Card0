@@ -398,7 +398,7 @@ export default function CalculadoraImpactoPage() {
           <div className="mt-6 rounded-2xl bg-[#ffe5e5] p-7">
             <div className="mb-5 flex items-center gap-3">
               <Sparkles className="text-[#ff7770]" size={34} />
-              <h3 className="font-black">Economia potencial com solução Digital</h3>
+              <h3 className="font-black">Economia potencial com solução digital</h3>
             </div>
             <div className="flex flex-wrap items-end gap-3">
               <TrendingDown size={42} />

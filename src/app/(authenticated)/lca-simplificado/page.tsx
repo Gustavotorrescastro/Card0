@@ -131,7 +131,7 @@ export default function LcaSimplificadoPage() {
       titulo: 'Produção',
       icon: <Factory size={16} />,
       color: RED,
-      details: ['PVC/plástico - 32%', 'Chip NFC/EMV - 18%', 'Antena metálica - 9%', 'Impressão - 7%', 'Embalagem - 6%'],
+      details: ['PVC/plástico - 32%', 'Chip NFC/EMV - 18%', 'Antena metálica - 9%', 'Impressão - 7%', 'Embalagem - 6%', 'Outros - 28%'],
     },
     { key: 'transporte', titulo: 'Transporte', icon: <Truck size={16} />, color: ROSE, details: [] },
     { key: 'uso', titulo: 'Uso', icon: <CreditCard size={16} />, color: LIGHT, details: [] },
@@ -203,7 +203,7 @@ export default function LcaSimplificadoPage() {
           <h2 className="text-sm font-black">Carbono gerado</h2>
           <div data-testid="carbono-gerado-valor" className="mt-8 text-5xl font-black tracking-tight">{formatKg(lca.carbonoCompensacaoKg)}kg</div>
           <p className="mt-2 max-w-[250px] text-[11px] font-medium leading-snug">
-            de CO₂ são gerados durante o ciclo dos vida dos cartões físicos.
+            de CO₂ são gerados durante o ciclo de vida dos cartões físicos.
           </p>
           <p data-testid="processo-fisico-diferenca" className="absolute bottom-3 left-6 max-w-[260px] text-[9px] font-semibold text-[#555]">
             ↑ O processo físico gera {(lca.carbonoCompensacaoKg * lca.reducaoPercentual / 100).toLocaleString('pt-BR', { maximumFractionDigits: 2 })} kg de CO₂ a mais que o digital
@@ -267,7 +267,7 @@ export default function LcaSimplificadoPage() {
                   ) : (
                     <div className="flex h-[115px] flex-col items-center justify-center text-center">
                       <strong className="text-3xl font-black">{faseData.percentual}%</strong>
-                      <span className="mt-2 text-xs font-medium">{formatTon(faseData.fisico)}tCO₂e</span>
+                      <span className="mt-2 text-xs font-medium">{formatTon(faseData.fisico)} tCO₂e</span>
                       <button
                         type="button"
                         onClick={(event) => {
@@ -463,7 +463,7 @@ export default function LcaSimplificadoPage() {
               type="button"
               onClick={() => {
                 const projeto = projetoOffset === 'amazonia' ? 'Reflorestamento Amazônico' : 'Parques Eólicos Nordeste'
-                setCompensacaoStatus(`Compensação registrada no projeto ${projeto}.`)
+                setCompensacaoStatus(`Simulação: compensação de ${lca.carbonoCompensacaoKg.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} kg via ${projeto}.`)
               }}
               className="mt-6 rounded-2xl bg-[#ff2b1d] px-14 py-4 text-lg font-black text-white shadow-lg shadow-[#ff2b1d]/20 transition-all hover:bg-[#e51f13]"
             >
