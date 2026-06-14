@@ -23,8 +23,8 @@ const PALE = '#ffe5e5'
 
 const matrizEnergetica = {
   br: { label: 'Brasil', mult: 1 },
-  ue: { label: 'União Europeia', mult: 2.2 },
-  usa: { label: 'Estados Unidos', mult: 2.8 },
+  ue: { label: 'União Europeia', mult: 2.1 },
+  usa: { label: 'Estados Unidos', mult: 3.7 },
 }
 
 const co2Base = {
@@ -66,19 +66,24 @@ export default function LcaSimplificadoPage() {
     const descFisKg = quantidade * co2Base.descarte
     const totalFisKg = prodFisKg + transFisKg + usoFisKg + descFisKg
 
-    const prodDigKg = prodFisKg * 0.22
-    const transDigKg = transFisKg * 0.17
-    const usoDigKg = usoFisKg * 0.48
-    const descDigKg = descFisKg * 0.18
+    const prodDigKg = prodFisKg * 0.70
+    const transDigKg = transFisKg * 0.75
+    const usoDigKg = usoFisKg * 0.85
+    const descDigKg = descFisKg * 0.30
     const totalDigKg = prodDigKg + transDigKg + usoDigKg + descDigKg
-    const carbonoCompensacaoKg = (quantidade / 13600) * 40 * multMatriz
+    const carbonoCompensacaoKg = totalFisKg
+
+    const pProd = totalFisKg > 0 ? Math.round((prodFisKg / totalFisKg) * 100) : 0
+    const pTrans = totalFisKg > 0 ? Math.round((transFisKg / totalFisKg) * 100) : 0
+    const pUso = totalFisKg > 0 ? Math.round((usoFisKg / totalFisKg) * 100) : 0
+    const pDesc = Math.max(0, 100 - pProd - pTrans - pUso)
 
     return {
       fases: {
-        producao: { fisico: prodFisKg / 1000, digital: prodDigKg / 1000, percentual: 42 },
-        transporte: { fisico: transFisKg / 1000, digital: transDigKg / 1000, percentual: 18 },
-        uso: { fisico: usoFisKg / 1000, digital: usoDigKg / 1000, percentual: 28 },
-        descarte: { fisico: descFisKg / 1000, digital: descDigKg / 1000, percentual: 12 },
+        producao: { fisico: prodFisKg / 1000, digital: prodDigKg / 1000, percentual: pProd },
+        transporte: { fisico: transFisKg / 1000, digital: transDigKg / 1000, percentual: pTrans },
+        uso: { fisico: usoFisKg / 1000, digital: usoDigKg / 1000, percentual: pUso },
+        descarte: { fisico: descFisKg / 1000, digital: descDigKg / 1000, percentual: pDesc },
       },
       totalFisKg,
       totalDigKg,
@@ -94,7 +99,7 @@ export default function LcaSimplificadoPage() {
     const impactoBruto = cartoesDescarte * co2Base.descarte
     const impactoReciclado = impactoBruto * (1 - taxaReciclagem / 100) * 0.9
     return {
-      pvcRecuperado: cartoesDescarte * (taxaReciclagem / 100) * 0.0083,
+      pvcRecuperado: cartoesDescarte * (taxaReciclagem / 100) * 0.0055,
       co2Evitado: Math.max(0, impactoBruto - impactoReciclado),
       metaisNobres: cartoesDescarte * (taxaReciclagem / 100) * 0.00017,
       impactoBruto,
@@ -133,7 +138,12 @@ export default function LcaSimplificadoPage() {
     { key: 'descarte', titulo: 'Descarte', icon: <Trash2 size={16} />, color: PALE, details: [] },
   ]
 
-  const donutStops = `#ff2b1d 0 42%, #ff7770 42% 60%, #ffb4ae 60% 88%, #ffe5e5 88% 100%`
+  const donutStops = (() => {
+    const p1 = lca.fases.producao.percentual
+    const p2 = p1 + lca.fases.transporte.percentual
+    const p3 = p2 + lca.fases.uso.percentual
+    return `#ff2b1d 0 ${p1}%, #ff7770 ${p1}% ${p2}%, #ffb4ae ${p2}% ${p3}%, #ffe5e5 ${p3}% 100%`
+  })()
   const maxFase = Math.max(...fases.map((fase) => lca.fases[fase.key].fisico))
   const maxImpactoLogistica = 20000 * co2Base.descarte
 
@@ -242,7 +252,7 @@ export default function LcaSimplificadoPage() {
                         <p key={detail}>{detail}</p>
                       ))}
                       <p className="pt-2 text-center font-black">Total estimado:<br />{formatTon(faseData.fisico)} tCO₂e</p>
-                      <p className="text-center text-[9px]">42% do ciclo de vida total</p>
+                      <p className="text-center text-[9px]">{faseData.percentual}% do ciclo de vida total</p>
                       <button
                         type="button"
                         onClick={(event) => {
@@ -429,7 +439,7 @@ export default function LcaSimplificadoPage() {
               }}
               title="Reflorestamento Amazônico"
               description="Proteção de áreas degradadas e plantio de espécies nativas."
-              cost="R$ 15,00"
+              cost="R$ 80,00"
             />
             <OffsetCard
               selected={projetoOffset === 'eolico'}
@@ -439,7 +449,7 @@ export default function LcaSimplificadoPage() {
               }}
               title="Parques Eólicos Nordeste"
               description="Geração de energia limpa substituindo fontes fósseis."
-              cost="R$ 12,00"
+              cost="R$ 55,00"
             />
           </div>
 

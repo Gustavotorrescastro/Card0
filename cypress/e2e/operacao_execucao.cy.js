@@ -39,23 +39,23 @@ describe('Fluxo: Operação e Execução - Card0', () => {
 
     // Carbono gerado e árvore dinâmica
     cy.contains('Carbono gerado').should('be.visible')
-    cy.get('[data-testid="carbono-gerado-valor"]').should('contain', '40kg')
+    cy.get('[data-testid="carbono-gerado-valor"]').should('contain', '2.339kg')
     cy.get('[data-testid="processo-fisico-diferenca"]')
       .should('contain', 'O processo físico gera')
       .and('contain', 'kg de CO₂ a mais que o digital')
     cy.get('[data-testid="carbono-arvore"]')
-      .should('contain', 'Equivalente a 3 árvores/ano')
+      .should('contain', 'Equivalente a 150 árvores/ano')
       .and('have.attr', 'style')
-      .and('contain', 'scale(1)')
+      .and('contain', 'scale(1.65)')
 
     // Ao aumentar a quantidade de cartões, carbono e árvore também aumentam.
     alterarRange(0, 100000)
-    cy.get('[data-testid="carbono-gerado-valor"]').should('contain', '294kg')
+    cy.get('[data-testid="carbono-gerado-valor"]').should('contain', '17.200kg')
     cy.get('[data-testid="carbono-arvore"]')
-      .should('contain', 'Equivalente a 19 árvores/ano')
+      .should('contain', 'Equivalente a 1103 árvores/ano')
       .and('have.attr', 'style')
       .and('contain', 'scale(1.65)')
-    cy.get('[data-testid="total-compensar-valor"]').should('contain', '294,1kg')
+    cy.get('[data-testid="total-compensar-valor"]').should('contain', '17.200,0kg')
 
     // Comparação físico vs. digital
     cy.contains('Comparar impacto físico vs. digital por fase').scrollIntoView().should('be.visible')

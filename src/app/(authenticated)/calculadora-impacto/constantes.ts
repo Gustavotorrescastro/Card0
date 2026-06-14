@@ -6,7 +6,7 @@
  * Material PVC + chip NFC + logística + mão de obra
  */
 export const CUSTO_DIRETO = {
-  PRODUCAO_CARTAO_PVC: 8.50,    // Material PVC + impressão
+  PRODUCAO_CARTAO_PVC: 5.50,    // Material PVC + impressão (benchmark BR lote corporativo)
   CHIP_NFC: 3.20,                // Chip + antena NFC
   LOGISTICA_ENVIO: 4.80,         // Distribuição fábrica → cliente
   MAO_DE_OBRA: 2.50,             // Emissão + ativação
@@ -27,10 +27,10 @@ export const CUSTO_INDIRETO = {
  * Reemissão, pagamento negado, retrabalho, perda
  */
 export const CUSTO_FALHA = {
-  TAXA_FALHA_MENSAL: 0.02,       // 2% dos cartões falham por mês (média)
+  TAXA_FALHA_MENSAL: 0.008,      // 0.8% dos cartões falham por mês (benchmark setor — Chargeback Gurus, Fed Reserve)
   CUSTO_REEMISSAO: 20.00,        // Custo de reemitir um cartão (produção + envio)
-  CUSTO_PAGAMENTO_NEGADO: 3.50,  // Perda média por transação negada
-  TRANSACOES_PERDIDAS_MES: 4,    // Média de transações perdidas até reemissão
+  CUSTO_PAGAMENTO_NEGADO: 5.00,  // Perda média por transação negada (ticket médio benefícios BR)
+  TRANSACOES_PERDIDAS_MES: 8,    // Média de transações perdidas até reemissão (5-10 dias úteis × 1-2 tx/dia)
 }
 
 /**
@@ -40,7 +40,7 @@ export const CUSTO_FALHA = {
 export const CARTAO_DIGITAL = {
   CUSTO_ATIVACAO: 1.50,          // Setup inicial wallet/NFC
   CUSTO_OPERACIONAL_MES: 0.20,   // Infra digital (servidor, processamento)
-  TAXA_FALHA_MENSAL: 0.002,      // 0.2% (10x menor que físico)
+  TAXA_FALHA_MENSAL: 0.002,      // 0.2% (4x menor que físico)
 }
 
 /**
@@ -57,7 +57,7 @@ export const LIMITES = {
     MIN: 5,
     MAX: 50,
     STEP: 0.50,
-    INICIAL: 19.00,    // Soma média dos custos diretos como sugestão inicial
+    INICIAL: 16.00,    // Soma média dos custos diretos como sugestão inicial (5.50+3.20+4.80+2.50)
   },
 }
 
@@ -73,5 +73,5 @@ export const TEXTOS = {
   TITULO: 'Custos e Impacto Financeiro',
   SUBTITULO: 'Matriz de custo total (TCO) em camadas — entenda o custo real além do valor unitário do cartão.',
   EXPLICACAO_METRICAS:
-    'A calculadora considera três camadas de custo: diretos (produção do cartão, chip NFC, logística), indiretos (onboarding, gestão e suporte) e custo de falha (reemissão, pagamento negado e retrabalho). Os valores são baseados em médias de mercado e nas premissas técnicas do GHG Protocol e do MCTI.',
+    'A calculadora considera três camadas de custo: diretos (produção do cartão, chip NFC, logística), indiretos (onboarding, gestão e suporte) e custo de falha (reemissão, pagamento negado e retrabalho). Os valores são baseados em benchmarks de mercado (ABCorp, ICMA, Chargeback Gurus) e nas premissas técnicas do GHG Protocol e do MCTI.',
 }
