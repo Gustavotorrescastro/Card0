@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const checkAuth = () => {
-      const publicPaths = ['/', '/login', '/cadastro']
+      const publicPaths = ['/', '/login', '/cadastro', '/visualizacao-publica']
       const isPublicPath = publicPaths.includes(pathname)
       const loggedIn = localStorage.getItem('userLoggedIn') === 'true'
 

@@ -22,9 +22,21 @@ const LIGHT = '#ffb4ae'
 const PALE = '#ffe5e5'
 
 const matrizEnergetica = {
-  br: { label: 'Brasil', mult: 1 },
-  ue: { label: 'União Europeia', mult: 2.1 },
-  usa: { label: 'Estados Unidos', mult: 3.7 },
+  br: {
+    label: 'Brasil',
+    intensidadeGco2Kwh: 66,
+    resumo: 'matriz com maior participação renovável',
+  },
+  ue: {
+    label: 'União Europeia',
+    intensidadeGco2Kwh: 244,
+    resumo: 'média regional com queda recente de fósseis',
+  },
+  usa: {
+    label: 'Estados Unidos',
+    intensidadeGco2Kwh: 331,
+    resumo: 'média nacional ainda mais fóssil que a brasileira',
+  },
 }
 
 const co2Base = {
@@ -58,11 +70,13 @@ export default function LcaSimplificadoPage() {
   const [compensacaoStatus, setCompensacaoStatus] = useState('')
 
   const lca = useMemo(() => {
-    const multMatriz = matrizEnergetica[matriz].mult
+    const matrizAtual = matrizEnergetica[matriz]
+    const fatorMatriz =
+      matrizAtual.intensidadeGco2Kwh / matrizEnergetica.br.intensidadeGco2Kwh
 
-    const prodFisKg = quantidade * co2Base.producao
-    const transFisKg = quantidade * co2Base.transporte * multMatriz
-    const usoFisKg = quantidade * co2Base.uso * multMatriz
+    const prodFisKg = quantidade * co2Base.producao * (0.72 + 0.28 * fatorMatriz)
+    const transFisKg = quantidade * co2Base.transporte
+    const usoFisKg = quantidade * co2Base.uso * fatorMatriz
     const descFisKg = quantidade * co2Base.descarte
     const totalFisKg = prodFisKg + transFisKg + usoFisKg + descFisKg
 
@@ -92,6 +106,8 @@ export default function LcaSimplificadoPage() {
       carbonoCompensacaoKg,
       reducaoPercentual: Math.round((1 - totalDigKg / totalFisKg) * 100),
       arvores: Math.max(1, Math.round(carbonoCompensacaoKg / 15.6)),
+      fatorMatriz,
+      matrizAtual,
     }
   }, [quantidade, matriz])
 
@@ -195,7 +211,18 @@ export default function LcaSimplificadoPage() {
                 </select>
                 <ChevronDown className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-white" size={16} />
               </span>
+              <span className="mt-3 block rounded-2xl bg-[#fff1ef] px-4 py-3 text-[10px] font-semibold leading-relaxed text-[#555]">
+                {lca.matrizAtual.intensidadeGco2Kwh} gCO₂/kWh · fator{' '}
+                {lca.fatorMatriz.toLocaleString('pt-BR', {
+                  minimumFractionDigits: 1,
+                  maximumFractionDigits: 1,
+                })}
+                x vs. Brasil
+              </span>
             </label>
+          </div>
+          <div className="mt-5 rounded-2xl border border-[#ffe1de] bg-[#fff7f7] p-4 text-xs font-semibold leading-relaxed text-[#555]">
+            <strong className="text-[#111]">Como a matriz é considerada:</strong> usamos a intensidade média de carbono da eletricidade em gCO₂/kWh. Ela ajusta o uso energético e 28% da produção; transporte e descarte permanecem em fatores operacionais próprios.
           </div>
         </section>
 

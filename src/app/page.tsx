@@ -86,13 +86,13 @@ export default function IntroPage() {
 
           <nav className="flex items-center gap-3">
             <Link
-              href="/cadastro"
+              href="/visualizacao-publica"
               className="hidden h-11 items-center justify-center rounded-full border border-[#ffb4ae] bg-white px-5 text-sm font-black text-[#ff2b1d] shadow-sm transition-all hover:bg-[#fff1ef] sm:inline-flex"
             >
               Criar conta
             </Link>
             <Link
-              href="/login"
+              href="/visualizacao-publica"
               className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#ff2b1d] px-5 text-sm font-black text-white shadow-lg shadow-[#ff2b1d]/20 transition-all hover:-translate-y-0.5 hover:bg-[#e51f13]"
             >
               Entrar
@@ -126,19 +126,13 @@ export default function IntroPage() {
               Uma plataforma Edenred para transformar operações de cartões físicos em decisões mensuráveis, sustentáveis e financeiramente claras.
             </p>
 
-            <div className="mt-9 flex flex-col gap-4 sm:flex-row">
+            <div className="mt-9 flex">
               <Link
-                href="/login"
-                className="inline-flex h-14 items-center justify-center gap-2 rounded-2xl bg-[#ff2b1d] px-7 text-base font-black text-white shadow-xl shadow-[#ff2b1d]/20 transition-all hover:-translate-y-0.5 hover:bg-[#e51f13]"
+                href="/visualizacao-publica"
+                className="inline-flex h-16 min-w-[280px] items-center justify-center gap-3 rounded-2xl bg-[#ff2b1d] px-10 text-lg font-black text-white shadow-xl shadow-[#ff2b1d]/25 transition-all hover:-translate-y-1 hover:bg-[#e51f13] hover:shadow-2xl hover:shadow-[#ff2b1d]/30"
               >
                 Acessar plataforma
-                <ArrowRight size={18} />
-              </Link>
-              <Link
-                href="/cadastro"
-                className="inline-flex h-14 items-center justify-center rounded-2xl border border-[#ffb4ae] bg-white/90 px-7 text-base font-black text-[#ff2b1d] shadow-sm backdrop-blur transition-all hover:-translate-y-0.5 hover:bg-white"
-              >
-                Criar acesso
+                <ArrowRight size={21} />
               </Link>
             </div>
           </div>
