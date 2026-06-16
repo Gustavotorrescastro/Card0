@@ -384,7 +384,7 @@ export default function CalculadoraImpactoPage() {
         </Card>
 
         <Card className="self-start lg:col-span-6 lg:mt-16">
-          <h2 className="text-xl font-black">Físico VS Digital</h2>
+          <h2 className="text-xl font-black">Físico vs. Digital</h2>
           <p className="text-sm font-medium">Comparativo final</p>
 
           <div className="relative mt-9 grid grid-cols-2 gap-5">

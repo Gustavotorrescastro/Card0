@@ -33,7 +33,7 @@ export default function TermometroCerteza({ camposObrigatorios }: TermometroCert
       <div>
         <div className="flex justify-between items-center mb-2">
           <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-            Termômetro de Certeza
+            Termômetro de Precisão
           </span>
           <span className={`text-xs font-black uppercase tracking-wider ${corTexto} bg-opacity-10 bg-current px-2 py-0.5 rounded-full`}>
             Nível: {nivel}

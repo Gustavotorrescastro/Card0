@@ -255,7 +255,7 @@ export default function VisualizacaoPublicaPage() {
             <h1 className="text-4xl font-black tracking-tight md:text-[2.65rem]">
               Impactos ambientais
             </h1>
-            <p className="mt-1 text-lg font-bold text-[#777]">Cartão físico vs. Digital</p>
+            <p className="mt-1 text-lg font-bold text-[#777]">Cartão físico vs. digital</p>
             <p className="mt-4 max-w-md text-base font-medium leading-relaxed text-[#777]">
               Simule e descubra os impactos ambientais e operacionais médios de uma operação com cartões físicos.
             </p>

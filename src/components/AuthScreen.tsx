@@ -34,7 +34,7 @@ const stepIndex: Record<AuthStep, number> = {
   reset: 0,
 }
 
-const estados = ['Pernambuco', 'Sao Paulo', 'Rio de Janeiro', 'Minas Gerais', 'Bahia']
+const estados = ['Pernambuco', 'São Paulo', 'Rio de Janeiro', 'Minas Gerais', 'Bahia']
 const nomesMeses = [
   'Janeiro',
   'Fevereiro',
@@ -512,19 +512,19 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
 
               <div className="space-y-1 pl-5 text-sm">
                 <PasswordCheck ok={resetPasswordChecks.length}>
-                  Minimo de <strong>8 caracteres</strong>
+                  Mínimo de <strong>8 caracteres</strong>
                 </PasswordCheck>
                 <PasswordCheck ok={resetPasswordChecks.uppercase}>
-                  Incluir pelo menos <strong>uma letra maiuscula</strong>
+                  Incluir pelo menos <strong>uma letra maiúscula</strong>
                 </PasswordCheck>
                 <PasswordCheck ok={resetPasswordChecks.number}>
-                  Incluir pelo menos <strong>um numero</strong>
+                  Incluir pelo menos <strong>um número</strong>
                 </PasswordCheck>
                 <PasswordCheck ok={resetPasswordChecks.symbol}>
-                  Incluir pelo menos <strong>um simbolo</strong>
+                  Incluir pelo menos <strong>um símbolo</strong>
                 </PasswordCheck>
                 <PasswordCheck ok={resetPasswordChecks.match}>
-                  Confirmacao igual a senha
+                  Confirmação igual a senha
                 </PasswordCheck>
               </div>
 
@@ -603,7 +603,7 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
               {error && <ErrorMessage message={error} />}
 
               <div className="flex justify-center pt-2">
-                <PrimaryButton label="Proximo" loading={loading} />
+                <PrimaryButton label="Próximo" loading={loading} />
               </div>
 
               <LoginShortcut onClick={voltarParaLogin} />
@@ -641,26 +641,26 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
 
               <div className="space-y-1 pl-5 text-sm">
                 <PasswordCheck ok={passwordChecks.length}>
-                  Minimo de <strong>8 caracteres</strong>
+                  Mínimo de <strong>8 caracteres</strong>
                 </PasswordCheck>
                 <PasswordCheck ok={passwordChecks.uppercase}>
-                  Incluir pelo menos <strong>uma letra maiuscula</strong>
+                  Incluir pelo menos <strong>uma letra maiúscula</strong>
                 </PasswordCheck>
                 <PasswordCheck ok={passwordChecks.number}>
-                  Incluir pelo menos <strong>um numero</strong>
+                  Incluir pelo menos <strong>um número</strong>
                 </PasswordCheck>
                 <PasswordCheck ok={passwordChecks.symbol}>
-                  Incluir pelo menos <strong>um simbolo</strong>
+                  Incluir pelo menos <strong>um símbolo</strong>
                 </PasswordCheck>
                 <PasswordCheck ok={passwordChecks.match}>
-                  Confirmacao igual a senha
+                  Confirmação igual a senha
                 </PasswordCheck>
               </div>
 
               {error && <ErrorMessage message={error} />}
 
               <div className="flex justify-center">
-                <PrimaryButton label="Proximo" loading={loading} />
+                <PrimaryButton label="Próximo" loading={loading} />
               </div>
 
               <LoginShortcut onClick={voltarParaLogin} />
