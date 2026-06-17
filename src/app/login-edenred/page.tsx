@@ -7,7 +7,6 @@ import { useState } from 'react'
 import type { ReactNode } from 'react'
 import { ArrowRight, BarChart3, Building2, Globe2, Leaf, LockKeyhole, Mail, ShieldCheck, UserPlus } from 'lucide-react'
 
-import Card0Logo from '@/components/Card0Logo'
 import EdenredLogo from '@/components/EdenredLogo'
 import fotoFundoEdenred from '../../../FotoFundoEdenred.jpg'
 
@@ -146,17 +145,7 @@ export default function EdenredLoginPage() {
         <div className="pointer-events-none absolute -left-28 bottom-0 h-[360px] w-[360px] rounded-full bg-[#ffb4ae]/35 blur-3xl" />
 
         <div className="relative max-w-2xl">
-          <div className="inline-flex items-center gap-5 rounded-full border border-[#ffe1de] bg-white/80 px-5 py-3 shadow-sm backdrop-blur">
-            <EdenredLogo compact />
-            <span className="h-9 w-px bg-[#111]" />
-            <Card0Logo className="h-7 w-auto" priority />
-          </div>
-
-          <p className="mt-8 inline-flex rounded-full bg-[#ff2b1d] px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-white">
-            Portal administrativo
-          </p>
-
-          <h1 className="mt-5 text-4xl font-black leading-tight md:text-6xl">
+          <h1 className="text-4xl font-black leading-tight md:text-6xl">
             Gestão Edenred para clientes, carbono e migração digital.
           </h1>
           <p className="mt-5 max-w-xl text-lg font-semibold leading-relaxed text-[#555]">
