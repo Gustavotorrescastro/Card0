@@ -86,13 +86,13 @@ export default function IntroPage() {
 
           <nav className="flex items-center gap-3">
             <Link
-              href="/visualizacao-publica"
+              href="/cadastro"
               className="hidden h-11 items-center justify-center rounded-full border border-[#ffb4ae] bg-white px-5 text-sm font-black text-[#ff2b1d] shadow-sm transition-all hover:bg-[#fff1ef] sm:inline-flex"
             >
               Criar conta
             </Link>
             <Link
-              href="/visualizacao-publica"
+              href="/login"
               className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#ff2b1d] px-5 text-sm font-black text-white shadow-lg shadow-[#ff2b1d]/20 transition-all hover:-translate-y-0.5 hover:bg-[#e51f13]"
             >
               Entrar
