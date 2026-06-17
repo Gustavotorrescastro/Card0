@@ -23,20 +23,19 @@ function getSavedAdmins() {
       email: string
       password: string
       name: string
-      area?: string
     }>
   } catch {
     return []
   }
 }
 
-function saveEdenredSession(admin: { email: string; name: string; area?: string }) {
+function saveEdenredSession(admin: { email: string; name: string }) {
   const profile = {
     name: admin.name,
     email: admin.email,
     empresa: 'Edenred',
     dataNascimento: 'Não aplicável',
-    localizacao: admin.area || 'Administração Edenred',
+    localizacao: 'Administração Edenred',
   }
 
   localStorage.setItem('userLoggedIn', 'true')
@@ -56,7 +55,6 @@ export default function EdenredLoginPage() {
     name: '',
     email: '',
     password: '',
-    area: '',
   })
 
   const submitLogin = (event: React.FormEvent<HTMLFormElement>) => {
@@ -104,7 +102,6 @@ export default function EdenredLoginPage() {
       name: form.name.trim(),
       email,
       password: form.password,
-      area: form.area.trim() || 'Administração Edenred',
     }
 
     localStorage.setItem('edenredAdmins', JSON.stringify([...admins, admin]))
@@ -228,15 +225,6 @@ export default function EdenredLoginPage() {
               icon={<LockKeyhole size={17} />}
               onChange={(value) => setForm({ ...form, password: value })}
             />
-            {isRegister && (
-              <AdminField
-                label="Área / unidade"
-                value={form.area}
-                placeholder="Ex: Sustentabilidade corporativa"
-                onChange={(value) => setForm({ ...form, area: value })}
-              />
-            )}
-
             {error && (
               <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-center text-sm font-bold text-red-700">
                 {error}
