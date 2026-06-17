@@ -26,13 +26,18 @@ const card0LogoAttachment = {
     path: card0LogoPath,
     cid: 'card0-logo',
 }
+const defaultBaseUrl = 'https://card0-edenred.vercel.app'
+
+const getBaseUrl = () => {
+    return (process.env.NEXT_PUBLIC_BASE_URL || defaultBaseUrl).replace(/\/$/, '')
+}
 
 export async function sendVerificationEmail(
     toEmail: string,
     toName: string,
     token: string
 ) {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+    const baseUrl = getBaseUrl()
     const verifyUrl = `${baseUrl}/api/auth/verify-email?token=${token}`
 
     await transporter.sendMail({
