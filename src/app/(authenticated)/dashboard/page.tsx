@@ -2,7 +2,19 @@
 
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
-import { BarChart3, ChevronDown, Edit2, Save, X } from 'lucide-react'
+import type { ReactNode } from 'react'
+import {
+  BarChart3,
+  Building2,
+  ChevronDown,
+  Edit2,
+  Leaf,
+  MapPin,
+  Save,
+  TrendingUp,
+  Users,
+  X,
+} from 'lucide-react'
 import { useUser } from '@/context/UserContext'
 import { dashboardNavigation } from '@/config/navigation'
 import {
@@ -20,6 +32,91 @@ const produtoDetalhes: Record<string, { status: string; emissao: string; transac
   Pagbem: { status: 'Pagamentos corporativos', emissao: '18 cartões digitais', transacoes: '1.780 transações/mês' },
 }
 
+const clientesEdenred = [
+  {
+    nome: 'Carteira Ticket Brasil',
+    segmento: 'Benefícios e engajamento',
+    local: 'Brasil',
+    usuarios: 7000000,
+    operacoesFisicas: 1820000,
+    adesaoDigital: 68,
+    potencial: 'R$ 18,4 mi',
+    co2PotencialTon: 38,
+    risco: 'Médio',
+  },
+  {
+    nome: 'Ticket Log',
+    segmento: 'Frotas e mobilidade corporativa',
+    local: 'Brasil',
+    usuarios: 240000,
+    operacoesFisicas: 86000,
+    adesaoDigital: 54,
+    potencial: 'R$ 6,8 mi',
+    co2PotencialTon: 21.4,
+    risco: 'Alto',
+  },
+  {
+    nome: 'Edenred Repom',
+    segmento: 'Pagamento de frete e transporte',
+    local: 'Brasil',
+    usuarios: 4000,
+    operacoesFisicas: 31000,
+    adesaoDigital: 47,
+    potencial: 'R$ 4,1 mi',
+    co2PotencialTon: 14.7,
+    risco: 'Alto',
+  },
+  {
+    nome: 'Sainsbury’s',
+    segmento: 'Varejo alimentar e assistência social',
+    local: 'Reino Unido',
+    usuarios: 120000,
+    operacoesFisicas: 22000,
+    adesaoDigital: 76,
+    potencial: 'R$ 2,9 mi',
+    co2PotencialTon: 7.8,
+    risco: 'Baixo',
+  },
+  {
+    nome: 'PayByPhone',
+    segmento: 'Mobilidade urbana e estacionamento',
+    local: 'Global',
+    usuarios: 50000000,
+    operacoesFisicas: 140000,
+    adesaoDigital: 84,
+    potencial: 'R$ 9,7 mi',
+    co2PotencialTon: 25.6,
+    risco: 'Baixo',
+  },
+  {
+    nome: 'thinkmoney',
+    segmento: 'Serviços financeiros digitais',
+    local: 'Reino Unido',
+    usuarios: 180000,
+    operacoesFisicas: 46000,
+    adesaoDigital: 63,
+    potencial: 'R$ 3,6 mi',
+    co2PotencialTon: 10.2,
+    risco: 'Médio',
+  },
+]
+
+function calcularOperacoesDigitais(operacoesFisicas: number, adesaoDigital: number) {
+  const fisicoPercentual = Math.max(1, 100 - adesaoDigital)
+  return Math.round((operacoesFisicas * adesaoDigital) / fisicoPercentual)
+}
+
+function calcularCo2Evitado(co2PotencialTon: number, adesaoDigital: number) {
+  return Number(((co2PotencialTon * adesaoDigital) / 100).toFixed(1))
+}
+
+function formatTonValue(value: number) {
+  return value.toLocaleString('pt-BR', {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  })
+}
+
 export default function Dashboard() {
   const { profile, updateProfile } = useUser()
   const [editando, setEditando] = useState(false)
@@ -28,6 +125,7 @@ export default function Dashboard() {
   const [historicoAberto, setHistoricoAberto] = useState(false)
   const [metricaAtiva, setMetricaAtiva] = useState<'custo' | 'impacto'>('custo')
   const [operationalMetrics, setOperationalMetrics] = useState<OperationalMetricsStore>({})
+  const [userRole, setUserRole] = useState<'company' | 'edenred'>('company')
 
   const abrirEdicao = () => {
     setFormData({ ...profile })
@@ -46,6 +144,7 @@ export default function Dashboard() {
     const syncMetrics = () => setOperationalMetrics(readOperationalMetrics())
 
     syncMetrics()
+    setUserRole(localStorage.getItem('userRole') === 'edenred' ? 'edenred' : 'company')
     window.addEventListener('storage', syncMetrics)
     window.addEventListener('focus', syncMetrics)
 
@@ -76,6 +175,10 @@ export default function Dashboard() {
       valor: metricaAtiva === 'custo' ? item.custo : item.impacto,
     }))
     .filter((item): item is { label: string; valor: number } => typeof item.valor === 'number')
+
+  if (userRole === 'edenred') {
+    return <EdenredAdminDashboard profileName={profile.name} />
+  }
 
   return (
     <div className="w-full space-y-8 pb-16 font-sans">
@@ -324,6 +427,229 @@ export default function Dashboard() {
             ))}
         </div>
       </section>
+    </div>
+  )
+}
+
+function EdenredAdminDashboard({ profileName }: { profileName: string }) {
+  const totalClientes = clientesEdenred.length
+  const totalUsuarios = clientesEdenred.reduce((sum, cliente) => sum + cliente.usuarios, 0)
+  const operacoesFisicas = clientesEdenred.reduce((sum, cliente) => sum + cliente.operacoesFisicas, 0)
+  const operacoesDigitais = clientesEdenred.reduce(
+    (sum, cliente) => sum + calcularOperacoesDigitais(cliente.operacoesFisicas, cliente.adesaoDigital),
+    0
+  )
+  const co2EvitadoTon = clientesEdenred.reduce(
+    (sum, cliente) => sum + calcularCo2Evitado(cliente.co2PotencialTon, cliente.adesaoDigital),
+    0
+  )
+  const co2PotencialTon = clientesEdenred.reduce((sum, cliente) => sum + cliente.co2PotencialTon, 0)
+  const adesaoMedia = Math.round(
+    clientesEdenred.reduce((sum, cliente) => sum + cliente.adesaoDigital, 0) / totalClientes
+  )
+
+  return (
+    <div className="w-full space-y-8 pb-16 font-sans">
+      <section className="rounded-[2rem] border border-[#ffe1de] bg-white p-8 shadow-sm">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-[#f72717]">Dashboard Edenred</p>
+            <h1 className="mt-3 text-3xl font-black tracking-tight text-brand-text md:text-5xl">
+              Olá, {profileName.split(' ')[0] || 'Edenred'}.
+            </h1>
+            <p className="mt-3 max-w-2xl text-sm font-semibold leading-relaxed text-slate-500">
+              Acompanhe empresas-clientes, carteiras de produtos e cases públicos da Edenred para priorizar migração digital, carbono evitável e risco operacional.
+            </p>
+          </div>
+
+          <div className="rounded-2xl bg-[#111] px-6 py-5 text-white">
+            <p className="text-xs font-black uppercase tracking-wide text-[#ffb4ae]">Carteira monitorada</p>
+            <strong className="mt-2 block text-3xl font-black">{totalClientes} clientes</strong>
+          </div>
+        </div>
+
+        <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-6">
+          <AdminMetric icon={<Building2 size={22} />} label="Clientes monitorados" value={String(totalClientes)} />
+          <AdminMetric icon={<Users size={22} />} label="Usuários impactados" value={totalUsuarios.toLocaleString('pt-BR')} />
+          <AdminMetric icon={<Building2 size={22} />} label="Operações físicas" value={operacoesFisicas.toLocaleString('pt-BR')} />
+          <AdminMetric icon={<TrendingUp size={22} />} label="Operações digitais" value={operacoesDigitais.toLocaleString('pt-BR')} />
+          <AdminMetric icon={<TrendingUp size={22} />} label="Adoção digital média" value={`${adesaoMedia}%`} />
+          <AdminMetric icon={<Leaf size={22} />} label="CO₂ já economizado" value={`${formatTonValue(co2EvitadoTon)} t`} />
+        </div>
+      </section>
+
+      <section className="grid grid-cols-1 gap-8 xl:grid-cols-[1.4fr_.8fr]">
+        <div className="rounded-[2rem] border border-[#ffe1de] bg-white p-6 shadow-sm">
+          <div className="mb-6 flex items-center justify-between gap-4">
+            <div>
+              <h2 className="text-xl font-black tracking-tight text-brand-text">Clientes Edenred</h2>
+              <p className="text-xs font-semibold text-slate-500">Visão administrativa por segmento, carteira e case público para priorização operacional.</p>
+            </div>
+            <span className="rounded-full bg-[#ffe5e5] px-4 py-2 text-xs font-black text-[#f72717]">
+              Atualizado hoje
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4">
+            {clientesEdenred.map((cliente) => (
+              <ClientEdenredCard key={cliente.nome} cliente={cliente} />
+            ))}
+          </div>
+        </div>
+
+        <aside className="space-y-8">
+          <section className="rounded-[2rem] border border-[#ffe1de] bg-white p-6 shadow-sm">
+            <h2 className="text-lg font-black text-brand-text">Resumo ambiental</h2>
+            <div className="mt-5 space-y-4">
+              <div className="rounded-2xl bg-[#fff7f7] p-5">
+                <span className="text-xs font-black uppercase tracking-wide text-slate-400">CO₂ já economizado</span>
+                <strong className="mt-2 block text-4xl font-black text-[#f72717]">{formatTonValue(co2EvitadoTon)} t</strong>
+                <p className="mt-2 text-xs font-semibold text-slate-500">Estimativa proporcional à adoção digital atual dos clientes.</p>
+              </div>
+              <div className="rounded-2xl bg-[#111] p-5 text-white">
+                <span className="text-xs font-black uppercase tracking-wide text-[#ffb4ae]">CO₂ potencial restante</span>
+                <strong className="mt-2 block text-4xl font-black">{formatTonValue(co2PotencialTon - co2EvitadoTon)} t</strong>
+                <p className="mt-2 text-xs font-semibold text-white/70">Oportunidade adicional ao reduzir operações físicas remanescentes.</p>
+              </div>
+            </div>
+          </section>
+
+          <section className="rounded-[2rem] border border-[#ffe1de] bg-white p-6 shadow-sm">
+            <h2 className="text-lg font-black text-brand-text">Prioridades Edenred</h2>
+            <div className="mt-5 space-y-4">
+              <PriorityCard title="Migrar contas de alto risco" text="Ticket Log e Edenred Repom concentram operações físicas relevantes e maior potencial de redução operacional." />
+              <PriorityCard title="Capturar economia rápida" text="Carteiras com alta adoção digital, como PayByPhone, ajudam a criar referência para novos produtos e regiões." />
+              <PriorityCard title="Acompanhar descarte seguro" text="Priorize clientes com alto volume de cartões ou vouchers físicos para reduzir resíduos e emissões de fim de vida." />
+            </div>
+          </section>
+
+          <section className="rounded-[2rem] border border-[#ffe1de] bg-[#111] p-6 text-white shadow-sm">
+            <Leaf className="text-[#ffb4ae]" size={30} />
+            <h2 className="mt-4 text-xl font-black">Impacto potencial da carteira</h2>
+            <strong className="mt-5 block text-4xl font-black">{formatTonValue(co2PotencialTon)} tCO₂e</strong>
+            <p className="mt-2 text-sm font-semibold text-white/70">
+              Estimativa evitável ao acelerar a migração digital dos clientes monitorados.
+            </p>
+          </section>
+        </aside>
+      </section>
+
+      <section className="rounded-[2rem] border border-[#ffe1de] bg-white p-6 shadow-sm">
+        <div className="mb-5">
+          <h2 className="text-sm font-black tracking-tight text-brand-text">Acessar ferramentas da plataforma</h2>
+          <p className="text-xs font-semibold text-slate-500">O login Edenred usa a mesma ferramenta, com visão administrativa no dashboard.</p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {dashboardNavigation
+            .filter((item) => item.href !== '/dashboard')
+            .map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="group rounded-2xl border border-slate-200 bg-slate-50 p-5 transition-all hover:-translate-y-0.5 hover:border-[#f72717]/40 hover:bg-white hover:shadow-md"
+              >
+                <div className="mb-4 inline-flex rounded-2xl bg-[#fff1ef] p-3 text-[#f72717] transition-colors group-hover:bg-[#f72717] group-hover:text-white">
+                  <item.icon size={18} />
+                </div>
+                <h4 className="text-sm font-black text-brand-text">{item.label}</h4>
+                <p className="mt-2 text-xs font-medium leading-relaxed text-slate-500">{item.description}</p>
+              </Link>
+            ))}
+        </div>
+      </section>
+    </div>
+  )
+}
+
+function ClientEdenredCard({ cliente }: { cliente: (typeof clientesEdenred)[number] }) {
+  const operacoesDigitais = calcularOperacoesDigitais(cliente.operacoesFisicas, cliente.adesaoDigital)
+  const totalOperacoes = cliente.operacoesFisicas + operacoesDigitais
+  const fisicoPercentual = totalOperacoes > 0 ? Math.round((cliente.operacoesFisicas / totalOperacoes) * 100) : 0
+  const co2Evitado = calcularCo2Evitado(cliente.co2PotencialTon, cliente.adesaoDigital)
+  const co2Restante = Math.max(0, cliente.co2PotencialTon - co2Evitado)
+
+  return (
+    <article className="rounded-2xl border border-[#ffe1de] bg-[#fff7f7] p-5 transition-all hover:-translate-y-0.5 hover:bg-white hover:shadow-md">
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-[1fr_1.2fr] xl:items-center">
+        <div>
+          <div className="flex flex-wrap items-center gap-3">
+            <h3 className="text-lg font-black text-brand-text">{cliente.nome}</h3>
+            <span className={`rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-wide ${
+              cliente.risco === 'Alto' ? 'bg-[#ff2b1d] text-white' : cliente.risco === 'Médio' ? 'bg-[#ffb4ae] text-black' : 'bg-[#ffe5e5] text-[#f72717]'
+            }`}>
+              Risco {cliente.risco}
+            </span>
+          </div>
+          <p className="mt-1 text-xs font-bold text-slate-500">{cliente.segmento}</p>
+          <p className="mt-3 inline-flex items-center gap-2 text-xs font-semibold text-slate-500">
+            <MapPin size={14} /> {cliente.local}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          <ClientStat label="Usuários" value={cliente.usuarios.toLocaleString('pt-BR')} />
+          <ClientStat label="Físicas" value={cliente.operacoesFisicas.toLocaleString('pt-BR')} />
+          <ClientStat label="Digitais" value={operacoesDigitais.toLocaleString('pt-BR')} />
+          <ClientStat label="CO₂ econom." value={`${formatTonValue(co2Evitado)} t`} />
+        </div>
+      </div>
+
+      <div className="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-[1.1fr_.9fr]">
+        <div>
+          <div className="mb-2 flex justify-between text-[10px] font-black uppercase tracking-wide text-slate-500">
+            <span>Uso físico x digital</span>
+            <span>{fisicoPercentual}% físico · {cliente.adesaoDigital}% digital</span>
+          </div>
+          <div className="flex h-4 overflow-hidden rounded-full bg-[#ffddd9]">
+            <div className="h-full bg-[#111]" style={{ width: `${fisicoPercentual}%` }} />
+            <div className="h-full bg-[#f72717]" style={{ width: `${cliente.adesaoDigital}%` }} />
+          </div>
+          <div className="mt-2 flex items-center gap-4 text-[10px] font-bold text-slate-500">
+            <span className="inline-flex items-center gap-1"><i className="h-2 w-2 rounded-full bg-[#111]" />Físico</span>
+            <span className="inline-flex items-center gap-1"><i className="h-2 w-2 rounded-full bg-[#f72717]" />Digital</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div className="rounded-2xl bg-white p-4">
+            <span className="text-[9px] font-black uppercase tracking-wide text-slate-400">CO₂ restante</span>
+            <strong className="mt-1 block text-lg font-black text-brand-text">{formatTonValue(co2Restante)} t</strong>
+          </div>
+          <div className="rounded-2xl bg-white p-4">
+            <span className="text-[9px] font-black uppercase tracking-wide text-slate-400">Potencial financeiro</span>
+            <strong className="mt-1 block text-lg font-black text-brand-text">{cliente.potencial}</strong>
+          </div>
+        </div>
+      </div>
+    </article>
+  )
+}
+
+function AdminMetric({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
+  return (
+    <div className="rounded-2xl border border-[#ffe1de] bg-[#fff7f7] p-5">
+      <div className="mb-4 inline-flex rounded-xl bg-[#ffe5e5] p-3 text-[#f72717]">{icon}</div>
+      <strong className="block text-2xl font-black text-brand-text">{value}</strong>
+      <span className="mt-1 block text-xs font-bold text-slate-500">{label}</span>
+    </div>
+  )
+}
+
+function ClientStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl bg-white px-3 py-3 text-center">
+      <span className="block text-[9px] font-black uppercase tracking-wide text-slate-400">{label}</span>
+      <strong className="mt-1 block text-xs font-black text-brand-text">{value}</strong>
+    </div>
+  )
+}
+
+function PriorityCard({ title, text }: { title: string; text: string }) {
+  return (
+    <div className="rounded-2xl bg-[#fff7f7] p-4">
+      <h3 className="text-sm font-black text-brand-text">{title}</h3>
+      <p className="mt-2 text-xs font-semibold leading-relaxed text-slate-500">{text}</p>
     </div>
   )
 }

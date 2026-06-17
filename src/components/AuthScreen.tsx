@@ -54,9 +54,11 @@ const diasSemana = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S']
 type StoredUser = {
   name?: string
   email?: string
+  empresa?: string
   birthDate?: string
   city?: string
   state?: string
+  role?: 'company' | 'edenred'
 }
 
 function formatarData(data?: string) {
@@ -77,13 +79,14 @@ function salvarProfileAutenticado(user: StoredUser) {
   const userProfile = {
     name: user.name || 'Usuário Gestor',
     email: user.email || '',
-    empresa: 'Edenred',
+    empresa: user.empresa || (user.role === 'edenred' ? 'Edenred' : 'Empresa cliente'),
     dataNascimento: formatarData(user.birthDate),
     localizacao: formatarLocalizacao(user.city, user.state),
   }
 
   localStorage.setItem('userEmail', userProfile.email)
   localStorage.setItem('userName', userProfile.name)
+  localStorage.setItem('userRole', user.role || 'company')
   localStorage.setItem('userProfile', JSON.stringify(userProfile))
   window.dispatchEvent(new Event('userProfileUpdated'))
 }
@@ -188,6 +191,7 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
       salvarProfileAutenticado({
         ...data.user,
         email: data.user?.email || loginData.email,
+        role: data.user?.role || 'company',
       })
       router.push('/dashboard')
     } catch (err) {
@@ -461,6 +465,12 @@ export default function AuthScreen({ initialStep = 'login' }: AuthScreenProps) {
                     Cadastre-se agora.
                   </span>
                 </button>
+                <Link
+                  href="/login-edenred"
+                  className="mx-auto inline-flex rounded-full px-4 py-2 text-xs font-black uppercase tracking-wide text-[#555] transition-all hover:-translate-y-0.5 hover:bg-white hover:text-[#ff2b1d] hover:shadow-[0_10px_24px_rgba(255,43,29,0.12)]"
+                >
+                  Acesso Edenred
+                </Link>
               </div>
             </form>
           </section>

@@ -143,5 +143,16 @@
     "verificationExpires": null,
     "passwordResetCode": null,
     "passwordResetExpires": null
+  },
+  {
+    "name": "Arthur",
+    "email": "amfgs@cesar",
+    "password": "Arthur*123",
+    "birthDate": "2007-02-12",
+    "city": "Recife",
+    "state": "Pernambuco",
+    "emailVerified": false,
+    "verificationToken": "9a75be7acad6c771cbfd490a197ba24eb37ecb27b8b7024176838c954ecf981a",
+    "verificationExpires": "2026-06-18T01:10:16.759Z"
   }
 ]

@@ -35,6 +35,7 @@ export default function PerfilPage() {
     localStorage.removeItem('userLoggedIn')
     localStorage.removeItem('userName')
     localStorage.removeItem('userEmail')
+    localStorage.removeItem('userRole')
     localStorage.removeItem('userProfile')
     router.push('/login')
   }

@@ -4,15 +4,19 @@ import { getUsers } from '@/lib/db'
 export async function POST(request: Request) {
   const { email, password } = await request.json()
 
-  const isAdmin = email === 'admin@card0.com.br' && password === 'senha123'
+  const isAdmin =
+    password === 'senha123' &&
+    (email === 'admin@card0.com.br' || email === 'admin@edenred.com.br')
   if (isAdmin) {
     return NextResponse.json({
       message: 'OK',
       user: {
-        name: 'Administrador',
-        email: 'admin@card0.com.br',
+        name: 'Administrador Edenred',
+        email,
+        empresa: 'Edenred',
         city: 'Recife',
         state: 'Pernambuco',
+        role: 'edenred',
       },
     }, { status: 200 })
   }
@@ -39,8 +43,10 @@ export async function POST(request: Request) {
     user: {
       name: user.name,
       email: user.email,
+      empresa: user.empresa || user.company || user.state || 'Empresa cliente',
       city: user.city,
       state: user.state,
+      role: 'company',
     },
   }, { status: 200 })
 }
