@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
-import type { ReactNode } from 'react'
+import type { FormEvent, ReactNode } from 'react'
 import {
   BarChart3,
   Building2,
@@ -20,16 +20,25 @@ import { dashboardNavigation } from '@/config/navigation'
 import {
   calculateCostImpactPanel,
   calculateOperationalScore,
+  clearOperationalMetrics,
   readOperationalMetrics,
   type OperationalMetricsStore,
 } from '@/lib/operationalMetrics'
 
-const produtosEmpresa = ['Taggy', 'Ticket Log', 'Repom', 'Pagbem']
-const produtoDetalhes: Record<string, { status: string; emissao: string; transacoes: string }> = {
-  Taggy: { status: 'Ativo para frotas leves', emissao: '12 cartões digitais', transacoes: '1.240 transações/mês' },
-  'Ticket Log': { status: 'Operação logística', emissao: '38 cartões digitais', transacoes: '3.890 transações/mês' },
-  Repom: { status: 'Gestão de transporte', emissao: '24 cartões digitais', transacoes: '2.160 transações/mês' },
-  Pagbem: { status: 'Pagamentos corporativos', emissao: '18 cartões digitais', transacoes: '1.780 transações/mês' },
+type CompanyProfile = {
+  nome: string
+  nicho: string
+  local: string
+  pessoas: string
+  cartoes: string
+}
+
+const EMPTY_COMPANY_PROFILE: CompanyProfile = {
+  nome: '',
+  nicho: '',
+  local: '',
+  pessoas: '',
+  cartoes: '',
 }
 
 const clientesEdenred = [
@@ -117,23 +126,68 @@ function formatTonValue(value: number) {
   })
 }
 
+function getCompanyStorageKey(email?: string) {
+  return `companyProfile:${email || 'default'}`
+}
+
+function readCompanyProfile(email?: string): CompanyProfile | null {
+  const stored = localStorage.getItem(getCompanyStorageKey(email))
+
+  if (!stored) return null
+
+  try {
+    return { ...EMPTY_COMPANY_PROFILE, ...JSON.parse(stored) }
+  } catch {
+    return null
+  }
+}
+
+function saveCompanyProfile(email: string | undefined, companyProfile: CompanyProfile) {
+  localStorage.setItem(getCompanyStorageKey(email), JSON.stringify(companyProfile))
+}
+
+function formatInteger(value?: string) {
+  const number = Number(value || 0)
+  return Number.isFinite(number) ? number.toLocaleString('pt-BR') : '0'
+}
+
 export default function Dashboard() {
-  const { profile, updateProfile } = useUser()
+  const { profile } = useUser()
   const [editando, setEditando] = useState(false)
-  const [formData, setFormData] = useState({ ...profile })
-  const [produtoSelecionado, setProdutoSelecionado] = useState(produtosEmpresa[0])
+  const [companyProfile, setCompanyProfile] = useState<CompanyProfile | null>(null)
+  const [companyForm, setCompanyForm] = useState<CompanyProfile>(EMPTY_COMPANY_PROFILE)
+  const [companyProfileLoaded, setCompanyProfileLoaded] = useState(false)
   const [historicoAberto, setHistoricoAberto] = useState(false)
   const [metricaAtiva, setMetricaAtiva] = useState<'custo' | 'impacto'>('custo')
   const [operationalMetrics, setOperationalMetrics] = useState<OperationalMetricsStore>({})
   const [userRole, setUserRole] = useState<'company' | 'edenred'>('company')
 
   const abrirEdicao = () => {
-    setFormData({ ...profile })
+    setCompanyForm(companyProfile || {
+      ...EMPTY_COMPANY_PROFILE,
+      nome: profile.empresa && profile.empresa !== 'Empresa cliente' ? profile.empresa : '',
+      local: profile.localizacao !== 'Não informado' ? profile.localizacao : '',
+    })
     setEditando(true)
   }
 
-  const salvarEdicao = () => {
-    updateProfile(formData)
+  const salvarEmpresa = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const emailLogado = localStorage.getItem('userEmail') || profile.email
+    const nextCompanyProfile = {
+      ...companyForm,
+      pessoas: String(Math.max(0, Number(companyForm.pessoas || 0))),
+      cartoes: String(Math.max(0, Number(companyForm.cartoes || 0))),
+    }
+
+    if (!companyProfile) {
+      clearOperationalMetrics()
+      setOperationalMetrics({})
+    }
+
+    saveCompanyProfile(emailLogado, nextCompanyProfile)
+    setCompanyProfile(nextCompanyProfile)
+    setCompanyForm(nextCompanyProfile)
     setEditando(false)
   }
 
@@ -144,7 +198,17 @@ export default function Dashboard() {
     const syncMetrics = () => setOperationalMetrics(readOperationalMetrics())
 
     syncMetrics()
-    setUserRole(localStorage.getItem('userRole') === 'edenred' ? 'edenred' : 'company')
+    const role = localStorage.getItem('userRole') === 'edenred' ? 'edenred' : 'company'
+    const storedCompanyProfile = readCompanyProfile(localStorage.getItem('userEmail') || profile.email)
+
+    setUserRole(role)
+    setCompanyProfile(storedCompanyProfile)
+    setCompanyForm(storedCompanyProfile || {
+      ...EMPTY_COMPANY_PROFILE,
+      nome: profile.empresa && profile.empresa !== 'Empresa cliente' ? profile.empresa : '',
+      local: profile.localizacao !== 'Não informado' ? profile.localizacao : '',
+    })
+    setCompanyProfileLoaded(true)
     window.addEventListener('storage', syncMetrics)
     window.addEventListener('focus', syncMetrics)
 
@@ -152,7 +216,7 @@ export default function Dashboard() {
       window.removeEventListener('storage', syncMetrics)
       window.removeEventListener('focus', syncMetrics)
     }
-  }, [])
+  }, [profile.email, profile.empresa, profile.localizacao])
 
   const metricas = useMemo(() => {
     const score = calculateOperationalScore(operationalMetrics)
@@ -168,7 +232,7 @@ export default function Dashboard() {
   const gaugeAngle = Math.PI - (metricas.score / 100) * Math.PI
   const knobX = 110 + 75 * Math.cos(gaugeAngle)
   const knobY = 115 - 75 * Math.sin(gaugeAngle)
-  const detalheProduto = produtoDetalhes[produtoSelecionado]
+  const showCompanyModal = companyProfileLoaded && userRole === 'company' && (!companyProfile || editando)
   const painelDetalhes = painelCustoImpacto.detalhe
     .map((item) => ({
       label: item.label,
@@ -181,32 +245,43 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="w-full space-y-8 pb-16 font-sans">
-      {editando && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-md space-y-5 rounded-3xl border border-brand-border bg-white p-8 shadow-2xl">
+    <div className="relative w-full space-y-8 pb-16 font-sans">
+      {showCompanyModal && (
+        <div className="absolute inset-0 z-40 flex min-h-[calc(100vh-220px)] items-start justify-center bg-black/30 p-4 pt-8 backdrop-blur-sm">
+          <form onSubmit={salvarEmpresa} className="w-full max-w-2xl space-y-6 rounded-3xl border border-brand-border bg-white p-8 shadow-2xl">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-black uppercase tracking-tight text-[#f72717]">Editar Perfil</h2>
-              <button onClick={() => setEditando(false)} className="text-slate-400 transition-colors hover:text-[#f72717]">
-                <X size={20} />
-              </button>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#f72717]">Primeiro acesso</p>
+                <h2 className="mt-1 text-2xl font-black tracking-tight text-brand-text">Cadastre sua empresa</h2>
+                <p className="mt-2 text-sm font-semibold text-slate-500">
+                  Essas informações serão usadas para personalizar o dashboard comum da ferramenta.
+                </p>
+              </div>
+
+              {companyProfile && (
+                <button type="button" onClick={() => setEditando(false)} className="text-slate-400 transition-colors hover:text-[#f72717]">
+                  <X size={20} />
+                </button>
+              )}
             </div>
 
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               {[
-                { label: 'Nome Completo', key: 'name', type: 'text' },
-                { label: 'E-mail', key: 'email', type: 'email' },
-                { label: 'Empresa', key: 'empresa', type: 'text' },
-                { label: 'Data de Nascimento', key: 'dataNascimento', type: 'text', placeholder: 'dd/mm/aaaa' },
-                { label: 'Localização', key: 'localizacao', type: 'text' },
+                { label: 'Nome', key: 'nome', type: 'text', placeholder: 'Ex: Edenred Brasil' },
+                { label: 'Nicho', key: 'nicho', type: 'text', placeholder: 'Ex: Benefícios corporativos' },
+                { label: 'Local', key: 'local', type: 'text', placeholder: 'Ex: Recife-PE, Brasil' },
+                { label: 'Quantas pessoas trabalham nela', key: 'pessoas', type: 'number', placeholder: 'Ex: 250' },
+                { label: 'Quantos cartões/tickets existem nela', key: 'cartoes', type: 'number', placeholder: 'Ex: 13600' },
               ].map(({ label, key, type, placeholder }) => (
-                <div key={key} className="space-y-1">
+                <div key={key} className={`space-y-1 ${key === 'cartoes' ? 'md:col-span-2' : ''}`}>
                   <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400">{label}</label>
                   <input
                     type={type}
-                    value={formData[key as keyof typeof formData]}
+                    min={type === 'number' ? 0 : undefined}
+                    required
+                    value={companyForm[key as keyof CompanyProfile]}
                     placeholder={placeholder}
-                    onChange={(event) => setFormData({ ...formData, [key]: event.target.value })}
+                    onChange={(event) => setCompanyForm({ ...companyForm, [key]: event.target.value })}
                     className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-brand-text outline-none transition-all focus:border-[#f72717] focus:ring-2 focus:ring-[#f72717]/25"
                   />
                 </div>
@@ -214,20 +289,23 @@ export default function Dashboard() {
             </div>
 
             <div className="flex gap-3 pt-2">
+              {companyProfile && (
+                <button
+                  type="button"
+                  onClick={() => setEditando(false)}
+                  className="flex-1 rounded-2xl border border-slate-200 py-2.5 text-xs font-black uppercase tracking-wider text-slate-500 transition-all hover:bg-slate-50"
+                >
+                  Cancelar
+                </button>
+              )}
               <button
-                onClick={() => setEditando(false)}
-                className="flex-1 rounded-2xl border border-slate-200 py-2.5 text-xs font-black uppercase tracking-wider text-slate-500 transition-all hover:bg-slate-50"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={salvarEdicao}
+                type="submit"
                 className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[#f72717] py-2.5 text-xs font-black uppercase tracking-wider text-white shadow-md transition-all hover:bg-[#df1e12]"
               >
-                <Save size={14} /> Salvar
+                <Save size={14} /> Salvar empresa
               </button>
             </div>
-          </div>
+          </form>
         </div>
       )}
 
@@ -236,63 +314,56 @@ export default function Dashboard() {
       </h1>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-        <section className="relative flex min-h-[280px] flex-col items-center gap-8 rounded-[2rem] border border-[#ffe1de] bg-white p-8 shadow-sm md:flex-row lg:col-span-7">
+        <section className="relative min-h-[280px] rounded-[2rem] border border-[#ffe1de] bg-white p-8 shadow-sm lg:col-span-7">
           <button
             onClick={abrirEdicao}
             className="absolute right-6 top-6 text-slate-400 transition-colors hover:text-[#f72717]"
-            title="Editar perfil"
+            title="Editar empresa"
           >
             <Edit2 size={18} />
           </button>
 
-          <div className="shrink-0">
-            <svg className="h-40 w-40 text-black" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="50" cy="50" r="46" stroke="currentColor" strokeWidth="6" fill="white" />
-              <circle cx="50" cy="40" r="16" fill="currentColor" />
-              <path d="M18 78C18 64.7452 28.7452 54 42 54H58C71.2548 54 82 64.7452 82 78V82H18V78Z" fill="currentColor" />
-            </svg>
+          <div className="mb-8 flex items-center gap-5">
+            <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-3xl bg-[#fff1ef] text-[#f72717]">
+              <Building2 size={38} strokeWidth={2.4} />
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#f72717]">Dados da Empresa</p>
+              <h2 className="mt-1 text-3xl font-black tracking-tight text-brand-text">{companyProfile?.nome || 'Empresa não cadastrada'}</h2>
+              <p className="mt-1 text-sm font-semibold text-slate-500">{companyProfile?.nicho || 'Complete o cadastro da empresa para liberar os dados do dashboard.'}</p>
+            </div>
           </div>
 
-          <div className="w-full space-y-4 text-left">
-            <h2 className="text-2xl font-black tracking-tight text-brand-text">{profile.name}</h2>
-            <div className="space-y-3 text-xs font-semibold md:text-sm">
-              <ProfileLine label="Empresa:" value={profile.empresa} />
-              <ProfileLine label="Data de Nasc.:" value={profile.dataNascimento} />
-              <ProfileLine label="Local:" value={profile.localizacao} />
-              <ProfileLine label="Email:" value={profile.email} strong />
-            </div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <CompanyInfoTile icon={<Building2 size={20} />} label="Nicho" value={companyProfile?.nicho || '-'} />
+            <CompanyInfoTile icon={<MapPin size={20} />} label="Local" value={companyProfile?.local || '-'} />
+            <CompanyInfoTile icon={<Users size={20} />} label="Funcionários" value={formatInteger(companyProfile?.pessoas)} />
+            <CompanyInfoTile icon={<TrendingUp size={20} />} label="Cartões/Tickets" value={formatInteger(companyProfile?.cartoes)} />
           </div>
         </section>
 
-        <section className="flex min-h-[280px] flex-col justify-center rounded-[2rem] border border-[#ffe1de] bg-white p-8 shadow-sm lg:col-span-5">
-          <h3 className="mb-5 text-sm font-black tracking-tight text-brand-text">Meus Cartões Ticket:</h3>
-          <p className="mb-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Produtos ativos da empresa</p>
-
-          <div className="grid grid-cols-2 gap-3">
-            {produtosEmpresa.map((produto) => (
-              <button
-                type="button"
-                key={produto}
-                onClick={() => setProdutoSelecionado(produto)}
-                className={`flex h-16 items-center justify-center rounded-xl border px-3 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-[#f72717] ${
-                  produtoSelecionado === produto ? 'border-[#f72717] bg-[#ff2b1d] text-white' : 'border-[#ffb4ae] bg-[#fff7f7]'
-                }`}
-              >
-                <span className={`text-sm font-black italic tracking-tight ${produtoSelecionado === produto ? 'text-white' : 'text-[#f72717]'}`}>{produto}</span>
-              </button>
-            ))}
+        <section className="flex min-h-[280px] flex-col justify-between rounded-[2rem] border border-[#ffe1de] bg-white p-8 shadow-sm lg:col-span-5">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#f72717]">Operação cadastrada</p>
+            <h3 className="mt-2 text-xl font-black tracking-tight text-brand-text">Estrutura da empresa</h3>
+            <p className="mt-2 text-sm font-semibold leading-relaxed text-slate-500">
+              Base usada para contextualizar os cálculos de custo, impacto e risco da plataforma.
+            </p>
           </div>
 
-          <div className="mt-5 rounded-2xl border border-[#ffe1de] bg-[#fff7f7] p-4">
-            <div className="flex items-center justify-between gap-3">
-              <strong className="text-sm font-black text-brand-text">{produtoSelecionado}</strong>
-              <span className="rounded-full bg-[#ff2b1d] px-3 py-1 text-[9px] font-black uppercase tracking-wide text-white">Selecionado</span>
-            </div>
-            <p className="mt-2 text-xs font-semibold text-slate-500">{detalheProduto.status}</p>
-            <div className="mt-3 grid grid-cols-2 gap-3 text-[10px] font-bold text-brand-text">
-              <span className="rounded-xl bg-white px-3 py-2">{detalheProduto.emissao}</span>
-              <span className="rounded-xl bg-white px-3 py-2">{detalheProduto.transacoes}</span>
-            </div>
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+            <CompanyMetricCard
+              icon={<TrendingUp size={26} />}
+              label="Cartões/Tickets"
+              value={formatInteger(companyProfile?.cartoes)}
+              description="Quantidade informada no cadastro da empresa."
+            />
+            <CompanyMetricCard
+              icon={<Users size={26} />}
+              label="Funcionários"
+              value={formatInteger(companyProfile?.pessoas)}
+              description="Pessoas que trabalham na operação cadastrada."
+            />
           </div>
         </section>
       </div>
@@ -654,11 +725,42 @@ function PriorityCard({ title, text }: { title: string; text: string }) {
   )
 }
 
-function ProfileLine({ label, value, strong = false }: { label: string; value: string; strong?: boolean }) {
+function CompanyInfoTile({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
-    <div className="flex gap-2">
-      <span className="min-w-[112px] font-bold text-slate-400">{label}</span>
-      <span className={`text-brand-text ${strong ? 'font-bold' : ''}`}>{value}</span>
+    <div className="rounded-2xl border border-[#ffe1de] bg-[#fff7f7] p-4">
+      <div className="mb-3 inline-flex rounded-xl bg-white p-3 text-[#f72717] shadow-sm">
+        {icon}
+      </div>
+      <span className="block text-[10px] font-black uppercase tracking-wide text-slate-400">{label}</span>
+      <strong className="mt-1 block break-words text-sm font-black text-brand-text">{value}</strong>
+    </div>
+  )
+}
+
+function CompanyMetricCard({
+  icon,
+  label,
+  value,
+  description,
+}: {
+  icon: ReactNode
+  label: string
+  value: string
+  description: string
+}) {
+  return (
+    <div className="rounded-3xl border border-[#ffe1de] bg-[#fff7f7] p-5">
+      <div className="flex items-start justify-between gap-4">
+        <div className="rounded-2xl bg-[#f72717] p-3 text-white shadow-md shadow-[#f72717]/20">
+          {icon}
+        </div>
+        <span className="rounded-full bg-white px-3 py-1 text-[9px] font-black uppercase tracking-wide text-[#f72717]">
+          Atual
+        </span>
+      </div>
+      <strong className="mt-5 block text-4xl font-black tracking-tight text-brand-text">{value}</strong>
+      <span className="mt-1 block text-xs font-black uppercase tracking-wide text-slate-500">{label}</span>
+      <p className="mt-3 text-xs font-semibold leading-relaxed text-slate-500">{description}</p>
     </div>
   )
 }

@@ -101,6 +101,12 @@ export function saveOperationalMetrics<T extends ToolSource>(
   )
 }
 
+export function clearOperationalMetrics() {
+  if (typeof window === 'undefined') return
+
+  localStorage.removeItem(OPERATIONAL_METRICS_KEY)
+}
+
 export function calculateOperationalScore(store: OperationalMetricsStore): OperationalScore {
   const financial = store.financial
   const lca = store.lca
@@ -142,7 +148,6 @@ export function calculateOperationalScore(store: OperationalMetricsStore): Opera
     financial?.precisaoSimulacao,
     lca?.taxaReciclagem,
     risk ? 100 - safeNumber(risk.riscoScore) : undefined,
-    fontesAtivas * 25,
   ]
     .map((value) => safeNumber(value, NaN))
     .filter(Number.isFinite)
